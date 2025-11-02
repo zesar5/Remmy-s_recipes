@@ -1,8 +1,8 @@
 from typing import List, Optional
-from pyndamic import BaseModel
+from pydantic import BaseModel
 from datetime import date
 import uuid
-
+from models import Usuario
 class baseDatos:
     def __init__(self):
         self.usuarios: List[Usuario] = []
@@ -13,7 +13,7 @@ class baseDatos:
     
     def buscarUsuario (self, username: str) -> Optional[Usuario]:
         for u in self.usuarios:
-            if u.sername == username:
+            if u.nombreUsuario == username:
                 return u
         return None
     
@@ -37,5 +37,5 @@ class baseDatos:
             return usuario
         return None
     #simula base de datoss
-db=baseDatos
+db=baseDatos()
 

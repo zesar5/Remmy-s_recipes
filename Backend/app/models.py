@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pyndamic import BaseModel
+from pydantic import BaseModel
 from datetime import date
 import uuid
 class Usuario (BaseModel):
