@@ -1,30 +1,20 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:remy_recipes/main.dart';
+import 'package:remy_recipes/main.dart'; // Asegurate de que este import apunte al nombre correcto de tu proyecto
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Verifica si la aplicacion tiene el texto "Remmy\'s Recipes"', (WidgetTester tester) async {
+    // Construye nuestra aplicacion y dispara un frame.
+    // === CORRECCION: Cambiamos 'MyApp' por 'RemyRecipesApp' ===
+    await tester.pumpWidget(const RemyRecipesApp()); 
+    // =========================================================
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Busca el texto "Remmy's Recipes" en la pantalla de Login
+    expect(find.text('Remmy\'s Recipes'), findsOneWidget);
+    
+    // Verifica que los botones de Login y Registro existan
+    expect(find.text('Iniciar Sesion'), findsOneWidget);
+    expect(find.text('Registrarse'), findsOneWidget);
   });
 }
