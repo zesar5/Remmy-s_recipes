@@ -217,39 +217,59 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _correoController = TextEditingController();
+  final TextEditingController _contrasenaController = TextEditingController();
+  bool _ocultarContrasena = true;
   bool _isLoading = false;
 
+  // ==== LOGIN HANDLER ====
   Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-    });
+    final correo = _correoController.text.trim();
+    final contrasena = _contrasenaController.text.trim();
 
+    // Validaciones locales (como en WPF)
+    if (correo.isEmpty) {
+      _showErrorDialog('Campo vacío', 'Por favor, introduce tu correo electrónico.');
+      return;
+    }
+    if (!_esCorreoValido(correo)) {
+      _showErrorDialog('Correo inválido', 'El formato del correo no es válido.');
+      return;
+    }
+    if (contrasena.isEmpty) {
+      _showErrorDialog('Campo vacío', 'Por favor, introduce tu contraseña.');
+      return;
+    }
+
+    // Simulación del backend real
+    setState(() => _isLoading = true);
     try {
-      // Usamos _usernameController.text como 'username' para la API
       final success = await widget.authService.login(
-        username: _usernameController.text,
-        password: _passwordController.text,
+        username: correo,
+        password: contrasena,
       );
 
-      if (!mounted) return; //  Evitar usar build context despues de await
+      if (!mounted) return;
 
       if (success) {
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
-        _showErrorDialog('Error de inicio de sesion', 'Credenciales incorrectas.');
+        _showErrorDialog('Error de inicio de sesión', 'Credenciales incorrectas.');
       }
     } catch (e) {
-      if (!mounted) return; //  Evitar usar build context despues de await
-      _showErrorDialog('Error de conexion', e.toString().replaceFirst('Exception: ', ''));
+      if (!mounted) return;
+      _showErrorDialog('Error de conexión', e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
+  }
+
+  // ==== UTILIDADES ====
+  bool _esCorreoValido(String correo) {
+    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return regex.hasMatch(correo);
   }
 
   void _showErrorDialog(String title, String message) {
@@ -258,131 +278,210 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(title),
         content: Text(message),
-        actions: <Widget>[
+        actions: [
           TextButton(
             child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-          )
+            onPressed: () => Navigator.of(ctx).pop(),
+          ),
         ],
       ),
     );
   }
 
+  // ==== BUILD UI ====
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFDEB887), // BurlyWood
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 80.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Titulo (Remmy's Recipes)
-              const Text(
-                'Remmy\'s Recipes',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF6B4226),
-                ),
-              ),
-              const SizedBox(height: 100),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
 
-              // Campo Correo electronico
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  hintText: 'Correo electronico',
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
+            // LOGO + TITULO
+            const Text(
+              "Remmy's Recipes",
+              style: TextStyle(
+                fontSize: 28,
+                fontFamily: 'Times New Roman',
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Image.asset(
+              'assets/logosinfondoBien.png',
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: MediaQuery.of(context).size.height *0.2,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 40),
+
+            // CORREO
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Correo electrónico",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                controller: _correoController,
                 keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-
-              // Campo Contraseña
-              TextField(
-                controller: _passwordController,
                 decoration: const InputDecoration(
-                  hintText: 'Contraseña',
-                  hintStyle: TextStyle(color: Colors.grey),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                 ),
-                obscureText: true,
               ),
-              const SizedBox(height: 10),
+            ),
 
-              // Boton 'He olvidado la contraseña'
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'He olvidado la contraseña',
-                    style: TextStyle(color: Color(0xFF6B4226)),
+            // CONTRASEÑA
+            const SizedBox(height: 20),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Contraseña",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 5),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                controller: _contrasenaController,
+                obscureText: _ocultarContrasena,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _ocultarContrasena ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _ocultarContrasena = !_ocultarContrasena;
+                      });
+                    },
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+            ),
 
-              // Boton Iniciar Sesion
-              _buildAuthButton(
-                text: 'Iniciar Sesion',
-                onPressed: _isLoading ? null : _handleLogin,
-                color: Colors.black,
-                textColor: Colors.white,
-                isLoading: _isLoading,
+            // OLVIDE CONTRASEÑA
+            TextButton(
+              onPressed: () => _showErrorDialog(
+                'Recuperar contraseña',
+                'Te enviaremos un enlace para restablecer tu contraseña.',
               ),
-              const SizedBox(height: 15),
+              child: const Text(
+                'He olvidado la contraseña',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
 
-              // Boton Registrarse 
-              _buildAuthButton(
-                text: 'Registrarse',
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/register');
-                },
-                color: Colors.black,
-                textColor: Colors.white,
-              ),
-              const SizedBox(height: 20),
+            // BOTÓN INICIAR SESIÓN
+            const SizedBox(height: 10),
+            _buildActionButton(
+              text: 'Iniciar Sesión',
+              color: Colors.black,
+              textColor: Colors.white,
+              onPressed: _isLoading ? null : _handleLogin,
+              isLoading: _isLoading,
+            ),
 
-              // Texto 'Omitir'
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/home');
-                },
-                child: const Text(
-                  'Omitir',
-                  style: TextStyle(color: Color(0xFF6B4226), decoration: TextDecoration.underline),
-                ),
-              ),
-              const SizedBox(height: 80),
+            // BOTÓN REGISTRARSE
+            const SizedBox(height: 20),
+            _buildActionButton(
+              text: 'Registrarse',
+              color: Colors.black,
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.of(context).pushNamed('/register');
+              },
+            ),
 
-              // Politica de Privacidad y Terminos
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: 'Al hacer clic en continuar, aceptas nuestros ',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Color(0xFF6B4226)),
-                  children: const <TextSpan>[
-                    TextSpan(
-                      text: 'Terminos de servicio',
-                      style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
-                    ),
-                    TextSpan(text: ' y '),
-                    TextSpan(
-                      text: 'Politica de privacidad',
-                      style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
-                    ),
-                  ],
-                ),
+            // BOTÓN OMITIR
+            const SizedBox(height: 25),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('/home');
+              },
+              child: const Text(
+                'Omitir',
+                style: TextStyle(color: Colors.blue),
               ),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // TÉRMINOS Y POLÍTICA
+            const Text(
+              "Al hacer click, aceptas nuestros Términos de",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.blue),
+            ),
+            const Text(
+              "servicio y Política de privacidad",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black),
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
   }
+
+  // ==== BOTÓN ESTILIZADO ====
+  Widget _buildActionButton({
+    required String text,
+    required Color color,
+    required Color textColor,
+    required VoidCallback? onPressed,
+    bool isLoading = false,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      height: 45,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  color: Colors.white,
+                ),
+              )
+            : Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      ),
+    );
+  }
+}
 
   Widget _buildAuthButton({required String text, VoidCallback? onPressed, required Color color, required Color textColor, bool isLoading = false}) {
     return SizedBox(
@@ -413,7 +512,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
+
 
 // ==========================================================================
 // 5. PANTALLA DE REGISTRO
@@ -659,7 +758,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        value: _selectedCountry,
+                        initialValue: _selectedCountry,
                         items: _countries.map((String country) {
                           return DropdownMenuItem<String>(
                             value: country,
@@ -681,7 +780,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        value: _selectedBirthYear,
+                        initialValue: _selectedBirthYear,
                         items: _birthYears.map((String year) {
                           return DropdownMenuItem<String>(
                             value: year,
