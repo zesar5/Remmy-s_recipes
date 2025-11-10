@@ -3,6 +3,9 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date
+import uuid
+from models import Receta
+from routers import recetas
 
 
 from database import db
@@ -75,3 +78,26 @@ def perfil (user:Usuario= Depends(usuarioActual)):
 @app.get("/")
 def inicio():
         return{"mensaje":"API funcionando", "usuarios": len(db.usuarios)}
+
+
+recetas_db = [
+      Receta(
+            id = str(uuid.uuid4()),
+            titulo = "Pasta al pesto",
+            descripcion = "Deliciosa pasta con salsa de albahaca y piñones",
+            tiempoPreparacion = 20,
+            porciones = 2,
+            dificultad = "Fácil",
+            fechaCreacion = date.today(),
+            idUsuario = "usuario_demo",
+            imagen = None,
+            categoria = "Italiana"
+      )
+]
+@app.get("/recetas")
+def obtener_recetas():
+      return recetas_db
+
+
+app = FastAPI()
+app.include_router(recetas.router)
