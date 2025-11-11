@@ -7,11 +7,11 @@ class Usuario (BaseModel):
     id: str =str(uuid.uuid4())
     nombreUsuario: str
     email: str
-    contraseña:str 
+    contrasena:str 
     primerApellido:Optional[str]= None
     segundoApellido :Optional[date]=None
     descripcion: Optional[str]=None
-    añoNacimiento: Optional[str]= None 
+    anioNacimiento: Optional[str]= None 
     fotoPerfil: Optional [str]=None #URL o nombre del archivo
     rol:str = "usuario"
 

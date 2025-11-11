@@ -64,6 +64,7 @@ def registro(datos: registroIn):
         return perfilOut(**guardado.model_dump())
     
 @app.post("/login/")
+
 def login(form:OAuth2PasswordRequestForm=Depends()):
         user = db.buscarUsuario(form.nombreUsuario)
         if not user or user.contraseña != form.contraseña:
