@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class RecetaBase(BaseModel):
-    nombre: str
+    titulo: str
     descripcion: str
 
 class RecetaCreate(RecetaBase):

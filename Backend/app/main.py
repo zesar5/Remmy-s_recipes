@@ -95,10 +95,6 @@ recetas_db = [
             categoria = "Italiana"
       )
 ]
-@app.get("/recetas")
-def obtener_recetas():
-      return recetas_db
-
 
 app = FastAPI()
 app.include_router(recetas.router)
