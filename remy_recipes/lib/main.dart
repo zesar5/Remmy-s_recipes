@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 
 //  URL del Backend
@@ -14,6 +15,7 @@ const String _baseUrl = 'http://127.0.0.1:8000';
 
 class Usuario {
   final String id;
+  final String userName;
   final String nombreUsuario;
   final String email;
   final String rol;
@@ -25,6 +27,7 @@ class Usuario {
 
   Usuario({
     required this.id,
+    required this.userName,
     required this.nombreUsuario,
     required this.email,
     required this.rol,
@@ -39,6 +42,7 @@ class Usuario {
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
       id: json['id'] as String,
+      userName: json['userName']as String,
       nombreUsuario: json['nombreUsuario'] as String,
       email: json['email'] as String,
       rol: json['rol'] as String,
@@ -58,6 +62,7 @@ class Usuario {
 
 class AuthService {
   // Simula el almacenamiento del token de sesion (usar Secure Storage en produccion)
+  
   String? _accessToken;
   Usuario? _currentUser;
 
@@ -86,13 +91,22 @@ class AuthService {
     }
   }
 
-  Future<bool> register(Map<String, dynamic> data) async {
+  Future<bool> register(Map<String, dynamic> data, {File? imageFile}) async {
     final url = Uri.parse('$_baseUrl/registro/');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(data),
-    );
+    final request = http.MultipartRequest('POST', url);
+    data.forEach((key, value){
+      request.fields[key] = value.toString();
+    }); 
+    if (imageFile != null){
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'fotoPerfil',
+          imageFile.path,
+        ),
+      );
+    }
+    final streamedResponse = await request.send();
+    final response =await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 200) {
       // Registro exitoso, el backend devuelve el perfil del nuevo usuario
@@ -221,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _contrasenaController = TextEditingController();
   bool _ocultarContrasena = true;
   bool _isLoading = false;
-
+  
   // ==== LOGIN HANDLER ====
   Future<void> _handleLogin() async {
     final correo = _correoController.text.trim();
@@ -530,7 +544,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> _formData = {};
   bool _isLoading = false;
-
+  File? _imageFile;
+  final ImagePicker _picker =ImagePicker();
+  //AÑADIR IMAGEN
+   Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
   final List<String> _countries = ['España', 'Mexico', 'Colombia', 'Argentina', 'Chile', 'Otro'];
   String? _selectedCountry;
 
@@ -539,6 +563,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _selectedBirthYear;
 
   // Controladores de texto
+  
+  final TextEditingController _userNameController =TextEditingController();
   final TextEditingController _nombreUsuarioController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -550,6 +576,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Guardamos las referencias a los controllers para limpieza
   @override
   void dispose() {
+    _userNameController.dispose();
     _nombreUsuarioController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -562,6 +589,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 
   Future<void> _handleRegister() async {
+    final userName = _userNameController.text.trim(); 
+    final nombreUsuario = _nombreUsuarioController.text.trim();
+    final correo = _emailController.text.trim();
+    final primeraContrasena = _passwordController.text.trim();
+    final segundaContrasena = _password2Controller.text.trim();
+    if (userName.isEmpty || nombreUsuario.isEmpty || correo.isEmpty || primeraContrasena.isEmpty) {
+        _showErrorDialog('Campos incompletos', 'Por favor, rellena todos los campos obligatorios.');
+        return;
+    }
+    
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       
@@ -571,6 +608,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       
       // Construimos el body que espera la API de FastAPI
       final Map<String, dynamic> registerData = {
+        'userName': _userNameController.text,
         'nombreUsuario': _nombreUsuarioController.text,
         'email': _emailController.text,
         // Usamos 'contrasena' y 'contrasena2' porque con'ñ ' nos da error
@@ -588,6 +626,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       try {
         
         final Map<String, dynamic> apiData = {
+          'userName':registerData['userName'],
           'nombreUsuario': registerData['nombreUsuario'],
           'email': registerData['email'],
           'contrasena': registerData['contrasena'],
@@ -598,8 +637,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'anioNacimiento': registerData['anioNacimiento'],
           'rol': registerData['rol'],
         };
+        final success = await widget.authService.register(
+        {
+          'userName': userName,
+          'nombreUsuario': nombreUsuario,
+          'email': correo,
+          'contrasena': primeraContrasena,
+          'rol': 'Usuario', 
+        },
+        imageFile: _imageFile, // <-- Pasamos el archivo aquí
+      );
 
-        final success = await widget.authService.register(apiData);
+        
 
         if (!mounted) return; 
 
@@ -676,46 +725,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                // Titulo
-                const Text(
-                  'Remmy\'s Recipes',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF6B4226),
-                  ),
+               GestureDetector(
+                onTap: _pickImage,
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundImage: _imageFile != null
+                      ? FileImage(_imageFile!) as ImageProvider<Object>?
+                      : null,
+                  child: _imageFile == null
+                      ? const Icon(
+                          Icons.camera_alt,
+                          size: 50,
+                          color: Colors.white,
+                        )
+                      : null,
                 ),
-                const SizedBox(height: 30),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: _pickImage,
+                child: const Text('Seleccionar Foto de Perfil'),
+              ),
+              const SizedBox(height: 30),  
+                // Titulo
+                
 
                 // Foto de Perfil
-                Stack(
-                  children: [
-                    const CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 60, color: Colors.grey),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ],
+               
+TextFormField(
+                controller: _userNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre de usuario (userName)',
+                  prefixIcon: Icon(Icons.alternate_email),
                 ),
-                const SizedBox(height: 5),
-                const Text('Añadir foto de perfil', style: TextStyle(color: Color(0xFF6B4226), fontSize: 12)),
-                const SizedBox(height: 30),
+                keyboardType: TextInputType.text,
+              ),
 
+              const SizedBox(height: 20),
+
+              
+                
+              
                 // Nombre y Apellidos
                 Row(
                   children: [
