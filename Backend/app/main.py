@@ -6,10 +6,9 @@ from datetime import date
 import uuid
 from models import Receta
 from routers import recetas
-
-
 from database import db
 from models import Usuario
+from app.routers import recetas, uploads
 
 app = FastAPI()
 #esquemas
@@ -98,3 +97,11 @@ recetas_db = [
 
 app = FastAPI()
 app.include_router(recetas.router)
+
+
+#Servir las imagenes
+app.mount("/images", StaticFiles(directory="images"), name="images")
+
+#Rutas
+app.include_router(recetas.router)
+app.include_router(uploads.router)  #router para subir imágenes
