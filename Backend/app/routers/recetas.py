@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from .. import schemas, crud
 from ..database import get_db
+from ..users import get_usuario_actual
 
 router = APIRouter(prefix="/recetas", tags=["Recetas"])
 
@@ -11,7 +12,15 @@ def listar_recetas():
 
 @router.post("/", response_model=schemas.Receta)
 def crear_receta(receta: schemas.RecetaCreate):
-    return crud.create_receta(receta)
+    usuario = get_usuario_actual()
+    if not usuario:
+        raise HTTPException(status_code=401, detail="Debes iniciar sesión")
+
+    # Sobrescribimos el idUsuario
+    receta_dict = receta.dict()
+    receta_dict["idUsuario"] = usuario["id"]
+
+    return crud.create_receta(schemas.RecetaCreate(**receta_dict))
 
 @router.get("/{receta_id}", response_model=schemas.Receta)
 def obtener_receta(receta_id: int):
