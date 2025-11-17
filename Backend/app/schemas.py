@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import Optional
+from datatime import date
 
 class RecetaBase(BaseModel):
     titulo: str = Field(..., min_length=3, max_length=50)

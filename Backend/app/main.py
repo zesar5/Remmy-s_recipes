@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date
@@ -105,3 +106,11 @@ app.mount("/images", StaticFiles(directory="images"), name="images")
 #Rutas
 app.include_router(recetas.router)
 app.include_router(uploads.router)  #router para subir imágenes
+
+
+#Esta parte es para capturar excepciones globales
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Error interno del servidor"}
+    )

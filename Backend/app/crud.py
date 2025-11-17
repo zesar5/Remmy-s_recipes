@@ -2,6 +2,7 @@
 from typing import List, Optional
 from datetime import date
 from .schemas import RecetaCreate, Receta
+from fastapi import HTTPException
 
 # Lista que simula la base de datos
 recetas_db: List[Receta] = []
@@ -19,6 +20,7 @@ def get_receta(receta_id: int) -> Optional[Receta]:
 def create_receta(receta_data: RecetaCreate) -> Receta:
     global ultimo_id
     ultimo_id += 1
+
     nueva_receta = Receta(
         id=ultimo_id,
         fechaCreacion=date.today(),
@@ -29,7 +31,10 @@ def create_receta(receta_data: RecetaCreate) -> Receta:
 
 def update_receta(receta_id: int, receta_data: RecetaCreate) -> Optional[Receta]:
     receta = get_receta(receta_id)
-    if receta:
+    if not receta:
+        raise HTTPException(404, "La receta no existe")
+    
+    try:
         receta.titulo = receta_data.titulo
         receta.descripcion = receta_data.descripcion
         receta.tiempoPreparacion = receta_data.tiempoPreparacion
@@ -38,12 +43,21 @@ def update_receta(receta_id: int, receta_data: RecetaCreate) -> Optional[Receta]
         receta.idUsuario = receta_data.idUsuario
         receta.imagen = receta_data.imagen
         receta.categoria = receta_data.categoria
+    except Exception:
+        raise HTTPException(500, "Error actualizando la receta")
+    
     return receta
 
 def delete_receta(receta_id: int) -> Optional[Receta]:
     receta = get_receta(receta_id)
-    if receta:
-        recetas_db.remove(receta)
+    if not receta:
+        raise HTTPException(404, "La receta no existe")
+
+        try:
+            recetas_db.remove(receta)
+        except Exception:
+            raise HTTPException(500, "No se puede eliminar la receta")
+        
     return receta
 
 #LA PARTE DE ABAJO LO QUE SE UTILIZARÁ CUANDO YA TENGAMOS UNA BASE DE DATOS
