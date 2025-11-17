@@ -1,23 +1,30 @@
-from pydantic import BaseModel
-from typing import Optional
-from datatime import date
+from pydantic import BaseModel, Field
+from typing import Optional, List
+from datetime import date
 
 class RecetaBase(BaseModel):
-    titulo: str = Field(..., min_length=3, max_length=50)
-    descripcion: str = Field(..., min_length=10, max_length=500)
-    tiempoPreparacion: Optional[int] = Field(None, ge=1, description="Minutos de preparación")
-    porciones: Optional[int] = Field(None, ge=1)
-    dificultad: Optional[str] = Field(None, pattern="^(Fácil|Media|Difícil)$")
-    categoria: Optional[str] = Field(None, min_length=3)
-    imagen: Optional[str] = None
+    titulo: str = Field(..., alias="title", min_length=3, max_length=50)
+    tiempoPreparacion: Optional[int] = Field(None, alias="duration", ge=1, description="Minutos de preparación")
+    categoria: Optional[str] = Field(None, alias="selectedAllergen", min_length=3)
+    pais: Optional[str] = Field(None, alias="country")
+    estacion: Optional[str] = Field(None, alias="season")
+    imagen: Optional[str] = Field(None, alias="imagePath")
     idUsuario: Optional[str] = None
 
 class RecetaCreate(RecetaBase):
     pass
 
+class Ingredient(BaseModel):
+    name: str
+
+class StepItem(BaseModel):
+    description: str
+
 class Receta(RecetaBase):
     id: int
     fechaCreacion: date
+    ingredients: List[Ingredient] = []
+    steps: List[StepItem] = []
 
     class Config:
         orm_mode = True
