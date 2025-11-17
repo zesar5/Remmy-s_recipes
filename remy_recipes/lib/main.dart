@@ -213,6 +213,7 @@ class RemyRecipesApp extends StatelessWidget {
         '/login': (context) => LoginScreen(authService: authService),
         '/register': (context) => RegisterScreen(authService: authService),
         '/home': (context) => const HomeScreen(),
+        '/add_recipe': (context) => RecipeFormPage(),
       },
     );
   }
@@ -956,8 +957,9 @@ TextFormField(
   }
 }
 
+// DESPUES de la Seccion 4 y antes de la Seccion 5 (o donde desees ubicarla)
 // ==========================================================================
-// 6. PANTALLA DE INICIO (HOME) - SIMULADA
+// 4.5. PANTALLA DE INICIO (Dummy)
 // ==========================================================================
 
 class HomeScreen extends StatelessWidget {
@@ -965,44 +967,434 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = authService.currentUser;
+    final user = authService.currentUser; // Si el usuario ha iniciado sesion
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inicio'),
+        title: const Text("Mis Recetas"),
         backgroundColor: Theme.of(context).primaryColor,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              authService.logout();
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-          ),
-        ],
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Bienvenido!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF6B4226)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (user != null) 
+              Text("¡Bienvenido, ${user.nombreUsuario}!", style: TextStyle(fontSize: 24)),
+            const SizedBox(height: 20),
+            // Boton para ir al formulario de recetas
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/add_recipe');
+              },
+              child: const Text('Añadir Nueva Receta'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                authService.logout();
+                Navigator.of(context).pushReplacementNamed('/login');
+              },
+              child: const Text('Cerrar Sesión'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+// ... (Despues de la clase LoginScreen y antes de RegisterScreen)
+// ==========================================================================
+// 6. FORMULARIO DE RECETAS
+// ==========================================================================
+
+// Clases de datos auxiliares (Ingrediente y Paso)
+class Ingredient {
+  String name;
+  Ingredient(this.name);
+}
+
+class StepItem {
+  String description;
+  StepItem(this.description);
+}
+
+class RecipeFormPage extends StatefulWidget {
+  @override
+  _RecipeFormPageState createState() => _RecipeFormPageState();
+}
+
+class _RecipeFormPageState extends State<RecipeFormPage> {
+  String? imagePath;
+  String title = '';
+  String? duration;
+  String? country;
+  String? selectedAllergen;
+  String? season;
+
+  List<Ingredient> ingredients = [];
+  List<StepItem> steps = [];
+
+  final TextEditingController titleController = TextEditingController();
+
+  final List<String> durations =
+      List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
+  final List<String> countries = [
+    'España',
+    'Italia',
+    'México',
+    'Francia',
+    'Alemania',
+    'Japón',
+    'China'
+  ];
+  final List<String> allergens = [
+    'Ninguna',
+    'Gluten',
+    'Lácteos / Lactosa',
+    'Huevo',
+    'Frutos secos',
+    'Cacahuete',
+    'Soja',
+    'Pescado',
+    'Mariscos',
+    'Sésamo',
+    'Mostaza',
+    'Apio',
+    'Sulfitos',
+    'Altramuces',
+  ];
+  final List<String> seasons = ['Todas', 'Primavera', 'Verano', 'Otoño', 'Invierno'];
+
+  final picker = ImagePicker();
+
+  Future<void> pickImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        imagePath = pickedFile.path;
+      });
+    }
+  }
+
+  void addIngredient() {
+    setState(() {
+      ingredients.add(Ingredient(''));
+    });
+  }
+
+  void removeIngredient(int index) {
+    setState(() {
+      ingredients.removeAt(index);
+    });
+  }
+
+  void addStep() {
+    setState(() {
+      steps.add(StepItem(''));
+    });
+  }
+
+  void removeStep(int index) {
+    setState(() {
+      steps.removeAt(index);
+    });
+  }
+
+  bool isFormValid() {
+    if (title.trim().isEmpty) return false;
+    if (imagePath == null) return false;
+    if (duration == null) return false;
+    if (country == null) return false;
+    if (selectedAllergen == null) return false;
+    if (season == null) return false;
+    if (ingredients.isEmpty || ingredients.any((i) => i.name.trim().isEmpty))
+      return false;
+    if (steps.isEmpty || steps.any((s) => s.description.trim().isEmpty))
+      return false;
+    return true;
+  }
+
+  void onSubmit() {
+    if (isFormValid()) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Éxito'),
+          content: Text('Receta guardada con éxito'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            )
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Advertencia'),
+          content: Text('Error, no ha rellenado todos los campos'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Usamos el color de fondo definido en el Theme para consistencia
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
+      appBar: AppBar(
+        title: Text("Añadir Nueva Receta"),
+        backgroundColor: Theme.of(context).primaryColor, // Usamos el color primario
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const Text(
+              "Remmy's Recipes",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+
+            // Añadir imagen
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Añadir imagen:"),
+            ),
+            SizedBox(height: 5),
+            GestureDetector(
+              onTap: pickImage,
+              child: Container(
+                height: 150,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black87),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0), // Usamos el mismo radio de borde que en el Theme
+                ),
+                child: imagePath == null
+                    ? const Center(
+                        child: Text(
+                          '+',
+                          style: TextStyle(fontSize: 40),
+                        ),
+                      )
+                    // Importante: La clase File ya está importada en el inicio del archivo
+                    : Image.file(
+                        File(imagePath!),
+                        fit: BoxFit.cover,
+                      ),
               ),
-              const SizedBox(height: 20),
-              if (user != null) ...[
-                Text('Usuario: ${user.nombreUsuario}', style: const TextStyle(fontSize: 18)),
-                Text('Email: ${user.email}', style: const TextStyle(fontSize: 18)),
-                Text('Rol: ${user.rol}', style: const TextStyle(fontSize: 18)),
-                const SizedBox(height: 20),
-                const Text('Autenticacion exitosa con FastAPI!', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
-              ] else ...[
-                const Text('Has accedido como invitado o la sesion ha expirado.', style: TextStyle(color: Colors.red)),
+            ),
+
+            SizedBox(height: 15),
+
+            // Título
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Título:"),
+            ),
+            SizedBox(height: 5),
+            TextField(
+              controller: titleController,
+              onChanged: (val) => title = val,
+              // Usamos el InputDecoration Theme del MaterialApp
+            ),
+            SizedBox(height: 15),
+
+            // Ingredientes
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Ingredientes:"),
+            ),
+            // ... (mapeo de ingredientes)
+            ...ingredients.asMap().entries.map((entry) {
+              int idx = entry.key;
+              Ingredient ing = entry.value;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (val) => ing.name = val,
+                        decoration: const InputDecoration(
+                          hintText: 'Ingrediente',
+                          // No se necesita border, fillColor, filled, ya están en el Theme
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    ElevatedButton(
+                      onPressed: () => removeIngredient(idx),
+                      child: const Text('-'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }).toList(),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addIngredient, 
+              child: const Text('Agregar Ingrediente'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+
+            SizedBox(height: 15),
+
+            // Pasos
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Pasos:"),
+            ),
+            // ... (mapeo de pasos)
+            ...steps.asMap().entries.map((entry) {
+              int idx = entry.key;
+              StepItem s = entry.value;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: (val) => s.description = val,
+                        decoration: const InputDecoration(
+                          hintText: 'Paso',
+                          // No se necesita border, fillColor, filled, ya están en el Theme
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    ElevatedButton(
+                      onPressed: () => removeStep(idx),
+                      child: const Text('-'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }).toList(),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addStep, 
+              child: const Text('Agregar Paso'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+
+            SizedBox(height: 20),
+
+            // Combo boxes (Duración y País)
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: duration,
+                    decoration: const InputDecoration(
+                      labelText: 'Duración (min)',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: durations
+                        .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                        .toList(),
+                    onChanged: (val) => setState(() => duration = val),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: country,
+                    decoration: const InputDecoration(
+                      labelText: 'País',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: countries
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (val) => setState(() => country = val),
+                  ),
+                ),
               ],
-            ],
-          ),
+            ),
+            SizedBox(height: 10),
+            
+            // Combo boxes (Alérgenos y Estación)
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedAllergen,
+                    decoration: const InputDecoration(
+                      labelText: 'Alérgenos',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: allergens
+                        .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+                        .toList(),
+                    onChanged: (val) => setState(() => selectedAllergen = val),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: season,
+                    decoration: const InputDecoration(
+                      labelText: 'Estación',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: seasons
+                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                        .toList(),
+                    onChanged: (val) => setState(() => season = val),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 20),
+
+            // Botón guardar (usamos un estilo similar al de Login/Register)
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: onSubmit,
+                child: const Text('Guardar Receta'),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
