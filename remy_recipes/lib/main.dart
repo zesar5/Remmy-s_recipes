@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io' show File;
 
 
 //  URL del Backend
@@ -985,7 +987,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pushNamed('/add_recipe');
               },
-              child: const Text('Añadir Nueva Receta'),
+              child: const Text('+'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -1078,6 +1080,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
   void addIngredient() {
     setState(() {
+      
       ingredients.add(Ingredient(''));
     });
   }
@@ -1189,6 +1192,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                           style: TextStyle(fontSize: 40),
                         ),
                       )
+                      : kIsWeb
+                      ? Image.network(
+                imagePath!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Center(child: Text("Error al cargar imagen web")),
+              )
                     // Importante: La clase File ya está importada en el inicio del archivo
                     : Image.file(
                         File(imagePath!),
@@ -1208,6 +1217,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             TextField(
               controller: titleController,
               onChanged: (val) => title = val,
+              
               // Usamos el InputDecoration Theme del MaterialApp
             ),
             SizedBox(height: 15),
