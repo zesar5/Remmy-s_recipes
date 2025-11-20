@@ -1016,14 +1016,14 @@ class MainPage extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// Logo
-              SizedBox(
-                width: 320,
-                height: 300,
-                child: Image.asset(
-                  "assets/logosinfondoBien.png",
-                  fit: BoxFit.contain,
-                ),
-              ),
+              Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 20),
+  child: Image.asset(
+    "assets/logosinfondoBien.png",
+    fit: BoxFit.contain,
+    height: 250,   // <<< Ajusta este valor (200–350 recomendado)
+  ),
+),
 
               const SizedBox(height: 10),
 
@@ -1034,6 +1034,7 @@ class MainPage extends StatelessWidget {
                 crossAxisSpacing: 10,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.0, // <<<<< AJUSTA EL TAMAÑO DEL BOTÓN
                 children: const [
                   RecipeButton(image: "assets/sopa.webp", title: "Sopa"),
                   RecipeButton(image: "assets/pizza.webp", title: "Pizza"),
