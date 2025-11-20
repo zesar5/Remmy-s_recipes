@@ -969,37 +969,128 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = authService.currentUser; // Si el usuario ha iniciado sesion
+    return MaterialApp(
+      title: 'Recetario',
+      debugShowCheckedModeBanner: false,
+      home: const MainPage(),
+    );
+  }
+}
+
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mis Recetas"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (user != null) 
-              Text("¡Bienvenido, ${user.nombreUsuario}!", style: TextStyle(fontSize: 24)),
-            const SizedBox(height: 20),
-            // Boton para ir al formulario de recetas
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/add_recipe');
-              },
-              child: const Text('+'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                authService.logout();
-                Navigator.of(context).pushReplacementNamed('/login');
-              },
-              child: const Text('Cerrar Sesión'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            ),
-          ],
+      backgroundColor: const Color(0xFFDEB887), // BurlyWood
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+
+              /// Barra superior
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () {},
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.person),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              /// Logo
+              SizedBox(
+                width: 320,
+                height: 300,
+                child: Image.asset(
+                  "assets/logosinfondoBien.png",
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              /// Grid de recetas
+              GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
+                  RecipeButton(image: "assets/sopa.webp", title: "Sopa"),
+                  RecipeButton(image: "assets/pizza.webp", title: "Pizza"),
+                  RecipeButton(image: "assets/tortilla.webp", title: "Tortilla de patata"),
+                  RecipeButton(image: "assets/Aborrajado.webp", title: "Aborrajado"),
+                  RecipeButton(image: "assets/carne.webp", title: "Carne"),
+                  RecipeButton(image: "assets/perreteCalentito.webp", title: "Hot Dog"),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class RecipeButton extends StatelessWidget {
+  final String image;
+  final String title;
+
+  const RecipeButton({
+    super.key,
+    required this.image,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        shadowColor: Colors.transparent,
+        padding: const EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      onPressed: () {},
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                image,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
