@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io' show File;
-
+import 'services/auth_service.dart';
 
 //  URL del Backend
 
@@ -982,6 +982,7 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: const Color(0xFFDEB887), // BurlyWood
       body: SafeArea(
@@ -1012,6 +1013,7 @@ class MainPage extends StatelessWidget {
                   ),
                 ],
               ),
+              
 
               const SizedBox(height: 10),
 
@@ -1026,7 +1028,12 @@ class MainPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 10),
-
+ ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/add_recipe');
+              },
+              child: const Text('+'),
+            ),
               /// Grid de recetas
               GridView.count(
                 crossAxisCount: 2,
@@ -1034,6 +1041,7 @@ class MainPage extends StatelessWidget {
                 crossAxisSpacing: 10,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
+                
                 children: const [
                   RecipeButton(image: "assets/sopa.webp", title: "Sopa"),
                   RecipeButton(image: "assets/pizza.webp", title: "Pizza"),
@@ -1060,6 +1068,7 @@ class RecipeButton extends StatelessWidget {
     required this.image,
     required this.title,
   });
+  
 
   @override
   Widget build(BuildContext context) {
