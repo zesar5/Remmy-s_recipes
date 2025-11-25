@@ -1,10 +1,9 @@
-import '../../services/auth_service.dart';
+
 import 'package:flutter/material.dart';
-import '../register/register_screen.dart';
-import '../home/home_screen.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 const String _baseUrl = 'http://127.0.0.1:8000';
 

@@ -1,7 +1,6 @@
-import '../../services/auth_service.dart';
+
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+
 const String _baseUrl = 'http://127.0.0.1:8000';
 
 
