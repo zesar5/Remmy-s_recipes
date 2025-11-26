@@ -158,7 +158,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Usamos el color de fondo definido en el Theme para consistencia
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
+      backgroundColor: const Color(0xFFDEB887), 
       appBar: AppBar(
         title: Text("Añadir Nueva Receta"),
         backgroundColor: Theme.of(context).primaryColor, // Usamos el color primario

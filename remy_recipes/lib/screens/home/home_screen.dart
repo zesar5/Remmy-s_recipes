@@ -15,11 +15,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Recetario',
-      debugShowCheckedModeBanner: false,
-      home: const MainPage(),
-    );
+    return const MainPage();
   }
 }
 
