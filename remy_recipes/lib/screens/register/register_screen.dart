@@ -39,7 +39,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool errorPais = false;
   bool errorAnio = false;
 
-  List<String> paises = [ /* ... tus países ... */ ];
+  String? errorCorreoMensaje;
+
+  List<String> paises = [
+    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Arabia Saudita",
+    "Argentina", "Australia", "Austria", "Bélgica", "Bolivia", "Brasil",
+    "Canadá", "Chile", "China", "Colombia", "Corea del Sur", "Costa Rica",
+    "Cuba", "Dinamarca", "Ecuador", "Egipto", "El Salvador", "Eslovaquia",
+    "Eslovenia", "España", "Estados Unidos", "Finlandia", "Francia", "Grecia",
+    "Guatemala", "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak",
+    "Irán", "Irlanda", "Islandia", "Italia", "Japón", "Jordania", "Kenia",
+    "Letonia", "Líbano", "Libia", "Lituania", "Luxemburgo", "México", "Mónaco",
+    "Mongolia", "Nepal", "Nicaragua", "Nigeria", "Noruega", "Países Bajos",
+    "Panamá", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido",
+    "República Dominicana", "Rumania", "Rusia", "Senegal", "Serbia", "Suecia",
+    "Suiza", "Tailandia", "Turquía", "Ucrania", "Uruguay", "Venezuela",
+    "Vietnam"
+  ];
+
   List<int> anios = [ for (int i = DateTime.now().year; i >= 1900; i--) i ];
 
   bool validarCorreo(String correo) {
@@ -65,6 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ===================== REGISTRO =====================
 
   void registrar() {
+    // Primero marcamos campos vacíos
     setState(() {
       errorName = name.text.isEmpty;
       errorCorreo = correo.text.isEmpty;
@@ -72,8 +90,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
       errorConfirmar = confirmarContrasenya.text.isEmpty;
       errorPais = paisSeleccionado == null;
       errorAnio = anioSeleccionado == null;
+
+      // Preparar mensaje para el correo: vacío o formato inválido
+      if (correo.text.isEmpty) {
+        errorCorreoMensaje = "Campo requerido";
+        errorCorreo = true;
+      } else if (!validarCorreo(correo.text)) {
+        errorCorreoMensaje = "Formato inválido";
+        errorCorreo = true;
+      } else {
+        errorCorreoMensaje = null;
+        errorCorreo = false;
+      }
     });
 
+    // Si hay algún error visual, avisamos y no seguimos
     if (errorName ||
         errorCorreo ||
         errorContrasenya ||
@@ -84,22 +115,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (!validarCorreo(correo.text)) {
-      mostrarMensaje("El correo electrónico no tiene un formato válido.");
-      return;
-    }
-
+    // Validaciones lógicas adicionales (contraseñas)
     if (contrasenya.text != confirmarContrasenya.text) {
+      setState(() {
+        errorContrasenya = true;
+        errorConfirmar = true;
+      });
       mostrarMensaje("Las contraseñas no coinciden.");
       return;
     }
 
     if (!validarContrasenyaFuerte(contrasenya.text)) {
+      setState(() {
+        errorContrasenya = true;
+        errorConfirmar = true;
+      });
       mostrarMensaje(
           "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.");
       return;
     }
 
+    // Si todo OK
     mostrarMensaje("Registro completado correctamente.");
   }
 
@@ -169,7 +205,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 10),
 
               campoTexto("Correo electrónico",
-                  controller: correo, error: errorCorreo),
+                  controller: correo,
+                  error: errorCorreo,
+                  errorTextMessage: errorCorreoMensaje),
 
               SizedBox(height: 10),
 
@@ -211,79 +249,97 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ================= COMPONENTES =================
 
   Widget campoTexto(String label,
-      {required TextEditingController controller,
-      bool esPassword = false,
-      int maxLineas = 1,
-      bool error = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label),
-        SizedBox(height: 5),
-        TextField(
-          controller: controller,
-          obscureText: esPassword,
-          maxLines: maxLineas,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            errorText: error ? "Campo requerido" : null,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+    {required TextEditingController controller,
+    bool esPassword = false,
+    int maxLineas = 1,
+    bool error = false,
+    String? errorTextMessage}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(label),
+      SizedBox(height: 5),
+      TextField(
+        controller: controller,
+        obscureText: esPassword,
+        maxLines: maxLineas,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          // bordes de error para que se vea claramente en rojo
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+            borderRadius: BorderRadius.circular(10),
           ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget dropdownPais() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("País"),
-        SizedBox(height: 5),
-        DropdownButtonFormField<String>(
-          value: paisSeleccionado,
-          items: paises
-              .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-              .toList(),
-          onChanged: (v) => setState(() {
-            paisSeleccionado = v;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text("País"),
+      SizedBox(height: 5),
+      DropdownButtonFormField<String>(
+        value: paisSeleccionado,
+        hint: Text("Selecciona un país"), // <-- evita que el dropdown quede 'deshabilitado' cuando value == null
+        isExpanded: true,
+        items: paises
+            .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            paisSeleccionado = value;
             errorPais = false;
-          }),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            errorText: errorPais ? "Campo requerido" : null,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          ),
+          });
+        },
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          errorText: errorPais ? "Campo requerido" : null,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget dropdownAnio() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Año nacimiento"),
-        SizedBox(height: 5),
-        DropdownButtonFormField<int>(
-          value: anioSeleccionado,
-          items: anios
-              .map((a) => DropdownMenuItem(value: a, child: Text("$a")))
-              .toList(),
-          onChanged: (v) => setState(() {
-            anioSeleccionado = v;
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text("Año nacimiento"),
+      SizedBox(height: 5),
+      DropdownButtonFormField<int>(
+        value: anioSeleccionado,
+        hint: Text("Selecciona un año"),
+        isExpanded: true,
+        items: anios
+            .map((a) => DropdownMenuItem(value: a, child: Text("$a")))
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            anioSeleccionado = value;
             errorAnio = false;
-          }),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            errorText: errorAnio ? "Campo requerido" : null,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          ),
+          });
+        },
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          errorText: errorAnio ? "Campo requerido" : null,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 }
