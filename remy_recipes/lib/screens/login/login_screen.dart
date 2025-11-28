@@ -4,18 +4,9 @@ import '../register/register_screen.dart';
 import '../home/home_screen.dart';
 const String _baseUrl = 'http://127.0.0.1:8000';
 
-
-
-
-
-
-
-
-
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION 
 // ==========================================================================
-
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
   const LoginScreen({super.key, required this.authService});
@@ -29,22 +20,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _contrasenaController = TextEditingController();
   bool _ocultarContrasena = true;
   bool _isLoading = false;
+
+  // NUEVOS FLAGS PARA BORDES ROJOS
+  bool _errorCorreo = false;
+  bool _errorContrasena = false;
   
   // ==== LOGIN HANDLER ====
   Future<void> _handleLogin() async {
     final correo = _correoController.text.trim();
     final contrasena = _contrasenaController.text.trim();
 
+    // Reiniciar errores visuales
+    setState(() {
+      _errorCorreo = false;
+      _errorContrasena = false;
+    });
+
     // Validaciones locales (como en WPF)
     if (correo.isEmpty) {
+      setState(() => _errorCorreo = true);
       _showErrorDialog('Campo vacío', 'Por favor, introduce tu correo electrónico.');
       return;
     }
     if (!_esCorreoValido(correo)) {
+      setState(() => _errorCorreo = true);
       _showErrorDialog('Correo inválido', 'El formato del correo no es válido.');
       return;
     }
     if (contrasena.isEmpty) {
+      setState(() => _errorContrasena = true);
       _showErrorDialog('Campo vacío', 'Por favor, introduce tu contraseña.');
       return;
     }
@@ -107,7 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const SizedBox(height: 50),
 
-            // LOGO + TITULO
             const Text(
               "Remmy's Recipes",
               style: TextStyle(
@@ -134,10 +137,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 5),
+            //Borde rojo
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
+                border: _errorCorreo ? Border.all(color: Colors.red, width: 2) : null,
               ),
               child: TextField(
                 controller: _correoController,
@@ -149,7 +154,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // CONTRASEÑA
             const SizedBox(height: 20),
             const Align(
               alignment: Alignment.centerLeft,
@@ -159,10 +163,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 5),
+            // ← Y AQUÍ PARA LA CONTRASEÑA
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
+                border: _errorContrasena ? Border.all(color: Colors.red, width: 2) : null,
               ),
               child: TextField(
                 controller: _contrasenaController,
@@ -185,7 +191,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // OLVIDE CONTRASEÑA
             TextButton(
               onPressed: () => _showErrorDialog(
                 'Recuperar contraseña',
@@ -197,7 +202,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // BOTÓN INICIAR SESIÓN
             const SizedBox(height: 10),
             _buildActionButton(
               text: 'Iniciar Sesión',
@@ -207,7 +211,6 @@ class _LoginScreenState extends State<LoginScreen> {
               isLoading: _isLoading,
             ),
 
-            // BOTÓN REGISTRARSE
             const SizedBox(height: 20),
             _buildActionButton(
               text: 'Registrarse',
@@ -218,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
 
-            // BOTÓN OMITIR
             const SizedBox(height: 25),
             TextButton(
               onPressed: () {
@@ -231,8 +233,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 30),
-
-            // TÉRMINOS Y POLÍTICA
             const Text(
               "Al hacer click, aceptas nuestros Términos de",
               textAlign: TextAlign.center,
@@ -290,33 +290,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-  Widget _buildAuthButton({required String text, VoidCallback? onPressed, required Color color, required Color textColor, bool isLoading = false}) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          elevation: 5,
-        ),
-        child: isLoading
-            ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2.0,
-                ),
-              )
-            : Text(
-                text,
-                style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-      ),
-    );
-  }
