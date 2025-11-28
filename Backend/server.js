@@ -56,7 +56,7 @@ class Receta {
 // RUTAS AUTH
 // ---------------------
 app.post("/auth/login", (req, res) => {
-    const { username, password } = req.body;
+    const { nombreUsuario, contrasena } = req.body;
     const user = usuariosDB.find(u => u.nombreUsuario === username && u.contrasena === password);
     if (!user) return res.status(400).json({ mensaje: "Credenciales incorrectas" });
 
@@ -73,14 +73,14 @@ app.post("/registro", (req, res) => {
     if (usuariosDB.find(u => u.nombreUsuario === data.nombreUsuario)) {
         return res.status(400).json({ mensaje: "El usuario ya existe" });
     }
-    if (data.contraseña !== data.contraseña2) {
-        return res.status(400).json({ mensaje: "Las contraseñas no coinciden" });
+    if (data.contrasena !== data.contrasena2) {
+    return res.status(400).json({ mensaje: "Las contraseñas no coinciden" });
     }
 
     const nuevoUsuario = new Usuario({
         nombreUsuario: data.nombreUsuario,
         email: data.email,
-        contrasena: data.contraseña,
+        contrasena: data.contrasena,
         primerApellido: data.primerApellido,
         segundoApellido: data.segundoApellido,
         descripcion: data.descripcion,
