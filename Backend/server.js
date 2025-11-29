@@ -5,134 +5,177 @@ const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
+const mysql = require("mysql2/promise");
 
 const app = express();
 const PORT = 8000;
+const db = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "remysrecipes"
+});
 
 // Middleware
 app.use(bodyParser.json());
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// ---------------------
-// BASE DE DATOS SIMULADA
-// ---------------------
-const usuariosDB = [];
-const recetasDB = [];
-let usuarioActual = null;
-
-// ---------------------
-// MODELOS
-// ---------------------
-class Usuario {
-    constructor({ nombreUsuario, email, contrasena, primerApellido, segundoApellido, descripcion, anioNacimiento, rol }) {
-        this.id = uuidv4();
-        this.nombreUsuario = nombreUsuario;
-        this.email = email;
-        this.contrasena = contrasena;
-        this.primerApellido = primerApellido || null;
-        this.segundoApellido = segundoApellido || null;
-        this.descripcion = descripcion || null;
-        this.anioNacimiento = anioNacimiento || null;
-        this.rol = rol || "usuario";
-    }
-}
-
-class Receta {
-    constructor({ titulo, descripcion, tiempoPreparacion, porciones, dificultad, idUsuario, imagen, categoria }) {
-        this.id = uuidv4();
-        this.titulo = titulo;
-        this.descripcion = descripcion || null;
-        this.tiempoPreparacion = tiempoPreparacion || null;
-        this.porciones = porciones || null;
-        this.dificultad = dificultad || null;
-        this.fechaCreacion = new Date();
-        this.idUsuario = idUsuario;
-        this.imagen = imagen || null;
-        this.categoria = categoria || null;
-    }
-}
 
 // ---------------------
 // RUTAS AUTH
 // ---------------------
-app.post("/auth/login", (req, res) => {
+app.post("/auth/login", async (req, res) => {
     const { nombreUsuario, contrasena } = req.body;
-    const user = usuariosDB.find(u => u.nombreUsuario === username && u.contrasena === password);
-    if (!user) return res.status(400).json({ mensaje: "Credenciales incorrectas" });
+    try{
+        const [rows] = await db.query(
+            "SELECT * FROM Usuario WHERE nombre = ? AND contraseña = ?",
+            [nombreUsuario, contrasena]
+        );
 
-    usuarioActual = user;
-    res.json({ mensaje: "Login correcto", usuario: user });
+        if(rows.length === 0){
+            return res.status(400).json({mensaje: "Credenciales incorrectas"});
+        }
+
+        const usuario = rows[0];
+
+        res.json({mensaje: "Login correcto", usuario});
+    }catch(err){
+        res.status(500).json({ error: err.message});
+    }
 });
 
 // ---------------------
 // RUTAS USUARIOS
 // ---------------------
-app.post("/registro", (req, res) => {
+app.post("/registro", async (req, res) => {
     const data = req.body;
 
-    if (usuariosDB.find(u => u.nombreUsuario === data.nombreUsuario)) {
-        return res.status(400).json({ mensaje: "El usuario ya existe" });
+    if(data.contrasena !== data.contrasena2){
+        return res.status(400).json({ mensaje: "Las credenciales no coinciden"});
     }
-    if (data.contrasena !== data.contrasena2) {
-    return res.status(400).json({ mensaje: "Las contraseñas no coinciden" });
+    try{
+        const [exists] = await db.query(
+            "SELECT * FROM Usuario WHERE nombre = ?",
+            [data.nombreUsuario]
+        );
+
+        if(exists.length > 0){
+            return res.status(400).json({ mensaje: "El usuario ya existe"});
+        }
+
+        const [result] = await db.query(
+            `INSERT INTO Usuario (nombre, email, contraseña, fecha_registro) 
+             VALUES (?, ?, ?, NOW())`,
+            [data.nombreUsuario, data.email, data.contrasena]
+        );
+
+        res.json({ mensaje: "Usuario creado", id: result.insertId});
+    } catch(err){
+        res.status(500).json({ error: err.message })
     }
-
-    const nuevoUsuario = new Usuario({
-        nombreUsuario: data.nombreUsuario,
-        email: data.email,
-        contrasena: data.contrasena,
-        primerApellido: data.primerApellido,
-        segundoApellido: data.segundoApellido,
-        descripcion: data.descripcion,
-        anioNacimiento: data.añoNacimiento,
-        rol: data.rol
-    });
-
-    usuariosDB.push(nuevoUsuario);
-    res.json(nuevoUsuario);
 });
 
-app.get("/perfil", (req, res) => {
-    if (!usuarioActual) return res.status(401).json({ mensaje: "No has iniciado sesión" });
-    res.json(usuarioActual);
+
+app.get("/perfil", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [rows] = await db.query(
+            "SELECT * FROM Usuario WHERE Id_usuario = ?",
+            [id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ mensaje: "Usuario no encontrado" });
+        }
+
+        res.json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ---------------------
 // RUTAS RECETAS
 // ---------------------
-app.get("/recetas", (req, res) => {
-    res.json(recetasDB);
+app.get("/recetas", async (req, res) => {
+   try{
+    const [rows] = await db.query("SELECT * FROM Receta")
+    res.json(rows);
+   } catch(err){
+    res.status(500).json({ error: err.message});
+   }
 });
 
-app.get("/recetas/:id", (req, res) => {
-    const receta = recetasDB.find(r => r.id === req.params.id);
-    if (!receta) return res.status(404).json({ mensaje: "Receta no encontrada" });
-    res.json(receta);
+app.get("/recetas/:id", async (req, res) => {
+    try{
+        const [rows] = await db.query(
+            "SELECT * FROM Receta WHERE Id_receta = ?",
+            [req.params.id]
+        );
+
+        if(rows.length === 0){
+            return res.status(404).json({ mensaje: "Receta no encontrada"});
+        }
+
+        res.json(rows[0]);
+    } catch(err){
+        res.status(500).json({ error: err.message})
+    }
 });
 
-app.post("/recetas", (req, res) => {
-    if (!usuarioActual) return res.status(401).json({ mensaje: "Debes iniciar sesión" });
-
+app.post("/recetas", async (req, res) => {
     const data = req.body;
-    const nuevaReceta = new Receta({ ...data, idUsuario: usuarioActual.id });
-    recetasDB.push(nuevaReceta);
-    res.json(nuevaReceta);
+
+    if(!data.idUsuario){
+        return res.status(401).json({ mensaje: "Debes iniciar sesión"});
+    }
+
+    try{
+        const [result] = await db.query(
+            `INSERT INTO Receta 
+            (titulo, descripcion, tiempo_preparacion, porciones, dificultad, Id_usuario) 
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                data.titulo,
+                data.descripcion,
+                data.tiempoPreparacion,
+                data.porciones,
+                data.dificultad,
+                data.idUsuario
+            ]
+        );
+
+        res.json({ mensaje: "Receta creada", id: result.insertId});
+    } catch(err){
+        res.status(500).json({ mensaje: err.message});
+    }
 });
 
-app.put("/recetas/:id", (req, res) => {
-    const receta = recetasDB.find(r => r.id === req.params.id);
-    if (!receta) return res.status(404).json({ mensaje: "Receta no encontrada" });
+app.put("/recetas/:id", async (req, res) => {
+    try{
+        await db.query(
+            "UPDATE Receta SET ? WHERE Id_receta = ?",
+            [req.body, req.params.id]
+        );
 
-    Object.assign(receta, req.body);
-    res.json(receta);
+        res.json({ mensaje: "Receta actualizada"});
+    } catch(err){
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.delete("/recetas/:id", (req, res) => {
-    const index = recetasDB.findIndex(r => r.id === req.params.id);
-    if (index === -1) return res.status(404).json({ mensaje: "Receta no encontrada" });
+app.delete("/recetas/:id", async (req, res) => {
+    try{
+        await db.query(
+            "DELETE FROM Receta WHERE Id_receta = ?",
+            [req.params.id]
+        );
 
-    recetasDB.splice(index, 1);
-    res.json({ mensaje: "Receta eliminada" });
+        res.json({ mensaje: "Receta eliminada" });
+    } catch(err){
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ---------------------
