@@ -162,7 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: [
               Text("Remmy's Recipes",
-                  style: TextStyle(fontSize: 28, fontFamily: "Times New Roman")),
+                  style: TextStyle(fontSize: 28, fontFamily: "Alegreya")),
 
               SizedBox(height: 10),
 

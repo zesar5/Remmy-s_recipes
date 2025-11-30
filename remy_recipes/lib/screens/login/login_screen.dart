@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
               "Remmy's Recipes",
               style: TextStyle(
                 fontSize: 28,
-                fontFamily: 'Times New Roman',
+                fontFamily: 'Alegreya',
                 color: Colors.black,
               ),
             ),

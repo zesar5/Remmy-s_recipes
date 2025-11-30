@@ -58,3 +58,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logosinfondoBien.png
+
+  # 🚀 INICIO DE LA DECLARACIÓN DE FUENTES 🚀
+  fonts:
+    - family: Alegreya
+      fonts:
+        # Regular (peso por defecto si no se especifica)
+        - asset: assets\Alegreya-VariableFont_wght.ttf
+       

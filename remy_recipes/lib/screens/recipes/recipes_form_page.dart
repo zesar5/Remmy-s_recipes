@@ -170,7 +170,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
           children: [
             const Text(
               "Remmy's Recipes",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 28,
+                fontFamily: 'Alegreya',
+                fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
 
