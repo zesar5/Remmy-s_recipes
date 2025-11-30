@@ -59,7 +59,7 @@ flutter:
   assets:
     - assets/logosinfondoBien.png
 
-  # 🚀 INICIO DE LA DECLARACIÓN DE FUENTES 🚀
+ 
   fonts:
     - family: Alegreya
       fonts:
