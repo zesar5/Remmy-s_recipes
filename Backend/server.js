@@ -76,8 +76,9 @@ app.post("/registro", async (req, res) => {
 });
 
 
-app.get("/perfil", async (req, res) => {
-    const { id } = req.params;
+
+app.get("/perfil/:id", async (req, res) => {
+    const { id } = req.params; 
 
     try {
         const [rows] = await db.query(

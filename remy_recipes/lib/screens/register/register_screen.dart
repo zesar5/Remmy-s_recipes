@@ -4,8 +4,7 @@ import '../home/home_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
-const String _baseUrl = 'http://127.0.0.1:8000';
-
+const String _baseUrl = 'http://10.0.2.2:8000';
 // ==========================================================================
 // 5. PANTALLA DE REGISTRO
 // ==========================================================================
