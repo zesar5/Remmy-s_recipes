@@ -120,12 +120,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 15),
-            Image.asset(
-              'assets/logosinfondoBien.png',
-              width: MediaQuery.of(context).size.width * 0.6,
-              height: MediaQuery.of(context).size.height *0.2,
-              fit: BoxFit.contain,
+           Transform.scale(
+           scale: 1.7, // Ajusta el tamaño sin cambiar el espacio que ocupa
+           child: Image.asset(
+            'assets/logosinfondoBien.png',
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.height * 0.2,
+            fit: BoxFit.contain,
             ),
+          ),
             const SizedBox(height: 40),
 
             // CORREO

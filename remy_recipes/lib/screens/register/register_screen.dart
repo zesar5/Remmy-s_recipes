@@ -166,26 +166,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               SizedBox(height: 10),
 
-              GestureDetector(
-                onTap: seleccionarImagen,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.grey.shade300,
-                      backgroundImage:
-                          imagenPerfil != null ? FileImage(imagenPerfil!) : null,
-                    ),
-                    if (imagenPerfil == null)
-                      Text("+",
-                          style: TextStyle(
-                              fontSize: 50,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey))
-                  ],
-                ),
-              ),
+             Column(
+  children: [
+    GestureDetector(
+      onTap: seleccionarImagen,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CircleAvatar(
+            radius: 60,
+            backgroundColor: Colors.grey.shade300,
+            backgroundImage:
+                imagenPerfil != null ? FileImage(imagenPerfil!) : null,
+          ),
+          if (imagenPerfil == null)
+            Text("+",
+                style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey))
+        ],
+      ),
+    ),
+    SizedBox(height: 8),
+    Text(
+      "Añadir foto de perfil",
+      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+    ),
+  ],
+),
 
               SizedBox(height: 25),
 
@@ -226,7 +235,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 10),
 
               campoTexto("Descripción (opcional)",
-                  controller: descripcion),
+                  controller: descripcion,
+                  maxLineas: 5,
+                  ),
 
               SizedBox(height: 25),
 

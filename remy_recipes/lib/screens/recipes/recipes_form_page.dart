@@ -35,7 +35,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   String title = '';
   String? duration;
   String? country;
-  String? selectedAllergen;
+  List<String> selectedAllergens = [];
   String? season;
 
   List<Ingredient> ingredients = [];
@@ -46,13 +46,22 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   final List<String> durations =
       List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
   final List<String> countries = [
-    'España',
-    'Italia',
-    'México',
-    'Francia',
-    'Alemania',
-    'Japón',
-    'China'
+  "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia","Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados",
+  "Baréin", "Bélgica", "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina",
+  "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre", 
+  "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil",
+  "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos", "Estonia", "Esuatini",
+  "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Guyana",
+  "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania",
+  "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Madagascar", "Malasia",
+  "Malaui", "Maldivas", "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México","Micronesia", "Moldavia", "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru",
+  "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", "Países Bajos","Pakistán", "Palaos", "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal",
+  "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda", "Rumanía","Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas",
+  "Santa Lucía", "Santo Tomé y Príncipe", "Senegal","Serbia", "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica",
+  "Sudán", "Sudán del Sur", "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", "Tuvalu",
+  "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
+
+  "Yibuti", "Zambia", "Zimbabue"
   ];
   final List<String> allergens = [
     'Ninguna',
@@ -107,13 +116,67 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       steps.removeAt(index);
     });
   }
+ void _showAllergenSelector(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (_) {
+      List<String> tempSelection = List.from(selectedAllergens);
+
+      return StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            title: Text("Seleccionar alérgenos"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView(
+                shrinkWrap: true,
+                children: allergens.map((a) {
+                  return CheckboxListTile(
+                    title: Text(a),
+                    value: tempSelection.contains(a),
+                    onChanged: (bool? checked) {
+                      setStateDialog(() {
+                        if (checked == true) {
+                          if (!tempSelection.contains(a)) {
+                            tempSelection.add(a);
+                          }
+                        } else {
+                          tempSelection.remove(a);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    selectedAllergens = tempSelection;
+                  });
+                  Navigator.pop(context);
+                },
+                child: Text("Aceptar"),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   bool isFormValid() {
     if (title.trim().isEmpty) return false;
     if (imagePath == null) return false;
     if (duration == null) return false;
     if (country == null) return false;
-    if (selectedAllergen == null) return false;
+    if (selectedAllergens.isEmpty) return false;
     if (season == null) return false;
     if (ingredients.isEmpty || ingredients.any((i) => i.name.trim().isEmpty))
       return false;
@@ -180,8 +243,13 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // Añadir imagen
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Añadir imagen:"),
+              child: Text("Añadir imagen:",
+              style: TextStyle(
+                
+                fontSize: 20,
+              )
             ),
+          ),
             SizedBox(height: 5),
             GestureDetector(
               onTap: pickImage,
@@ -219,21 +287,31 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // Título
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Título:"),
+              child: Text("Título:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+              ),
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 0),
             TextField(
               controller: titleController,
               onChanged: (val) => title = val,
-              
-              // Usamos el InputDecoration Theme del MaterialApp
-            ),
-            SizedBox(height: 15),
+              style: const TextStyle(
+              fontSize: 22,       
+          ),
+        ),
+            SizedBox(height: 30),
 
             // Ingredientes
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Ingredientes:"),
+              child: Text("Ingredientes:",
+              style: TextStyle(
+
+              fontWeight: FontWeight.w600, fontSize: 18,),
+              ),
             ),
             // ... (mapeo de ingredientes)
             ...ingredients.asMap().entries.map((entry) {
@@ -282,12 +360,16 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // Pasos
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Pasos:"),
+              child: Text("Pasos:",
+              style: TextStyle(
+               fontWeight: FontWeight.w600, fontSize: 18
+              ),
+              ),
             ),
             // ... (mapeo de pasos)
-            ...steps.asMap().entries.map((entry) {
-              int idx = entry.key;
-              StepItem s = entry.value;
+            ...List.generate(steps.length, (idx) {
+               StepItem s = steps[idx];
+             
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Row(
@@ -326,7 +408,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               ),
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 50),
 
             // Combo boxes (Duración y País)
             Row(
@@ -366,18 +448,22 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             Row(
               children: [
                 Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedAllergen,
-                    decoration: const InputDecoration(
+                child: GestureDetector(
+                onTap: () => _showAllergenSelector(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
                       labelText: 'Alérgenos',
-                      // Tema aplicado automáticamente
                     ),
-                    items: allergens
-                        .map((a) => DropdownMenuItem(value: a, child: Text(a)))
-                        .toList(),
-                    onChanged: (val) => setState(() => selectedAllergen = val),
+                    controller: TextEditingController(
+                      text: selectedAllergens.isEmpty
+                          ? ''
+                          : selectedAllergens.join(', '),
+                    ),
                   ),
                 ),
+              ),
+            ),
                 SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -395,7 +481,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               ],
             ),
 
-            SizedBox(height: 20),
+            SizedBox(height: 50),
 
             // Botón guardar (usamos un estilo similar al de Login/Register)
             SizedBox(
