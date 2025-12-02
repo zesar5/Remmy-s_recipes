@@ -135,14 +135,14 @@ app.post("/recetas", async (req, res) => {
     try{
         const [result] = await db.query(
             `INSERT INTO Receta 
-            (titulo, descripcion, tiempo_preparacion, porciones, dificultad, Id_usuario) 
+            (titulo, tiempo_preparacion, origen, alergenos, estacion, Id_usuario) 
             VALUES (?, ?, ?, ?, ?, ?)`,
             [
                 data.titulo,
-                data.descripcion,
-                data.tiempoPreparacion,
-                data.porciones,
-                data.dificultad,
+                data.duracion,
+                data.pais,
+                data.alergenos,
+                data.estacion,
                 data.idUsuario
             ]
         );
