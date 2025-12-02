@@ -157,12 +157,12 @@ class Recipe {
 }
 
 const List<Recipe> _recipes = [
-  Recipe("assets/sopa.webp", "Sopa"),
-  Recipe("assets/pizza.webp", "Pizza"),
-  Recipe("assets/tortilla.webp", "Tortilla de patata"),
-  Recipe("assets/Aborrajado.webp", "Aborrajado"),
-  Recipe("assets/carne.webp", "Carne"),
-  Recipe("assets/perreteCalentito.webp", "Hot Dog"),
+  Recipe("assets/sopa.png", "Sopa"),
+  Recipe("assets/pizza.png", "Pizza"),
+  Recipe("assets/tortilla.png", "Tortilla de patata"),
+  Recipe("assets/Aborrajado.png", "Aborrajado"),
+  Recipe("assets/carne.png", "Carne"),
+  Recipe("assets/perreteCalentito.png", "Hot Dog"),
 ];
 
 

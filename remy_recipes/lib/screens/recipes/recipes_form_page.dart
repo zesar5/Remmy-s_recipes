@@ -16,7 +16,8 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 // Clases de datos auxiliares (Ingrediente y Paso)
 class Ingredient {
   String name;
-  Ingredient(this.name);
+  String quantity;
+  Ingredient(this.name, this.quantity);
 }
 
 class StepItem {
@@ -94,7 +95,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   void addIngredient() {
     setState(() {
       
-      ingredients.add(Ingredient(''));
+      ingredients.add(Ingredient('', '')); //Ingrediente y cantidad
     });
   }
 
@@ -177,7 +178,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     if (country == null) return false;
     if (selectedAllergens.isEmpty) return false;
     if (season == null) return false;
-    if (ingredients.isEmpty || ingredients.any((i) => i.name.trim().isEmpty))
+    if (ingredients.isEmpty || ingredients.any((i) => i.name.trim().isEmpty||i.quantity.trim().isEmpty))
       return false;
     if (steps.isEmpty || steps.any((s) => s.description.trim().isEmpty))
       return false;
@@ -317,31 +318,50 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               int idx = entry.key;
               Ingredient ing = entry.value;
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        onChanged: (val) => ing.name = val,
-                        decoration: const InputDecoration(
-                          hintText: 'Ingrediente',
-                          // No se necesita border, fillColor, filled, ya están en el Theme
-                        ),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                children: [
+                  // Nombre del ingrediente
+                  Expanded(
+                    flex: 2,
+                    child: TextField(
+                      key: ValueKey(ing),
+                      onChanged: (val) => ing.name = val,
+                      decoration: const InputDecoration(
+                        hintText: 'Ingrediente',
                       ),
                     ),
-                    SizedBox(width: 5),
-                    ElevatedButton(
-                      onPressed: () => removeIngredient(idx),
-                      child: const Text('-'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  // Cantidad
+                  Expanded(
+                    flex: 1,
+                    child: TextField(
+                      key: ValueKey(('${ing.name}_${ing.quantity}')),
+                      onChanged: (val) => ing.quantity = val,
+                      decoration: const InputDecoration(
+                        hintText: 'Cantidad',
                       ),
-                    )
-                  ],
-                ),
-              );
+                    ),
+                  ),
+
+                 const SizedBox(width: 5),
+
+                  // Botón eliminar
+                  ElevatedButton(
+                    onPressed: () => removeIngredient(idx),
+                    child: const Text('-'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  )
+                ],
+              ),
+            );
             }).toList(),
             SizedBox(height: 10),
             ElevatedButton(
@@ -366,8 +386,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               ),
             ),
             // ... (mapeo de pasos)
-            ...List.generate(steps.length, (idx) {
-               StepItem s = steps[idx];
+            ...steps.asMap().entries.map((entry) {
+              int idx = entry.key;
+              StepItem s = entry.value;
              
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -382,7 +403,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     ElevatedButton(
                       onPressed: () => removeStep(idx),
                       child: const Text('-'),
