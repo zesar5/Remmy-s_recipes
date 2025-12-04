@@ -87,6 +87,7 @@ class MainPage extends StatelessWidget {
 
               // ★ Título de sección
               const Text(
+                
                 "Recetas",
                 style: TextStyle(
                   fontSize: 22,
