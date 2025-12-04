@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
 const mysql = require("mysql2/promise");
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = 8000;
@@ -128,11 +129,18 @@ app.get("/recetas/:id", async (req, res) => {
 app.post("/recetas", async (req, res) => {
     const data = req.body;
 
-    if(!data.idUsuario){
+    const token = req.headers['authorization'];
+
+    if(!token){
         return res.status(401).json({ mensaje: "Debes iniciar sesión"});
     }
 
     try{
+
+        const decoded = jwt.verify(token, 'tu_Clave_secreta');
+
+        const userId = decoded.id;
+
         const [result] = await db.query(
             `INSERT INTO Receta 
             (titulo, tiempo_preparacion, origen, alergenos, estacion, Id_usuario) 
@@ -143,9 +151,29 @@ app.post("/recetas", async (req, res) => {
                 data.pais,
                 data.alergenos,
                 data.estacion,
-                data.idUsuario
+                userId
             ]
         );
+
+        if (data.pasos && data.pasos.length > 0) {
+            const pasosPromises = data.pasos.map(paso => {
+                return db.query(
+                    `INSERT INTO Paso (descripcion, Id_receta) VALUES (?, ?)`,
+                    [paso.descripcion, result.insertId]
+                );
+            });
+            await Promise.all(pasosPromises);
+        }
+
+        if (data.ingredientes && data.ingredientes.length > 0) {
+            const ingredientesPromises = data.ingredientes.map(ingrediente => {
+                return db.query(
+                    `INSERT INTO Ingrediente (nombre, cantidad, Id_receta) VALUES (?, ?, ?)`,
+                    [ingrediente.nombre, ingrediente.cantidad, result.insertId]
+                );
+            });
+            await Promise.all(ingredientesPromises);
+        }
 
         res.json({ mensaje: "Receta creada", id: result.insertId});
     } catch(err){
