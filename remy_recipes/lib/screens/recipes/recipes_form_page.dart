@@ -254,7 +254,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             GestureDetector(
               onTap: pickImage,
               child: Container(
-                height: 150,
+                height:150,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black87),
@@ -270,8 +270,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       )
                       : kIsWeb
                       ? Image.network(
+                        fit: BoxFit.fill,
                 imagePath!,
-                fit: BoxFit.cover,
+                
                 errorBuilder: (context, error, stackTrace) => const Center(child: Text("Error al cargar imagen web")),
               )
                     // Importante: La clase File ya está importada en el inicio del archivo

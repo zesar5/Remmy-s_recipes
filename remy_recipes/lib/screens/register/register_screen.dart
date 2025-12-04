@@ -185,14 +185,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.grey))
         ],
+        
       ),
+      
     ),
     SizedBox(height: 8),
     Text(
       "Añadir foto de perfil",
       style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+      
     ),
+    
   ],
+  
+  
 ),
 
               SizedBox(height: 25),
