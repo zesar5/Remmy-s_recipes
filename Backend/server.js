@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
 const mysql = require("mysql2/promise");
-const jwt = require('jsonwebtoken');
+const auth = require("./authMiddleware");
 
 const app = express();
 const PORT = 8000;
@@ -93,116 +93,6 @@ app.get("/perfil/:id", async (req, res) => {
 
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// ---------------------
-// RUTAS RECETAS
-// ---------------------
-app.get("/recetas", async (req, res) => {
-   try{
-    const [rows] = await db.query("SELECT * FROM Receta")
-    res.json(rows);
-   } catch(err){
-    res.status(500).json({ error: err.message});
-   }
-});
-
-app.get("/recetas/:id", async (req, res) => {
-    try{
-        const [rows] = await db.query(
-            "SELECT * FROM Receta WHERE Id_receta = ?",
-            [req.params.id]
-        );
-
-        if(rows.length === 0){
-            return res.status(404).json({ mensaje: "Receta no encontrada"});
-        }
-
-        res.json(rows[0]);
-    } catch(err){
-        res.status(500).json({ error: err.message})
-    }
-});
-
-app.post("/recetas", async (req, res) => {
-    const data = req.body;
-
-    const token = req.headers['authorization'];
-
-    if(!token){
-        return res.status(401).json({ mensaje: "Debes iniciar sesión"});
-    }
-
-    try{
-
-        const decoded = jwt.verify(token, 'tu_Clave_secreta');
-
-        const userId = decoded.id;
-
-        const [result] = await db.query(
-            `INSERT INTO Receta 
-            (titulo, tiempo_preparacion, origen, alergenos, estacion, Id_usuario) 
-            VALUES (?, ?, ?, ?, ?, ?)`,
-            [
-                data.titulo,
-                data.duracion,
-                data.pais,
-                data.alergenos,
-                data.estacion,
-                userId
-            ]
-        );
-
-        if (data.pasos && data.pasos.length > 0) {
-            const pasosPromises = data.pasos.map(paso => {
-                return db.query(
-                    `INSERT INTO Paso (descripcion, Id_receta) VALUES (?, ?)`,
-                    [paso.descripcion, result.insertId]
-                );
-            });
-            await Promise.all(pasosPromises);
-        }
-
-        if (data.ingredientes && data.ingredientes.length > 0) {
-            const ingredientesPromises = data.ingredientes.map(ingrediente => {
-                return db.query(
-                    `INSERT INTO Ingrediente (nombre, cantidad, Id_receta) VALUES (?, ?, ?)`,
-                    [ingrediente.nombre, ingrediente.cantidad, result.insertId]
-                );
-            });
-            await Promise.all(ingredientesPromises);
-        }
-
-        res.json({ mensaje: "Receta creada", id: result.insertId});
-    } catch(err){
-        res.status(500).json({ mensaje: err.message});
-    }
-});
-
-app.put("/recetas/:id", async (req, res) => {
-    try{
-        await db.query(
-            "UPDATE Receta SET ? WHERE Id_receta = ?",
-            [req.body, req.params.id]
-        );
-
-        res.json({ mensaje: "Receta actualizada"});
-    } catch(err){
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.delete("/recetas/:id", async (req, res) => {
-    try{
-        await db.query(
-            "DELETE FROM Receta WHERE Id_receta = ?",
-            [req.params.id]
-        );
-
-        res.json({ mensaje: "Receta eliminada" });
-    } catch(err){
         res.status(500).json({ error: err.message });
     }
 });
