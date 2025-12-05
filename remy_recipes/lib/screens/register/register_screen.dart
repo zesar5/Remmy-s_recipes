@@ -97,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else if (!validarCorreo(correo.text)) {
         errorCorreoMensaje = "Formato inválido";
         errorCorreo = true;
-      } else {
+      } else {  
         errorCorreoMensaje = null;
         errorCorreo = false;
       }

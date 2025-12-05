@@ -326,7 +326,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   Expanded(
                     flex: 2,
                     child: TextField(
-                      key: ValueKey(ing),
+                      key: ValueKey("ingredient_name_$idx"),
                       onChanged: (val) => ing.name = val,
                       decoration: const InputDecoration(
                         hintText: 'Ingrediente',
@@ -340,7 +340,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   Expanded(
                     flex: 1,
                     child: TextField(
-                      key: ValueKey(('${ing.name}_${ing.quantity}')),
+                      key: ValueKey("ingredient_qty_$idx"),
                       onChanged: (val) => ing.quantity = val,
                       decoration: const InputDecoration(
                         hintText: 'Cantidad',
@@ -397,6 +397,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   children: [
                     Expanded(
                       child: TextField(
+                        key: ValueKey("step_$idx"),
                         onChanged: (val) => s.description = val,
                         decoration: const InputDecoration(
                           hintText: 'Paso',
