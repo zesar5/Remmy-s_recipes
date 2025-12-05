@@ -1,31 +1,66 @@
+const { param } = require("../routes/recetasRoutes");
+
 const db = require();
 
-exports.obtenerReceta = async (req, res) => {
-   try{
-    const [rows] = await db.query("SELECT * FROM Receta")
-    res.json(rows);
-   } catch(err){
-    res.status(500).json({ error: err.message});
-   }
+
+//-----------------------------
+//   OBTENER RECETA VISIBLE
+//-----------------------------
+exports.obtenerRecetaVisibles = async (req, res) => {
+    const userId = req.userId || null;
+
+    try{
+        let query = "SELECT * FORM receta WHERE public = 1";
+        let params = [];
+
+        if(userId){
+            query = "SELECT * FROM receta WHERE publica = 1 OR Id_usuario = ?";
+            params = [userId];
+        }
+
+        const [rows] = await db.query(query, params);
+        res.json(rows);
+
+    } catch(err){
+        res.status(500).json({ error: err.message});
+    }
 };
 
+
+//---------------------------
+//   OBTENER RECETA X ID
+//---------------------------
 exports.obtenerRecetaPorId = async (req, res) => {
+    const userId = req.userId || null;
+    const Id_receta = req.params.id;
+
     try{
         const [rows] = await db.query(
             "SELECT * FROM Receta WHERE Id_receta = ?",
-            [req.params.id]
+            [Id_receta]
         );
 
         if(rows.length === 0){
             return res.status(404).json({ mensaje: "Receta no encontrada"});
         }
 
-        res.json(rows[0]);
+        const receta = rows[0];
+
+        if(!receta.publica && receta.Id_usuario !== userId){
+            return res.status(403).json({ mensaje: "No tienes permiso para ver esta receta" });
+        }
+
+        res.json(receta);
+
     } catch(err){
         res.status(500).json({ error: err.message})
     }
 };
 
+
+//------------------------
+//   CREAR RECETA
+//------------------------
 exports.crearReceta = async (req, res) => {
     const data = req.body;
     const userId = req.userId;
@@ -82,11 +117,31 @@ exports.crearReceta = async (req, res) => {
     }
 };
 
+
+//------------------------
+//   ACTUALIZAR RECETA
+//------------------------
 exports.actualizarReceta = async (req, res) => {
+    const Id_receta = req.params.id;
+    const Id_usuario = req.userId;
+
     try{
+        const [recetaRows] = await db.query(
+            "SELECT Id_usuario FROM receta WHERE Id_receta = ?",
+            [Id_receta]
+        )
+
+        if(recetaRows.length === 0){
+            return res.status(404).json({ mensaje: "Receta no encontrada" });
+        }
+
+        if(recetaRows[0].Id_usuario !== userId){
+            return res.status(403).json({ mensaje: "No tienes permiso para editar esta receta" });
+        }
+
         await db.query(
             "UPDATE Receta SET ? WHERE Id_receta = ?",
-            [req.body, req.params.id]
+            [req.body, Id_receta]
         );
 
         res.json({ mensaje: "Receta actualizada"});
@@ -95,8 +150,28 @@ exports.actualizarReceta = async (req, res) => {
     }
 };
 
+
+//------------------------
+//   ELIMINAR RECETA
+//------------------------
 exports.eliminarReceta = async (req, res) => {
+    const Id_receta = req.params.id;
+    const Id_usuario = req.userId;
+
     try{
+        const [recetaRows] = await db.query(
+            "SELECT Id_usuario FROM receta WHERE Id_receta = ?",
+            [Id_receta]
+        )
+
+        if(recetaRows.length === 0){
+            return res.status(404).json({ mensaje: "Receta no encontrada" });
+        }
+
+        if(recetaRows[0].Id_usuario !== userId){
+            return res.status(403).json({ mensaje: "No tienes permiso para eliminar esta receta" });
+        }
+
         await db.query(
             "DELETE FROM Receta WHERE Id_receta = ?",
             [req.params.id]

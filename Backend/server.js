@@ -5,17 +5,8 @@ const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
-const mysql = require("mysql2/promise");
 const auth = require("./authMiddleware");
-
-const app = express();
-const PORT = 8000;
-const db = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "remysrecipes"
-});
+const db = require('./db');
 
 // Middleware
 app.use(bodyParser.json());

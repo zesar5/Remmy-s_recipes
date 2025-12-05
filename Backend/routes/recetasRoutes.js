@@ -4,8 +4,10 @@ const auth = require("../middlewares/authMiddleware");
 const recetaController = require("../controllers/recetaController");
 
 //Las rutas CRUD
-router.get("/", recetaController.obtenerRecetas);
+router.get("/", recetaController.obtenerRecetasVisibles);
 router.get("/:id", recetaController.obtenerRecetaPorId);
 router.post("/", auth, recetaController.crearReceta);
-router.put("/:id", recetaController.actualizarReceta);
-router.delete("/:id", recetaController.eliminarReceta);
+router.put("/:id", auth, recetaController.actualizarReceta);
+router.delete("/:id", auth, recetaController.eliminarReceta);
+
+module.exports = router;
