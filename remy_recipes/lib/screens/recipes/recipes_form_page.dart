@@ -194,7 +194,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
           content: Text('Receta guardada con éxito'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed:() => Navigator.of(context).pushNamed('/home'),
               child: Text('OK'),
             )
           ],
