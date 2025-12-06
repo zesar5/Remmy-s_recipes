@@ -1,4 +1,4 @@
-const { param } = require("../routes/recetasRoutes");
+const { param } = require("../routes/recetaRoutes");
 
 const db = require();
 
