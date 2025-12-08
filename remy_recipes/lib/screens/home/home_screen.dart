@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../Profile/Profile_screen.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 
@@ -11,16 +12,16 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 // ==========================================================================
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+   HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MainPage();
+    return MainPage();
   }
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+   MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class MainPage extends StatelessWidget {
             children: [
               
               // ★ Barra superior
-              _buildTopBar(),
+              _buildTopBar(context),
 
               const SizedBox(height: 10),
               
@@ -121,34 +122,42 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  Row _buildTopBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _topIcon(Icons.menu),
-        Row(
-          children: [
-            _topIcon(Icons.search),
-            const SizedBox(width: 5),
-            _topIcon(Icons.person),
-          ],
-        ),
-      ],
-    );
-  }
+  Row _buildTopBar(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      _topIcon(Icons.menu),
+      Row(
+        children: [
+          _topIcon(Icons.search),
+          const SizedBox(width: 5),
+          
+          // ← AQUI SE NAVEGA AL PERFIL
+          _topIcon(
+            Icons.person,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => PerfilScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
-  Widget _topIcon(IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        shape: BoxShape.circle,
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.black87),
-        onPressed: () {},
-      ),
-    );
-  }
+Widget _topIcon(IconData icon, {VoidCallback? onTap}) {
+  return Material(
+    color: Colors.white.withOpacity(0.8),
+    shape: const CircleBorder(),
+    child: IconButton(
+      icon: Icon(icon, color: Colors.black87),
+      onPressed: onTap ?? () {},
+    ),
+  );
+}
 }
 
 class Recipe {

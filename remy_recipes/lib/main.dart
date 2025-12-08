@@ -24,7 +24,7 @@ class RemmyApp extends StatelessWidget {
       routes: {
         "/login": (_) => LoginScreen(authService: authService),
         "/register": (_) => RegisterScreen(authService: authService),
-        "/home": (_) => const HomeScreen(),
+        "/home": (_) =>  HomeScreen(),
         "/add_recipe": (_) => RecipeFormPage(),
         
       },

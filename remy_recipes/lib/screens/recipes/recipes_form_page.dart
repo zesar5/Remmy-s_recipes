@@ -422,7 +422,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: addStep, 
-              child: const Text('Agregar Paso'),
+              child: const Text('Agregar Paso'), 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
