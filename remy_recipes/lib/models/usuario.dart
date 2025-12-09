@@ -13,11 +13,9 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 class Usuario {
   final String id;
   final String userName;
-  final String nombreUsuario;
+  final String pais;
   final String email;
-  final String rol;
-  final String? primerApellido;
-  final String? segundoApellido;
+  final String contrasena;
   final String? descripcion;
   final String? anioNacimiento;
   final String? fotoPerfil;
@@ -25,12 +23,10 @@ class Usuario {
   Usuario({
     required this.id,
     required this.userName,
-    required this.nombreUsuario,
+    required this.pais,
     required this.email,
-    required this.rol,
-    this.primerApellido,
-    this.segundoApellido,
-    this.descripcion,
+    required this.contrasena,
+     this.descripcion,
     this.anioNacimiento,
     this.fotoPerfil,
   });
@@ -40,12 +36,10 @@ class Usuario {
     return Usuario(
       id: json['id'] as String,
       userName: json['userName']as String,
-      nombreUsuario: json['nombreUsuario'] as String,
+      pais: json['pais'] as String,
       email: json['email'] as String,
-      rol: json['rol'] as String,
-      primerApellido: json['primerApellido'] as String?,
-      // FastAPI devuelve las fechas como strings (e.g., "2025-11-03")
-      segundoApellido: json['segundoApellido'] as String?, 
+      contrasena: json['contrasena'] as String,
+      // FastAPI devuelve las fechas como strings (e.g., "2025-11-03"), 
       descripcion: json['descripcion'] as String?,
       anioNacimiento: json['anioNacimiento'] as String?,
       fotoPerfil: json['fotoPerfil'] as String?,

@@ -317,6 +317,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // ... (mapeo de ingredientes)
             ...ingredients.asMap().entries.map((entry) {
               int idx = entry.key;
+              
               Ingredient ing = entry.value;
               return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
