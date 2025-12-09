@@ -327,6 +327,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     flex: 2,
                     child: TextField(
                       key: ValueKey("ingredient_name_$idx"),
+                      controller: TextEditingController(text: ing.name)
+                        ..selection= TextSelection.collapsed(offset: ing.name.length),
                       onChanged: (val) => ing.name = val,
                       decoration: const InputDecoration(
                         hintText: 'Ingrediente',
@@ -341,6 +343,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     flex: 1,
                     child: TextField(
                       key: ValueKey("ingredient_qty_$idx"),
+                      controller: TextEditingController(text: ing.quantity)
+                        ..selection = TextSelection.collapsed(offset: ing.quantity.length),
                       onChanged: (val) => ing.quantity = val,
                       decoration: const InputDecoration(
                         hintText: 'Cantidad',
@@ -388,23 +392,24 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             ),
             // ... (mapeo de pasos)
             ...steps.asMap().entries.map((entry) {
-              int idx = entry.key;
-              StepItem s = entry.value;
-             
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        key: ValueKey("step_$idx"),
-                        onChanged: (val) => s.description = val,
-                        decoration: const InputDecoration(
-                          hintText: 'Paso',
-                          // No se necesita border, fillColor, filled, ya están en el Theme
+                int idx = entry.key;
+                StepItem step = entry.value;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: ValueKey("step_desc_$idx"),
+                          controller: TextEditingController(text: step.description)
+                            ..selection = TextSelection.collapsed(offset: step.description.length),
+                          onChanged: (val) => step.description = val,
+                          decoration: const InputDecoration(
+                            hintText: 'Paso',
+                          ),
                         ),
                       ),
-                    ),
                     const SizedBox(width: 5),
                     ElevatedButton(
                       onPressed: () => removeStep(idx),

@@ -43,6 +43,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         children: [
           // HEADER (altura fija)
           Container(
+            width: double.infinity,
             height: 360,
             color: const Color(0xFFDEB887),
             child: Column(
