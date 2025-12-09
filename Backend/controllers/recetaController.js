@@ -1,6 +1,6 @@
 const { param } = require("../routes/recetaRoutes");
 
-const db = require();
+const db = require("../db");
 
 
 //-----------------------------
@@ -10,7 +10,7 @@ exports.obtenerRecetaVisibles = async (req, res) => {
     const userId = req.userId || null;
 
     try{
-        let query = "SELECT * FORM receta WHERE public = 1";
+        let query = "SELECT * FROM receta WHERE public = 1";
         let params = [];
 
         if(userId){
@@ -135,7 +135,7 @@ exports.actualizarReceta = async (req, res) => {
             return res.status(404).json({ mensaje: "Receta no encontrada" });
         }
 
-        if(recetaRows[0].Id_usuario !== userId){
+        if(recetaRows[0].Id_usuario !== Id_usuario){
             return res.status(403).json({ mensaje: "No tienes permiso para editar esta receta" });
         }
 
@@ -168,7 +168,7 @@ exports.eliminarReceta = async (req, res) => {
             return res.status(404).json({ mensaje: "Receta no encontrada" });
         }
 
-        if(recetaRows[0].Id_usuario !== userId){
+        if(recetaRows[0].Id_usuario !== Id_usuario){
             return res.status(403).json({ mensaje: "No tienes permiso para eliminar esta receta" });
         }
 

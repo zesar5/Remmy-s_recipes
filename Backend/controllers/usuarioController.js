@@ -14,7 +14,7 @@ exports.registrarUsuario = async (req, res) => {
     try{
         const [exists] = await db.query(
             "SELECT * FROM usuario WHERE nombre = ?",
-            [data.nombreUsuario]
+            [data.userName]
         );
 
         if(exists.length > 0){
@@ -22,9 +22,20 @@ exports.registrarUsuario = async (req, res) => {
         }
 
         const [result] = await db.query(
-            'INSERT INTO usuario (nombre, email, contraseña, fecha_registro) VALUES (?, ?, ?, NOW())',
-            [data.nombreUsuario, data.email, data.contrasena]
+            'INSERT INTO usuario (nombre, pais, email, contrasena, descripcion, anioNacimiento) VALUES (?, ?, ?, ?, ?, ?)',
+            [data.userName, data.pais, data.email, data.contrasena, data.descripcion, data.anioNacimiento]
         );
+
+        if(data.fotoPerfil){
+            const base64Data = data.fotoPerfil.replace(/^data:image\/\w+;base64,/, "");
+
+            const buffer = Buffer.from(base64Data, "base64");
+
+            await db.query(
+                'INSERT INTO usuario_imagen (imagen, Id_usuario) VALUES (?, ?)',
+                [buffer, result.insertId]
+            )
+        }
 
         res.json({ mensaje: "Usuario creado", id: result.insertId });
     } catch(err){
@@ -40,7 +51,7 @@ exports.obtenerPerfil = async (req, res) => {
 
     try {
         const [rows] = await db.query(
-            "SELECT * FROM Usuario WHERE Id_usuario = ?",
+            "SELECT * FROM usuario WHERE Id_usuario = ?",
             [id]
         );
 
@@ -49,6 +60,7 @@ exports.obtenerPerfil = async (req, res) => {
         }
 
         res.json(rows[0]);
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
