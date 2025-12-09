@@ -58,11 +58,11 @@ class Receta {
       'titulo': titulo,
       'ingredientes': ingredientes, 
       'pasos': pasos, 
-      'duracion': duracion, 
-      'pais': pais,
+      'tiempo_preparacion': duracion, 
+      'origen': pais,
       'alergenos': alergenos,
       'estacion': estacion,
-      'idUsuario': idUsuario, // Nombre del campo que espera el JS
+      'Id_usuario': idUsuario, // Nombre del campo que espera el JS
     };
   }
 }

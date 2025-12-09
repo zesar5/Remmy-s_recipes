@@ -157,7 +157,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         width: 70,
         height: 45,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color:const Color(0xFFDEB887),
           borderRadius: BorderRadius.circular(8),
         ),
         alignment: Alignment.center,
