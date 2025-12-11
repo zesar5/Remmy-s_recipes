@@ -4,7 +4,7 @@ const auth = require("../middlewares/authMiddleware");
 const recetaController = require("../controllers/recetaController");
 
 //Las rutas CRUD
-router.get("/", recetaController.obtenerRecetasVisibles);
+router.get("/", recetaController.obtenerRecetaVisibles);
 router.get("/:id", recetaController.obtenerRecetaPorId);
 router.post("/", auth, recetaController.crearReceta);
 router.put("/:id", auth, recetaController.actualizarReceta);

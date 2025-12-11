@@ -1,12 +1,13 @@
 // Server.js
 const express = require("express");
-
+const cors = require('cors');
 const app = express();
 const PORT = 8000;
 
+app.use(cors());
+
 // Middleware global
 app.use(express.json());
-
 
 // Rutas
 app.use("/", require("./routes/indexRoutes"));
