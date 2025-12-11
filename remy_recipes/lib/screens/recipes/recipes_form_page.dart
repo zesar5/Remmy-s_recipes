@@ -41,6 +41,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   List<Ingredient> ingredients = [];
   List<StepItem> steps = [];
 
+  
+  
   final TextEditingController titleController = TextEditingController();
 
   final List<String> durations =
@@ -83,6 +85,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
   final picker = ImagePicker();
 
+  
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -91,7 +94,6 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       });
     }
   }
-
   void addIngredient() {
     setState(() {
       
@@ -216,6 +218,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       );
     }
   }
+  //Aquí va la funcion _guardarReceta (obtener el models y el service)
 
   @override
   Widget build(BuildContext context) {
@@ -516,7 +519,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: onSubmit,
+                onPressed: onSubmit,/*onPressed: _guardarReceta (implementar cuando tengamos
+                 la funcion _guardarReceta),*/
                 child: const Text('Guardar Receta'),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
