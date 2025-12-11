@@ -23,6 +23,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   // Simulación de BD
   String username = "USERNAME DESDE BD";
   String descripcion = "Aquí aparecerá la descripción del usuario proveniente de la BD.";
+  String hovered = "";
 
   // Listas internas (favoritos, guardados, personas)
   List<String> favoritos = [];
@@ -49,6 +50,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                
                 // FOTO CLICKABLE
                 GestureDetector(
                   onTap: _cambiarFoto,
@@ -120,8 +122,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
           // BARRA DE BOTONES ARRIBA
           // -----------------------------
           Container(
-            height: 80,
-            color: Colors.grey.shade200,
+            height: 75,
+            color: const Color.fromARGB(255, 141, 134, 134),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -139,6 +141,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(10),
+              color: const Color.fromARGB(255, 192, 187, 181),
               child: _buildContent(),
             ),
           )
@@ -151,20 +154,43 @@ class _PerfilScreenState extends State<PerfilScreen> {
   // BOTÓN DEL MENÚ
   // -----------------------------
   Widget _menuButton(String icon, String view) {
-    return GestureDetector(
+  bool isSelected = currentView == view;
+
+  return MouseRegion(
+    onEnter: (_) => setState(() => hovered = view),
+    onExit: (_) => setState(() => hovered = ""),
+    child: GestureDetector(
       onTap: () => setState(() => currentView = view),
-      child: Container(
-        width: 70,
-        height: 45,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 85,
+        height: 55,
         decoration: BoxDecoration(
-          color:const Color(0xFFDEB887),
-          borderRadius: BorderRadius.circular(8),
+          color: isSelected
+              ? const Color(0xFF575757)
+              : (hovered == view
+                  ? Colors.white.withOpacity(0.15)
+                  : const Color(0xFF3A3A3A)),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: hovered == view
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : [],
         ),
         alignment: Alignment.center,
-        child: Text(icon, style: const TextStyle(fontSize: 25)),
+        child: Text(
+          icon,
+          style: const TextStyle(fontSize: 26, color: Colors.white),
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   // -----------------------------
   // CONTENIDO SEGÚN SECCIÓN
