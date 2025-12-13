@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../config/db");
 
 // ----------------------------------------
 //     ENTIDAD / MODELO DE USUARIO
@@ -9,6 +9,7 @@ class UsuarioEntity {
         this.nombre = obj.nombre;
         this.pais = obj.pais;
         this.email = obj.email;
+        this.contrasena = obj.contrasena;
         this.descripcion = obj.descripcion;
         this.anioNacimiento = obj.anioNacimiento;
     }

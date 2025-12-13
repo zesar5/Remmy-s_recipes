@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import '../Profile/Profile_screen.dart';
 
-const String _baseUrl = 'http://10.0.2.2:8000';
+//const String _baseUrl = 'http://10.0.2.2:8000';
+const String _baseUrl = 'http://localhost:8000';
 
 
 

@@ -4,10 +4,9 @@ const cors = require('cors');
 const app = express();
 const PORT = 8000;
 
-app.use(cors());
-
 // Middleware global
 app.use(express.json());
+app.use(cors());
 
 // Rutas
 app.use("/", require("./routes/indexRoutes"));

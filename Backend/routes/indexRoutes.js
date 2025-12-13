@@ -4,7 +4,7 @@ const router = express.Router();
 // ---------------------
 // INICIO
 // ---------------------
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
     res.json({ mensaje: "API funcionando" });
 });
 
