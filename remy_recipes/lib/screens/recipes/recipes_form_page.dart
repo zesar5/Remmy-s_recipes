@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
+import 'dart:convert';
+import '/models/receta.dart';
+import '/services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 const String _baseUrl = 'http://10.0.2.2:8000';
 
@@ -14,16 +16,7 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 // ==========================================================================
 
 // Clases de datos auxiliares (Ingrediente y Paso)
-class Ingredient {
-  String name;
-  String quantity;
-  Ingredient(this.name, this.quantity);
-}
 
-class StepItem {
-  String description;
-  StepItem(this.description);
-}
 
 class RecipeFormPage extends StatefulWidget {
   @override
@@ -38,8 +31,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   List<String> selectedAllergens = [];
   String? season;
 
-  List<Ingredient> ingredients = [];
-  List<StepItem> steps = [];
+  List<Ingrediente> ingredients = [];
+  List<Paso> steps = [];
 
   
   
@@ -97,7 +90,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   void addIngredient() {
     setState(() {
       
-      ingredients.add(Ingredient('', '')); //Ingrediente y cantidad
+      ingredients.add(Ingrediente(nombre: '', cantidad: '')); //Ingrediente y cantidad
     });
   }
 
@@ -109,7 +102,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
   void addStep() {
     setState(() {
-      steps.add(StepItem(''));
+      steps.add(Paso(descripcion: ''));
     });
   }
 
@@ -180,9 +173,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     if (country == null) return false;
     if (selectedAllergens.isEmpty) return false;
     if (season == null) return false;
-    if (ingredients.isEmpty || ingredients.any((i) => i.name.trim().isEmpty||i.quantity.trim().isEmpty))
+    if (ingredients.isEmpty || ingredients.any((i) => i.nombre.trim().isEmpty||i.cantidad.trim().isEmpty))
       return false;
-    if (steps.isEmpty || steps.any((s) => s.description.trim().isEmpty))
+    if (steps.isEmpty || steps.any((s) => s.descripcion.trim().isEmpty))
       return false;
     return true;
   }
@@ -218,7 +211,53 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       );
     }
   }
-  //Aquí va la funcion _guardarReceta (obtener el models y el service)
+  Future<void> _guardarReceta() async {
+  if (!isFormValid()) {
+    _mostrarError('Debe rellenar todos los campos');
+    return;
+  }
+
+  final receta = Receta(
+    titulo: titleController.text.trim(),
+    ingredientes: ingredients,
+    pasos: steps,
+    duracion: int.parse(duration!),
+    pais: country!,
+    alergenos: selectedAllergens.join(','),
+    estacion: season!,
+    idUsuario: 1, // ← luego lo sacas del login
+    imagenBase64: imagePath != null
+        ? base64Encode(File(imagePath!).readAsBytesSync())
+        : null,
+  );
+
+  final id = await crearRecetaEnServidor(receta);
+
+  if (id != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Receta guardada con éxito")),
+    );
+
+    Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => false);
+  } else {
+    _mostrarError('Error al guardar la receta');
+  }
+}
+void _mostrarError(String mensaje) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Text('Error'),
+      content: Text(mensaje),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('OK'),
+        )
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +360,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             ...ingredients.asMap().entries.map((entry) {
               int idx = entry.key;
               
-              Ingredient ing = entry.value;
+              Ingrediente ing = entry.value;
               return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
@@ -331,9 +370,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     flex: 2,
                     child: TextField(
                       key: ValueKey("ingredient_name_$idx"),
-                      controller: TextEditingController(text: ing.name)
-                        ..selection= TextSelection.collapsed(offset: ing.name.length),
-                      onChanged: (val) => ing.name = val,
+                      controller: TextEditingController(text: ing.nombre)
+                        ..selection= TextSelection.collapsed(offset: ing.nombre.length),
+                      onChanged: (val) => ing.nombre = val,
                       decoration: const InputDecoration(
                         hintText: 'Ingrediente',
                       ),
@@ -347,9 +386,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     flex: 1,
                     child: TextField(
                       key: ValueKey("ingredient_qty_$idx"),
-                      controller: TextEditingController(text: ing.quantity)
-                        ..selection = TextSelection.collapsed(offset: ing.quantity.length),
-                      onChanged: (val) => ing.quantity = val,
+                      controller: TextEditingController(text: ing.cantidad)
+                        ..selection = TextSelection.collapsed(offset: ing.cantidad.length),
+                      onChanged: (val) => ing.cantidad = val,
                       decoration: const InputDecoration(
                         hintText: 'Cantidad',
                       ),
@@ -397,7 +436,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // ... (mapeo de pasos)
             ...steps.asMap().entries.map((entry) {
                 int idx = entry.key;
-                StepItem step = entry.value;
+                Paso step = entry.value;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -406,9 +445,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       Expanded(
                         child: TextField(
                           key: ValueKey("step_desc_$idx"),
-                          controller: TextEditingController(text: step.description)
-                            ..selection = TextSelection.collapsed(offset: step.description.length),
-                          onChanged: (val) => step.description = val,
+                          controller: TextEditingController(text: step.descripcion)
+                            ..selection = TextSelection.collapsed(offset: step.descripcion.length),
+                          onChanged: (val) => step.descripcion= val,
                           decoration: const InputDecoration(
                             hintText: 'Paso',
                           ),
@@ -519,8 +558,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: onSubmit,/*onPressed: _guardarReceta (implementar cuando tengamos
-                 la funcion _guardarReceta),*/
+                onPressed: _guardarReceta,
                 child: const Text('Guardar Receta'),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,

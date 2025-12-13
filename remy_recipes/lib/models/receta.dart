@@ -10,14 +10,14 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 // ==========================================================================
 
 class Ingrediente {
-  final String nombre;
-  final String cantidad;
+  String nombre;
+  String cantidad;
   Ingrediente({required this.nombre, required this.cantidad});
   Map<String, dynamic> toJson() => {'nombre': nombre, 'cantidad': cantidad};
 }
 
 class Paso {
-  final String descripcion;
+  String descripcion;
   Paso({required this.descripcion});
   Map<String, dynamic> toJson() => {'descripcion': descripcion};
 }
