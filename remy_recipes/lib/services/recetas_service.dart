@@ -39,14 +39,18 @@ Future<List<Receta>> obtenerTodasLasRecetas() async {
 }
 
 //  FUNCIÓN POST
-Future<String?> crearRecetaEnServidor(Receta nuevaReceta) async {
+Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
   final url = Uri.parse('$_baseUrl/recetas');
 
   try {
+    print('Enviando token al backend: $token');
+    print('URL: $url');
+    print('Body: ${json.encode(nuevaReceta.toJson())}');
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', 
       },
       body: json.encode(nuevaReceta.toJson()), // Usa el método toJson() modificado
     );

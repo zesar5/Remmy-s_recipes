@@ -15,29 +15,33 @@ class AuthService {
   // Simula el almacenamiento del token de sesion (usar Secure Storage en produccion)
  
   String? _accessToken;
+  String? get accessToken => _accessToken;
   Usuario? _currentUser;
 
   Usuario? get currentUser => _currentUser;
 
-  Future<bool> login({required String username, required String password}) async {
+  // ============================
+  // LOGIN
+  // ============================
+
+  Future<bool> login({required String email, required String password}) async {
     // La ruta es CORRECTA: /auth/login
-    final url = Uri.parse('$_baseUrl/auth/login');
+    final url = Uri.parse('$_baseUrl/usuarios/login');
    
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'nombreUsuario': username, // Clave que espera Node.js para el LOGIN
+        'email': email, // Clave que espera Node.js para el LOGIN
         'contrasena': password, // Clave que espera Node.js para el LOGIN
       }),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-     
-      //  Extraemos el usuario y luego el Id_usuario para usarlo como token
-      final userData = data['usuario'];
-      _accessToken = userData['Id_usuario'].toString(); // El backend usa Id_usuario para login
+    
+      // Guardamos el Id_usuario como token temporal
+      _accessToken = data['id'].toString();
 
       // Usamos fetchProfile para obtener el perfil completo usando el nuevo modelo corregido
       return await fetchProfile();
@@ -60,16 +64,16 @@ class AuthService {
     String? anioNacimiento,
     String? fotoPerfil,
   }) async {
-    final url = Uri.parse('$_baseUrl/registro');
+    final url = Uri.parse('$_baseUrl/usuarios/registro');
 
     // Creamos una instancia temporal del modelo solo para usar el toJsonRegistro
     final newUser = Usuario(
       id: '', // ID temporal, no se usa para el registro POST
       userName: nombreUsuario,
-       pais: pais,
+      pais: pais,
       email: email,
       contrasena: contrasena,
-     contrasena2: contrasena2,
+      contrasena2: contrasena2,
       descripcion: descripcion,
       anioNacimiento: anioNacimiento,
       fotoPerfil: fotoPerfil,
@@ -87,8 +91,7 @@ class AuthService {
       final responseData = json.decode(response.body);
      
       //  Guardamos el nuevo ID y lo usamos para obtener el perfil completo
-      final newUserId = responseData['id'].toString();
-      _accessToken = newUserId;
+      _accessToken = responseData['id'].toString();
      
       return await fetchProfile(); // Obtenemos el perfil completo para _currentUser
     } else {
@@ -110,7 +113,7 @@ class AuthService {
     if (_accessToken == null) return false;
 
     // RUTA CORRECTA: /perfil/{idUsuario}
-    final url = Uri.parse('$_baseUrl/perfil/$_accessToken');
+    final url = Uri.parse('$_baseUrl/usuarios/perfil/$_accessToken');
 
     final response = await http.get(
       url,

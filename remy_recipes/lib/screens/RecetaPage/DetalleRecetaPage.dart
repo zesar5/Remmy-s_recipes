@@ -15,8 +15,9 @@ import '../../models/receta.dart';
 
 class DetalleRecetaPage extends StatelessWidget {
   final Receta receta;
+  final AuthService authService;
 
-  const DetalleRecetaPage({Key? key, required this.receta}) : super(key: key);
+  const DetalleRecetaPage({Key? key, required this.receta, required this.authService,}) : super(key: key);
 
   @override
   void _confirmarEliminar(BuildContext context) {
@@ -54,7 +55,7 @@ class DetalleRecetaPage extends StatelessWidget {
               final actualizado = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => RecipeFormPage(recetaEditar: receta),
+                  builder: (_) => RecipeFormPage(token: authService.accessToken!, recetaEditar: receta),
                 ),
               );
 

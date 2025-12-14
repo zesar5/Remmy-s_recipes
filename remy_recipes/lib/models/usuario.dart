@@ -17,7 +17,7 @@ class Usuario {
   final String? pais;
   final String email;
   final String contrasena;
-   final String contrasena2;
+  final String contrasena2;
   final String? descripcion;
   final String? anioNacimiento;
   final String? fotoPerfil;
@@ -28,8 +28,8 @@ class Usuario {
     required this.email,
     required this.contrasena,
     required this.contrasena2,
-      this.pais,
-     this.descripcion,
+    this.pais,
+    this.descripcion,
     this.anioNacimiento,
     this.fotoPerfil,
   });
@@ -37,22 +37,22 @@ class Usuario {
   // Constructor para crear un objeto Usuario desde una respuesta JSON (PerfilOut)
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
-      id: json['id'] as String,
-      userName: json['userName']as String,
-      pais: json['pais'] as String,
-      email: json['email'] as String,
-      contrasena: json['contrasena'] as String,
-       contrasena2: json['contrasena2'] as String,
+      id: json['Id_usuario']?.toString() ?? '',
+      userName: json['nombre'] ?? '',
+      pais: json['pais'],
+      email: json['email'] ?? '',
+      contrasena: '',
+       contrasena2: '',
       // FastAPI devuelve las fechas como strings (e.g., "2025-11-03"),
-      descripcion: json['descripcion'] as String?,
-      anioNacimiento: json['anioNacimiento'] as String?,
-      fotoPerfil: json['fotoPerfil'] as String?,
+      descripcion: json['descripcion'],
+      anioNacimiento: json['anioNacimiento']?.toString(),
+      fotoPerfil: json['fotoPerfil'],
     );
 
   }
    Map<String, dynamic> toJsonRegistro() {
     return {
-      'userName': userName,
+      'nombre': userName,
       'email': email,
       'contrasena': contrasena,
       'contrasena2': contrasena2,

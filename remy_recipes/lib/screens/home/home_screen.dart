@@ -4,6 +4,8 @@ import 'package:remy_recipes/models/receta.dart';
 import '../Profile/Profile_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
+import '../recipes/recipes_form_page.dart';
+import '../../services/auth_service.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
@@ -16,16 +18,26 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 // ==========================================================================
 
 class HomeScreen extends StatelessWidget {
-   HomeScreen({super.key});
+  final AuthService authService;
+
+  const HomeScreen({
+    Key? key,
+    required this.authService,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MainPage();
+    return MainPage(authService: authService);
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final AuthService authService;
+
+  const MainPage({
+    super.key,
+    required this.authService,
+  });
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -34,6 +46,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List<Receta> recipes = [];
   bool loading = true;
+  //widget.authService
 
   @override
   void initState() {
@@ -71,7 +84,17 @@ class _MainPageState extends State<MainPage> {
       backgroundColor: const Color(0xFFDEB887),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange.shade800,
-        onPressed: () => Navigator.of(context).pushNamed('/add_recipe'),
+        onPressed: () {
+          print('TOKEN antes de navegar a RecipeFormPage: ${widget.authService.accessToken}');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => RecipeFormPage(
+              token: widget.authService.accessToken!,
+             ),
+            ),
+          );
+        },  
         child: const Icon(Icons.add, size: 28),
       ),
 
@@ -184,7 +207,9 @@ class _MainPageState extends State<MainPage> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => PerfilScreen()),
+                MaterialPageRoute(builder: (_) => PerfilScreen(
+                  authService: widget.authService,
+                )),
               );
             },
           ),

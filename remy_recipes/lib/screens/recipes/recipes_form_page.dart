@@ -21,11 +21,12 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 
 class RecipeFormPage extends StatefulWidget {
   final Receta? recetaEditar;
+  final String token;
 
-  const RecipeFormPage({Key? key,this.recetaEditar}) : super(key: key);
+  const RecipeFormPage({Key? key, required this.token, this.recetaEditar}) : super(key: key);
 
   @override
-  _RecipeFormPageState createState() => _RecipeFormPageState();
+  State<RecipeFormPage> createState() => _RecipeFormPageState();
 }
 
 class _RecipeFormPageState extends State<RecipeFormPage> {
@@ -231,13 +232,14 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     pais: country!,
     alergenos: selectedAllergens.join(','),
     estacion: season!,
-    idUsuario: 1, // ← luego lo sacas del login
     imagenBase64: imagePath != null
         ? base64Encode(File(imagePath!).readAsBytesSync())
         : '',
   );
 
-  final id = await crearRecetaEnServidor(receta);
+print('TOKEN antes de enviar al servidor: ${widget.token}');
+print('Datos de la receta que se enviarán: ${receta.toJson()}');
+  final id = await crearRecetaEnServidor(receta, widget.token);
 
   if (id != null) {
     ScaffoldMessenger.of(context).showSnackBar(

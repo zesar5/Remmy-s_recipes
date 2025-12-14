@@ -1,3 +1,5 @@
+import 'package:remy_recipes/main.dart';
+
 import '../../services/auth_service.dart';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
@@ -11,14 +13,18 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 
 
 void main() {
-  runApp(const MaterialApp(
-    home: PerfilScreen(),
+  final authService = AuthService();
+
+  runApp(MaterialApp(
+    home: PerfilScreen(authService: authService),
     debugShowCheckedModeBanner: false,
   ));
 }
 
 class PerfilScreen extends StatefulWidget {
-  const PerfilScreen({Key? key}) : super(key: key);
+  final AuthService authService;
+
+  const PerfilScreen({super.key, required this.authService});
 
   @override
   State<PerfilScreen> createState() => _PerfilScreenState();
@@ -261,7 +267,8 @@ Widget _buildRecetasGuardadas() {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DetalleRecetaPage(receta: receta),
+              builder: (_) => DetalleRecetaPage(receta: receta,
+              authService: authService,),
             ),
           );
         },

@@ -57,14 +57,21 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       final success = await widget.authService.login(
-        username: correo,
+        email: correo,
         password: contrasena,
       );
 
       if (!mounted) return;
 
       if (success) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        print('Login exitoso. Token en AuthService: ${widget.authService.accessToken}');
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(
+              authService: widget.authService,
+            ),
+          ),
+        );
       } else {
         _showErrorDialog('Error de inicio de sesión', 'Credenciales incorrectas.');
       }
