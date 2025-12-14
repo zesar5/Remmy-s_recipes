@@ -7,8 +7,8 @@ import 'dart:convert';
 import '/models/receta.dart';
 import '/services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
-//const String _baseUrl = 'http://10.0.2.2:8000';
-const String _baseUrl = 'http://localhost:8000';
+const String _baseUrl = 'http://10.0.2.2:8000';
+//const String _baseUrl = 'http://localhost:8000';
 
 
 // ... (Despues de la clase LoginScreen y antes de RegisterScreen)
@@ -43,7 +43,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   
   
   final TextEditingController titleController = TextEditingController();
-
+ 
   final List<String> durations =
       List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
   final List<String> countries = [

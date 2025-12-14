@@ -1,13 +1,13 @@
 import '../../services/auth_service.dart';
+import '../../services/recetas_service.dart';
+import '../../models/receta.dart';
+import '../RecetaPage/DetalleRecetaPage.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
 import '../home/home_screen.dart';
-import '../RecetaPage/DetalleRecetaPage.dart';
-import 'dart:convert';
-import '../../services/recetas_service.dart';
-import '../../models/receta.dart';
-//const String _baseUrl = 'http://10.0.2.2:8000';
-const String _baseUrl = 'http://localhost:8000';
+const String _baseUrl = 'http://10.0.2.2:8000';
+//const String _baseUrl = 'http://localhost:8000';
 
 
 void main() {
