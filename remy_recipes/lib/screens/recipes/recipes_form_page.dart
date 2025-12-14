@@ -229,7 +229,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     idUsuario: 1, // ← luego lo sacas del login
     imagenBase64: imagePath != null
         ? base64Encode(File(imagePath!).readAsBytesSync())
-        : null,
+        : '',
   );
 
   final id = await crearRecetaEnServidor(receta);

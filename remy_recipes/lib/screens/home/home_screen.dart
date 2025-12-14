@@ -1,6 +1,9 @@
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:remy_recipes/models/receta.dart';
 import '../Profile/Profile_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:typed_data';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
@@ -21,8 +24,46 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
-   MainPage({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  List<Receta> recipes = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRecipes();
+  }
+
+  Future<void> fetchRecipes() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/recetas/?rangoInicio=1&rangoFin=4'),
+      );
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body);
+        recipes = data.map((e) => Receta.fromJson(e as Map<String, dynamic>)).toList();
+
+        setState(() {
+          recipes = data.map((e) => Receta.fromJson(e)).toList();
+          loading = false;
+        });
+        print('RECIPES LENGTH: ${recipes.length}');
+      } else {
+        setState(() => loading = false);
+      }
+    } catch (e) {
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,20 +142,24 @@ class MainPage extends StatelessWidget {
 
               // ★ Grid expandida y limpia
               Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 250,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
+                child: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : recipes.isEmpty
+                    ? const Center(child: Text('No hay recetas'))
+                    : GridView.builder(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 250,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemCount: recipes.length,
+                      itemBuilder: (_, i) {
+                        final Receta r = recipes[i];
+                        return RecipeButton(recipe: r);
+                      },
                   ),
-                  itemCount: _recipes.length,
-                  itemBuilder: (_, i) {
-                    final r = _recipes[i];
-                    return RecipeButton(image: r.image, title: r.title);
-                  },
-                ),
               ),
             ],
           ),
@@ -161,35 +206,41 @@ Widget _topIcon(IconData icon, {VoidCallback? onTap}) {
 }
 }
 
-class Recipe {
-  final String image;
-  final String title;
-  const Recipe(this.image, this.title);
+class Receta {
+  final String titulo;
+  final String imagenBase64;
+
+  Receta({required this.titulo, required this.imagenBase64});
+
+  factory Receta.fromJson(Map<String, dynamic> json) {
+    return Receta(
+      titulo: json['titulo'] as String,
+      imagenBase64: json['imagenBase64'] ?? '', // si llega null, ponemos ''
+    );
+  }
 }
 
-const List<Recipe> _recipes = [
-  Recipe("assets/sopa.png", "Sopa"),
-  Recipe("assets/pizza.png", "Pizza"),
-  Recipe("assets/tortilla.png", "Tortilla de patata"),
-  Recipe("assets/Aborrajado.png", "Aborrajado"),
-  Recipe("assets/carne.png", "Carne"),
-  Recipe("assets/perreteCalentito.png", "Hot Dog"),
-];
 
-
-// ★ Nuevo RecipeButton mejorado
+// =======================================================
+// RecipeButton que usa Base64
+// =======================================================
 class RecipeButton extends StatelessWidget {
-  final String image;
-  final String title;
+  final Receta recipe;
 
-  const RecipeButton({
-    super.key,
-    required this.image,
-    required this.title,
-  });
+  const RecipeButton({super.key, required this.recipe});
 
   @override
   Widget build(BuildContext context) {
+    Uint8List? imageBytes;
+    if (recipe.imagenBase64.isNotEmpty) {
+      try {
+        final base64Image = recipe.imagenBase64.split(',').last;
+        imageBytes = base64Decode(base64Image);
+      } catch (e) {
+      print('ERROR DECODING IMAGE: $e');
+      }
+    }
+
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () {},
@@ -206,26 +257,27 @@ class RecipeButton extends StatelessWidget {
           ],
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
-                child: Image.asset(
-                  image,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(14),
                 ),
+                child: imageBytes != null
+                    ? Image.memory(
+                        imageBytes,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      )
+                    : const Center(child: Icon(Icons.image_not_supported)),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(
-                title,
+                recipe.titulo,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             )
           ],

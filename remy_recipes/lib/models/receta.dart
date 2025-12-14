@@ -26,25 +26,25 @@ class Paso {
 class Receta {
   final String? id;
   final String titulo;
-  final List<Ingrediente> ingredientes;
-  final List<Paso> pasos;
-  final int duracion;
-  final String pais;
-  final String alergenos;
-  final String estacion;
-  final int idUsuario;
+  final List<Ingrediente>? ingredientes;
+  final List<Paso>? pasos;
+  final int? duracion;
+  final String? pais;
+  final String? alergenos;
+  final String? estacion;
+  final int? idUsuario;
   final String? imagenBase64;
 
   Receta({
     this.id,
     required this.titulo,
-    required this.ingredientes,
-    required this.pasos,
-    required this.duracion,
-    required this.pais,
-    required this.alergenos,
-    required this.estacion,
-    required this.idUsuario,
+    this.ingredientes,
+    this.pasos,
+    this.duracion,
+    this.pais,
+    this.alergenos,
+    this.estacion,
+    this.idUsuario,
     this.imagenBase64,
   });
 
@@ -62,6 +62,16 @@ class Receta {
       alergenos: json['alergenos'] as String,
       estacion: json['estacion'] as String,
       idUsuario: json['Id_usuario'] as int,
+      imagenBase64: json['imagen'] as String?,
+    );
+  }
+
+  // PARA HOME (GRID)
+  factory Receta.fromHomeJson(Map<String, dynamic> json) {
+    return Receta(
+      id: json['Id_receta']?.toString(),
+      titulo: json['titulo'] as String,
+      imagenBase64: json['imagenBase64'] as String?,
     );
   }
 
@@ -71,13 +81,13 @@ class Receta {
     return {
       'titulo': titulo,
       //  lista de JSONs que el JS espera
-      'ingredientes': ingredientes.map((i) => i.toJson()).toList(),
-      'pasos': pasos.map((p) => p.toJson()).toList(),
-      'duracion': duracion,
-      'pais': pais,
-      'alergenos': alergenos,
-      'estacion': estacion,
-      'Id_usuario': idUsuario,
+      if (ingredientes != null)'ingredientes': ingredientes!.map((i) => i.toJson()).toList(),
+      if (pasos != null)'pasos': pasos!.map((p) => p.toJson()).toList(),
+      if (duracion != null)'duracion': duracion,
+      if (pais != null)'pais': pais,
+      if (alergenos != null)'alergenos': alergenos,
+      if (estacion != null)'estacion': estacion,
+      if (idUsuario != null) 'Id_usuario': idUsuario,
      
       if (imagenBase64 != null) 'imagen': imagenBase64,
     };

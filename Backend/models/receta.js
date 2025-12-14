@@ -36,6 +36,31 @@ const RecetaModel = {
         return rows.map(r => new RecetaEntity(r));
     },
 
+    //Función para obtener recetas para home
+    getByRange: async (minId, maxId) => {
+        const [rows] = await db.query(
+            `SELECT 
+            r.Id_receta,
+            r.titulo,
+            i.imagen
+            FROM receta r
+            LEFT JOIN receta_imagen i ON i.Id_receta = r.Id_receta
+            WHERE r.Id_receta BETWEEN ? AND ?
+            ORDER BY r.Id_receta
+            LIMIT 6`,
+            [minId, maxId]
+        );
+
+        const recetas = rows.map(row => ({
+            Id_receta: row.Id_receta,
+            titulo: row.titulo,
+            imagenBase64: row.imagen
+            ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` : null
+        }));
+
+        return recetas;
+    },
+
     obtenerPorId: async (id) => {
         const [rows] = await db.query("SELECT * FROM Receta WHERE Id_receta = ?", [id]);
         if(rows.length === 0) return null;

@@ -14,6 +14,23 @@ exports.obtenerRecetaVisibles = async (req, res) => {
     }
 };
 
+//--------------------------------
+//   OBTENER RECETA PARA HOME
+//--------------------------------
+
+exports.getRecetas = async (req, res) => {
+    try{
+    const rangoInicio = parseInt(req.query.rangoInicio) || 1;
+    const rangoFin = parseInt(req.query.rangoFin) || 6;
+
+    const recetas = await RecetaModel.getByRange(rangoInicio, rangoFin);
+
+    res.status(200).json(recetas);
+    }catch(error){
+        res.status(500).json({ message: 'Error obtenido recetas', error });
+    }
+};
+
 //---------------------------
 //   OBTENER RECETA X ID
 //---------------------------
