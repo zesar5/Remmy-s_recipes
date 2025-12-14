@@ -20,11 +20,16 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 
 
 class RecipeFormPage extends StatefulWidget {
+  final Receta? recetaEditar;
+
+  const RecipeFormPage({Key? key,this.recetaEditar}) : super(key: key);
+
   @override
   _RecipeFormPageState createState() => _RecipeFormPageState();
 }
 
 class _RecipeFormPageState extends State<RecipeFormPage> {
+
   String? imagePath;
   String title = '';
   String? duration;
@@ -38,7 +43,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   
   
   final TextEditingController titleController = TextEditingController();
-
+ 
   final List<String> durations =
       List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
   final List<String> countries = [
