@@ -2,6 +2,10 @@ import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
 import '../home/home_screen.dart';
+import '../RecetaPage/DetalleRecetaPage.dart';
+import 'dart:convert';
+import '../../services/recetas_service.dart';
+import '../../models/receta.dart';
 //const String _baseUrl = 'http://10.0.2.2:8000';
 const String _baseUrl = 'http://localhost:8000';
 
@@ -21,6 +25,20 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+
+  @override
+void initState() {
+  super.initState();
+  _cargarRecetasGuardadas();
+}
+
+Future<void> _cargarRecetasGuardadas() async {
+  final recetas = await obtenerTodasLasRecetas();
+
+  setState(() {
+    recetasGuardadas = recetas;
+  });
+}
   // Simulación de BD
   String username = "USERNAME DESDE BD";
   String descripcion = "Aquí aparecerá la descripción del usuario proveniente de la BD.";
@@ -28,7 +46,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   // Listas internas (favoritos, guardados, personas)
   List<String> favoritos = [];
-  List<String> guardados = [];
+  List<Receta> recetasGuardadas = [];
   List<String> personas = [];
 
   // Menú actual
@@ -198,16 +216,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
   // -----------------------------
   Widget _buildContent() {
     switch (currentView) {
-      case "favoritos":
+      case "favoritos": 
         return _buildListaEditable(
             titulo: "Favoritos",
             lista: favoritos,
             onAdd: () => _addToList(favoritos));
       case "guardados":
-        return _buildListaEditable(
-            titulo: "Guardados",
-            lista: guardados,
-            onAdd: () => _addToList(guardados));
+        return _buildRecetasGuardadas();
       case "personas":
         return _buildListaEditable(
             titulo: "Personas",
@@ -217,6 +232,75 @@ class _PerfilScreenState extends State<PerfilScreen> {
         return _buildHome();
     }
   }
+//--------------------------------
+//BUILDEO DE LAS RECETAS GUARDADAS
+//--------------------------------
+Widget _buildRecetasGuardadas() {
+  if (recetasGuardadas.isEmpty) {
+    return const Center(
+      child: Text(
+        'No tienes recetas guardadas',
+        style: TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
+  return GridView.builder(
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10,
+      childAspectRatio: 0.75,
+    ),
+    itemCount: recetasGuardadas.length,
+    itemBuilder: (context, index) {
+      final receta = recetasGuardadas[index];
+
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DetalleRecetaPage(receta: receta),
+            ),
+          );
+        },
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: receta.imagenBase64 != null
+                    ? Image.memory(
+                        base64Decode(receta.imagenBase64!),
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        color: Colors.grey.shade300,
+                        child: const Icon(Icons.image, size: 50),
+                      ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  receta.titulo,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
   // -----------------------------
   // HOME
@@ -242,7 +326,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   // -----------------------------
   Widget _buildListaEditable({
     required String titulo,
-    required List<String> lista,
+    required List<String> lista,   
     required VoidCallback onAdd,
   }) {
     return Column(

@@ -20,11 +20,16 @@ const String _baseUrl = 'http://localhost:8000';
 
 
 class RecipeFormPage extends StatefulWidget {
+  final Receta? recetaEditar;
+
+  const RecipeFormPage({Key? key,this.recetaEditar}) : super(key: key);
+
   @override
   _RecipeFormPageState createState() => _RecipeFormPageState();
 }
 
 class _RecipeFormPageState extends State<RecipeFormPage> {
+
   String? imagePath;
   String title = '';
   String? duration;
