@@ -3,7 +3,7 @@ import 'package:remy_recipes/screens/recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
-import '../home/home_screen.dart';
+import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
 import '../recipes/recipes_form_page.dart';
 import 'dart:convert';
 import '../../services/recetas_service.dart';
@@ -79,12 +79,12 @@ class DetalleRecetaPage extends StatelessWidget {
               ),
             const SizedBox(height: 16),
             const Text("Ingredientes", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ...receta.ingredientes.map(
+            ...receta.ingredientes!.map(
               (i) => Text("• ${i.cantidad} ${i.nombre}"),
             ),
             const SizedBox(height: 16),
             const Text("Pasos", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ...receta.pasos.map(
+            ...receta.pasos!.map(
               (p) => Text("- ${p.descripcion}"),
             ),
           ],

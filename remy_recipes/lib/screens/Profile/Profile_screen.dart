@@ -5,7 +5,7 @@ import '../RecetaPage/DetalleRecetaPage.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
-import '../home/home_screen.dart';
+import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 
