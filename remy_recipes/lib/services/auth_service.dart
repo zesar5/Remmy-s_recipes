@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart'as http;
+import 'package:remy_recipes/main.dart';
 // Importamos el modelo de usuario actualizado que creamos antes
 import '../models/usuario.dart';
 
@@ -119,6 +120,8 @@ class AuthService {
       url,
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authService.accessToken}',
+
       },
     );
 
