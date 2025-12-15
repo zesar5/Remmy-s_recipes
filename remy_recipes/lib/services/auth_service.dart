@@ -29,9 +29,13 @@ class AuthService {
     // La ruta es CORRECTA: /auth/login
     final url = Uri.parse('$_baseUrl/usuarios/login');
    
+    //print('TOKEN ENVIADO AL BACKEND: ${authService.accessToken}');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        //'Authorization': 'Bearer ${authService.accessToken}',
+      },
       body: json.encode({
         'email': email, // Clave que espera Node.js para el LOGIN
         'contrasena': password, // Clave que espera Node.js para el LOGIN
@@ -40,12 +44,12 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-    
-      // Guardamos el Id_usuario como token temporal
-      _accessToken = data['id'].toString();
-
+      _accessToken = data['token'];
+      final userId = int.parse(data['id'].toString());
+      print('TOKEN JWT GUARDADO: $_accessToken');
+      print('ID USUARIO GUARDADO: $userId');
       // Usamos fetchProfile para obtener el perfil completo usando el nuevo modelo corregido
-      return await fetchProfile();
+      return await fetchProfile(userId);
     } else {
       final errorData = json.decode(response.body);
       throw Exception(errorData['mensaje'] ?? 'Credenciales incorrectas o error de servidor.');
@@ -92,9 +96,9 @@ class AuthService {
       final responseData = json.decode(response.body);
      
       //  Guardamos el nuevo ID y lo usamos para obtener el perfil completo
-      _accessToken = responseData['id'].toString();
-     
-      return await fetchProfile(); // Obtenemos el perfil completo para _currentUser
+      _accessToken = responseData['token']; // tu JWT
+      final userId = responseData['id']; 
+      return await fetchProfile(userId); // Obtenemos el perfil completo para _currentUser
     } else {
       // Manejo de errores
       try {
@@ -110,18 +114,17 @@ class AuthService {
   // ==========================================================================
   // FUNCIÓN FETCH PROFILE CORREGIDA (usa el nuevo modelo Usuario.fromJson)
   // ==========================================================================
-  Future<bool> fetchProfile() async {
+  Future<bool> fetchProfile(int userId) async {
     if (_accessToken == null) return false;
 
     // RUTA CORRECTA: /perfil/{idUsuario}
-    final url = Uri.parse('$_baseUrl/usuarios/perfil/$_accessToken');
+    final url = Uri.parse('$_baseUrl/usuarios/perfil/$userId');
 
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${authService.accessToken}',
-
+        'Authorization': 'Bearer $_accessToken',
       },
     );
 

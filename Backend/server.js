@@ -3,14 +3,15 @@ const express = require("express");
 const cors = require('cors');
 const app = express();
 const PORT = 8000;
+require("dotenv").config();
 
 // Middleware global
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cors());
 
 // Rutas
 app.use("/", require("./routes/indexRoutes"));
-app.use("/auth", require("./routes/authRoutes"));
 app.use("/usuarios", require("./routes/usuarioRoutes"));
 app.use("/recetas", require("./routes/recetaRoutes"));
 

@@ -1,5 +1,5 @@
 const { Usuario } = require("../models/usuario");
-
+const jwt = require("jsonwebtoken");
 
 //--------------------------
 //    LOGIN USUARIO
@@ -23,12 +23,22 @@ exports.loginUsuario = async (req, res) => {
         }
 
         const usuario = rows[0];
+
+        const token = jwt.sign(
+            { id: usuario.Id_usuario },
+            process.env.JWT_SECRET,
+            { expiresIn: "24h" }
+        );
+
+        console.log("JWT generado:", token);
         res.json({
             mensaje: "Login exitoso",
+            token,
             id: usuario.Id_usuario,
             userName: usuario.nombre,
             email: usuario.email
         });
+
     }catch(err){
         res.status(500).json({ error: err.message });
     }

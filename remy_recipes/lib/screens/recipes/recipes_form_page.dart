@@ -274,7 +274,7 @@ steps = (r.pasos??[]).map((p) {
       ? await crearRecetaEnServidor(receta, widget.token)
       : await editarReceta(receta);
 
-  if (ok != null || ok == true) {
+  if (ok != null && ok == true) {
     Navigator.pop(context, true);
   } else {
     _mostrarError('Error al guardar la receta');
