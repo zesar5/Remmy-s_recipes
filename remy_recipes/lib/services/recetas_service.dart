@@ -51,12 +51,12 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', 
+        'Authorization': 'Bearer $token',
       },
-      body: json.encode(nuevaReceta.toJson()), // Usa el método toJson() modificado
+      body: json.encode(nuevaReceta.toJson()),
     );
-   
-    if (response.statusCode == 200) {
+
+    if (response.statusCode == 200 || response.statusCode == 201) {  // <- Acepta 201
       final data = json.decode(response.body);
       print('Receta creada con éxito. ID: ${data['id']}');
       return data['id'].toString();

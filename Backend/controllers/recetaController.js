@@ -56,10 +56,11 @@ exports.obtenerRecetaPorId = async (req, res) => {
 //------------------------
 exports.crearReceta = async (req, res) => {
     try {
-        console.log("Datos recibidos:", req.body);
+        console.log("REQ.BODY:", req.body);
+        console.log("Tipo de req.body:", typeof req.body);
         console.log("Tamaño de la imagen:", req.body.imagen?.length);
         const id = await RecetaModel.crear(req.body, req.userId);
-        res.json({ mensaje: "Receta creada", id });
+        res.status(200).json({ mensaje: "Receta creada", id });
     } catch(err) {
         res.status(500).json({ mensaje: err.message });
     }

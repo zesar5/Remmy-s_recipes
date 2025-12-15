@@ -275,9 +275,8 @@ steps = (r.pasos??[]).map((p) {
 
   if (widget.recetaEditar == null) {
     //CREAR RECETA
-    final String? recetaId =
-        await crearRecetaEnServidor(receta, widget.token);
-    
+    final String? recetaId = await crearRecetaEnServidor(receta, widget.token);
+    print('RecetaId devuelta del servidor: $recetaId');
     success = recetaId != null;
   } else {
     //EDITAR RECETA
