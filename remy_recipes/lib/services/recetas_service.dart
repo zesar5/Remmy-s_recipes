@@ -56,7 +56,7 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
       body: json.encode(nuevaReceta.toJson()), // Usa el método toJson() modificado
     );
    
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       print('Receta creada con éxito. ID: ${data['id']}');
       return data['id'].toString();
