@@ -3,6 +3,7 @@ import 'package:remy_recipes/main.dart';
 import '../../services/auth_service.dart';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
+import '../../models/usuario.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -11,15 +12,6 @@ import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 
-
-void main() {
-  final authService = AuthService();
-
-  runApp(MaterialApp(
-    home: PerfilScreen(authService: authService),
-    debugShowCheckedModeBanner: false,
-  ));
-}
 
 class PerfilScreen extends StatefulWidget {
   final AuthService authService;
@@ -32,9 +24,18 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
 
+  late Usuario user;
   @override
 void initState() {
   super.initState();
+  if (widget.authService.currentUser == null) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacementNamed(context, '/login');
+    });
+    return;
+  }
+
+  user = widget.authService.currentUser!;
   _cargarRecetasGuardadas();
 }
 
@@ -48,8 +49,6 @@ Future<void> _cargarRecetasGuardadas() async {
   });
 }
   // Simulación de BD
-  String username = "USERNAME DESDE BD";
-  String descripcion = "Aquí aparecerá la descripción del usuario proveniente de la BD.";
   String hovered = "";
 
   // Listas internas (favoritos, guardados, personas)
@@ -89,16 +88,26 @@ Future<void> _cargarRecetasGuardadas() async {
                       shape: BoxShape.circle,
                     ),
                     alignment: Alignment.center,
-                    child: const Text("👤", style: TextStyle(fontSize: 55)),
+                    child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
+                      ? ClipOval(
+                          child: Image.memory(
+                            base64Decode(user.fotoPerfil!),
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
+                      )
+                    : const Text(
+                        "👤",
+                        style: TextStyle(fontSize: 55),
+                      ),
                   ),
                 ),
                 const SizedBox(height: 10),
 
                 // USERNAME
                 Text(
-                  username,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                  user.userName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 10),
@@ -137,8 +146,7 @@ Future<void> _cargarRecetasGuardadas() async {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    descripcion,
-                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                    user.descripcion ?? "Sin descripción", style: const TextStyle(fontSize: 13),
                   ),
                 ),
               ],
@@ -385,8 +393,8 @@ Widget _buildRecetasGuardadas() {
   // -----------------------------
   void _addToList(List<String> lista) {
     setState(() {
-      if (descripcion.trim().isNotEmpty) {
-        lista.add(descripcion);
+      if (user.descripcion != null && user.descripcion!.trim().isNotEmpty) {
+        lista.add(user.descripcion!);
       }
     });
   }
