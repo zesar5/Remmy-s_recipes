@@ -41,6 +41,8 @@ void initState() {
 Future<void> _cargarRecetasGuardadas() async {
   final recetas = await obtenerTodasLasRecetas();
 
+  //hueco para el refrescar perfil
+  
   setState(() {
     recetasGuardadas = recetas;
   });
@@ -403,4 +405,5 @@ Widget _buildRecetasGuardadas() {
       const SnackBar(content: Text("Aquí abrirías edición de perfil")),
     );
   }
+  
 }

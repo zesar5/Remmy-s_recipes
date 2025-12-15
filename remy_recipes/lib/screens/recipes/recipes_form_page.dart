@@ -31,6 +31,33 @@ class RecipeFormPage extends StatefulWidget {
 
 class _RecipeFormPageState extends State<RecipeFormPage> {
 
+  @override
+void initState() {
+  super.initState();
+
+  if (widget.recetaEditar != null) {
+    final r = widget.recetaEditar!;
+
+    titleController.text = r.titulo;
+    duration = r.duracion?.toString();
+    country = r.pais;
+    selectedAllergens = (r.alergenos ?? '').split(',');
+    season = r.estacion;
+
+    // 👇 Ingredientes (String → Ingredient)
+    ingredients = (r.ingredientes??[]).map((i) {
+  return Ingrediente(
+    nombre: i.nombre,
+    cantidad: i.cantidad,
+  );
+}).toList();
+
+steps = (r.pasos??[]).map((p) {
+  return Paso(descripcion: p.descripcion);
+}).toList();
+  }
+}
+
   String? imagePath;
   String title = '';
   String? duration;
@@ -218,38 +245,41 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       );
     }
   }
-  Future<void> _guardarReceta() async {
+  Future<void> _guardarReceta(  ) async {
   if (!isFormValid()) {
     _mostrarError('Debe rellenar todos los campos');
     return;
   }
 
   final receta = Receta(
+    id: widget.recetaEditar?.id,
     titulo: titleController.text.trim(),
-    ingredientes: ingredients,
-    pasos: steps,
+    ingredientes: ingredients
+        .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
+        .toList(),
+    pasos: steps.map((s) => Paso(descripcion: s.descripcion)).toList(),
     duracion: int.parse(duration!),
     pais: country!,
     alergenos: selectedAllergens.join(','),
     estacion: season!,
+
     imagenBase64: imagePath != null
         ? base64Encode(File(imagePath!).readAsBytesSync())
-        : '',
+        : widget.recetaEditar?.imagenBase64,
   );
 
-print('TOKEN antes de enviar al servidor: ${widget.token}');
-print('Datos de la receta que se enviarán: ${receta.toJson()}');
-  final id = await crearRecetaEnServidor(receta, widget.token);
+  print('TOKEN antes de enviar al servidor: ${widget.token}');
+  print('Datos de la receta que se enviarán: ${receta.toJson()}');
+  final ok = widget.recetaEditar == null
+      ? await crearRecetaEnServidor(receta, widget.token)
+      : await editarReceta(receta);
 
-  if (id != null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Receta guardada con éxito")),
-    );
-
-    Navigator.of(context).pushNamedAndRemoveUntil('/home', (_) => false);
+  if (ok != null || ok == true) {
+    Navigator.pop(context, true);
   } else {
     _mostrarError('Error al guardar la receta');
   }
+
 }
 void _mostrarError(String mensaje) {
   showDialog(
@@ -266,6 +296,7 @@ void _mostrarError(String mensaje) {
     ),
   );
 }
+
 
   @override
   Widget build(BuildContext context) {
