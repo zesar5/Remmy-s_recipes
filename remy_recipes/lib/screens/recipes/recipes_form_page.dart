@@ -270,16 +270,23 @@ steps = (r.pasos??[]).map((p) {
 
   print('TOKEN antes de enviar al servidor: ${widget.token}');
   print('Datos de la receta que se enviarán: ${receta.toJson()}');
-  final ok = widget.recetaEditar == null
-      ? await crearRecetaEnServidor(receta, widget.token)
-      : await editarReceta(receta);
+  bool success;
 
-  if (ok != null && ok == true) {
+  if (widget.recetaEditar == null) {
+    //CREAR RECETA
+    final String? recetaId =
+        await crearRecetaEnServidor(receta, widget.token);
+    success = recetaId != null;
+  } else {
+    //EDITAR RECETA
+    success = await editarReceta(receta, widget.token);
+  }
+
+  if (success) {
     Navigator.pop(context, true);
   } else {
     _mostrarError('Error al guardar la receta');
   }
-
 }
 void _mostrarError(String mensaje) {
   showDialog(

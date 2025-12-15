@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:remy_recipes/main.dart';
 import '../models/receta.dart';
 
 
@@ -75,10 +76,13 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
     return response.statusCode == 200;
   }
 
-  Future<bool> editarReceta(Receta receta) async {
+  Future<bool> editarReceta(Receta receta, String token) async {
     final response = await http.put(
-      Uri.parse("${_baseUrl}/${receta.id}"),
-      headers: {"Content-Type": "application/json"},
+      Uri.parse('$_baseUrl/recetas/${receta.id}'),
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token",
+    },
       body: jsonEncode(receta.toJson()),
     );
 

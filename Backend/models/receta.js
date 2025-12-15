@@ -95,9 +95,9 @@ const RecetaModel = {
     crear: async (data, userId) => {
         const [result] = await db.query(
             `INSERT INTO Receta 
-            (titulo, tiempo_preparacion, origen, alergenos, estacion, Id_usuario) 
-            VALUES (?, ?, ?, ?, ?, ?)`,
-            [data.titulo, data.duracion, data.pais, data.alergenos, data.estacion, userId]
+            (titulo, tiempo_preparacion, origen, alergenos, estacion, publica, Id_usuario) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [data.titulo, data.duracion, data.pais, data.alergenos, data.estacion, 0, userId]
         );
 
         const recetaId = result.insertId;
