@@ -270,12 +270,14 @@ steps = (r.pasos??[]).map((p) {
 
   print('TOKEN antes de enviar al servidor: ${widget.token}');
   print('Datos de la receta que se enviarán: ${receta.toJson()}');
+
   bool success;
 
   if (widget.recetaEditar == null) {
     //CREAR RECETA
     final String? recetaId =
         await crearRecetaEnServidor(receta, widget.token);
+    
     success = recetaId != null;
   } else {
     //EDITAR RECETA
