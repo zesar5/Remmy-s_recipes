@@ -71,6 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         c.contains(RegExp(r'[0-9]')) &&
         c.contains(RegExp(r'[^A-Za-z0-9]'));
   }
+  
 
   Future<void> seleccionarImagen() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
@@ -81,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   // ===================== REGISTRO =====================
 
-  void registrar() {
+  void registrar() async{
     // Primero marcamos campos vacíos
     setState(() {
       errorName = name.text.isEmpty;
@@ -136,8 +137,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     // Si todo OK
-    mostrarMensaje("Registro completado correctamente.");
+
+    try {
+  final ok = await widget.authService.register(
+    nombreUsuario: name.text,
+    email: correo.text,
+    contrasena: contrasenya.text,
+    contrasena2: confirmarContrasenya.text,
+    pais: paisSeleccionado,
+    descripcion: descripcion.text,
+    anioNacimiento: anioSeleccionado.toString(),
+    fotoPerfil: null,
+  );
+
+  if (ok) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => HomeScreen(authService: widget.authService,)),
+    );
   }
+} catch (e) {
+  mostrarMensaje(e.toString().replaceAll("Exception:", ""));
+}
+  }
+  
 
   void mostrarMensaje(String mensaje) {
     showDialog(

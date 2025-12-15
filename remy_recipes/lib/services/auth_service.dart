@@ -91,15 +91,14 @@ class AuthService {
   // Llama al método sin argumentos
   body: json.encode(newUser.toJsonRegistro()),
 );
-
-    if (response.statusCode == 200) { // Node.js devuelve 200 para éxito
-      final responseData = json.decode(response.body);
-     
-      //  Guardamos el nuevo ID y lo usamos para obtener el perfil completo
-      _accessToken = responseData['token']; // tu JWT
-      final userId = responseData['id']; 
-      return await fetchProfile(userId); // Obtenemos el perfil completo para _currentUser
-    } else {
+//lo he cambiado
+    if (response.statusCode == 200) {
+  // 🔗 LOGIN AUTOMÁTICO DESPUÉS DEL REGISTRO
+  return await login(
+    email: email,
+    password: contrasena,
+  );
+} else {
       // Manejo de errores
       try {
         final errorData = json.decode(response.body);
