@@ -265,14 +265,17 @@ Widget _buildRecetasGuardadas() {
       final receta = recetasGuardadas[index];
 
       return GestureDetector(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final refrescar = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DetalleRecetaPage(receta: receta,
-              authService: authService,),
+              builder: (_) => DetalleRecetaPage(receta: receta, authService: authService,),
             ),
           );
+
+          if (refrescar == true) {
+            _cargarRecetasGuardadas();
+          }
         },
         child: Card(
           elevation: 4,

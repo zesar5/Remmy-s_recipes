@@ -34,9 +34,8 @@ class DetalleRecetaPage extends StatelessWidget {
         TextButton(
           onPressed: () async {
             await eliminarReceta(int.parse(receta.id!));
-            Navigator.of(context)
-              ..pop()
-              ..pop(true);
+            Navigator.pop(context);
+            Navigator.pop(context, true);
           },
           child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
         ),
