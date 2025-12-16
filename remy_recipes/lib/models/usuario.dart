@@ -19,7 +19,7 @@ class Usuario {
   final String contrasena;
   final String contrasena2;
   final String? descripcion;
-  final String? anioNacimiento;
+  final int? anioNacimiento;
   final String? fotoPerfil;
 
   Usuario({
@@ -45,7 +45,7 @@ class Usuario {
        contrasena2: '',
       // FastAPI devuelve las fechas como strings (e.g., "2025-11-03"),
       descripcion: json['descripcion'],
-      anioNacimiento: json['anioNacimiento']?.toString(),
+      anioNacimiento: json['anioNacimiento'],
       fotoPerfil: json['fotoPerfil'],
     );
 
@@ -58,6 +58,8 @@ class Usuario {
       'contrasena2': contrasena2,
       'pais': pais,
       'descripcion': descripcion,
+      'anioNacimiento': anioNacimiento,
+      'fotoPerfil': fotoPerfil,
       // Nota: No incluimos 'id', 'anioNacimiento' o 'fotoPerfil' si el backend los genera o no son necesarios para el REGISTRO inicial.
     };
   }

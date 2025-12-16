@@ -66,7 +66,7 @@ class AuthService {
     required String contrasena2,
     String? pais,
     String? descripcion,
-    String? anioNacimiento,
+    int? anioNacimiento,
     String? fotoPerfil,
   }) async {
     final url = Uri.parse('$_baseUrl/usuarios/registro');
