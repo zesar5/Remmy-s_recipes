@@ -71,6 +71,27 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
   }
 
 }
+
+Future<List<Receta>> obtenerRecetasUsuario(String token) async {
+  final url = Uri.parse('$_baseUrl/recetas/usuario');
+
+  final response = await http.get(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if(response.statusCode == 200){
+    final List<dynamic> jsonList = json.decode(response.body);
+    return jsonList.map((json) => Receta.fromJson(json)).toList();
+  } else {
+    print('Error al obtener recetas del usuario: ${response.statusCode}');
+    return [];
+  }
+}
+
  Future<bool> eliminarReceta(int id) async {
     final response = await http.delete(Uri.parse("$_baseUrl/$id"));
     return response.statusCode == 200;

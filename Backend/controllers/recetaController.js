@@ -101,3 +101,15 @@ exports.eliminarReceta = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+//---------------------------
+//  RECETA POR USUARIO
+//---------------------------
+exports.obtenerRecetaUsuario = async (req, res) => {
+    try{
+        const recetas = await RecetaModel.obtenerPorUsuario(req.userId);
+        res.json(recetas);
+    }catch(err){
+        res.status(500).json({ error: err.message});
+    }
+};

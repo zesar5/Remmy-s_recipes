@@ -23,6 +23,10 @@ class RecetaEntity {
 //     FUNCIONES DE ACCESO A DATOS
 // ----------------------------------------
 const RecetaModel = {
+    obtenerPorUsuario: async (userId) =>{
+        const [rows] = await db.query("SELECT * FROM receta WHERE Id_usuario = ?", [userId]);
+        return rows.map(r => new RecetaEntity(r));
+    },
     obtenerVisibles: async (userId = null) => {
         let query = "SELECT * FROM receta WHERE publica = 1";
         let params = [];

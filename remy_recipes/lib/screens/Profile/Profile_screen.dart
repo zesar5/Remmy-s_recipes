@@ -39,12 +39,12 @@ void initState() {
 }
 
 Future<void> _cargarRecetasGuardadas() async {
-  final recetas = await obtenerTodasLasRecetas();
 
-  //hueco para el refrescar perfil
-  
+  if(widget.authService.accessToken == null) return;
+
+  final recetas = await obtenerRecetasUsuario(widget.authService.accessToken!);
   setState(() {
-    recetasGuardadas = recetas;
+    recetasGuardadas= recetas;
   });
 }
   // Simulación de BD
@@ -252,7 +252,6 @@ Widget _buildRecetasGuardadas() {
       ),
     );
   }
-
   return GridView.builder(
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
