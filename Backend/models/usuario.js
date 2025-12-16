@@ -36,7 +36,7 @@ class Usuario {
             (nombre, pais, email, contrasena, descripcion, anioNacimiento)
             VALUES (?, ?, ?, ?, ?, ?)`,
             [
-                data.userName,
+                data.nombre,
                 data.pais,
                 data.email,
                 data.contrasena,

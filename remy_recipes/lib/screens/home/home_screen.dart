@@ -205,6 +205,13 @@ class _MainPageState extends State<MainPage> {
           _topIcon(
             Icons.person,
             onTap: () {
+              if (widget.authService.currentUser == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Debes iniciar sesión")),
+                );
+                return;
+              }
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => PerfilScreen(

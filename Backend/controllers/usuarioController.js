@@ -56,12 +56,13 @@ exports.registrarUsuario = async (req, res) => {
 
     try {
         // Verificar si el usuario ya existe
-        const existe = await Usuario.existeUsuario(data.userName);
+        const existe = await Usuario.existeUsuario(data.nombre);
         if (existe) {
             return res.status(400).json({ mensaje: "El usuario ya existe" });
         }
 
         // Crear usuario
+        console.log("Datos a registrar:", data);
         const idUsuario = await Usuario.crearUsuario(data);
 
         // Guardar imagen si existe
@@ -72,6 +73,7 @@ exports.registrarUsuario = async (req, res) => {
         res.json({ mensaje: "Usuario creado", id: idUsuario });
 
     } catch (err) {
+        console.error("Error al registrar usuario:", err);
         res.status(500).json({ error: err.message });
     }
 };

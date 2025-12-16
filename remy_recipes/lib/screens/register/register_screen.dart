@@ -1,7 +1,9 @@
 import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
+import '../login/login_screen.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
@@ -137,39 +139,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     // Si todo OK
+    String? base64Image;
+    if (imagenPerfil != null) {
+      final bytes = await imagenPerfil!.readAsBytes();
+      base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+    }
 
     try {
-  final ok = await widget.authService.register(
-    nombreUsuario: name.text,
-    email: correo.text,
-    contrasena: contrasenya.text,
-    contrasena2: confirmarContrasenya.text,
-    pais: paisSeleccionado,
-    descripcion: descripcion.text,
-    anioNacimiento: anioSeleccionado.toString(),
-    fotoPerfil: null,
-  );
+      final ok = await widget.authService.register(
+        nombreUsuario: name.text,
+        email: correo.text,
+        contrasena: contrasenya.text,
+        contrasena2: confirmarContrasenya.text,
+        pais: paisSeleccionado,
+        descripcion: descripcion.text,
+        anioNacimiento: anioSeleccionado,
+        fotoPerfil: base64Image,
+      );
 
-  if (ok) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => HomeScreen(authService: widget.authService,)),
-    );
-  }
-} catch (e) {
-  mostrarMensaje(e.toString().replaceAll("Exception:", ""));
-}
+      mostrarMensaje("Usuario registrado exitosamente.", onClose: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LoginScreen(authService: widget.authService),
+          ),
+        );
+      });
+    } catch (e) {
+      mostrarMensaje(e.toString().replaceAll("Exception:", ""));
+    }
   }
   
 
-  void mostrarMensaje(String mensaje) {
+  void mostrarMensaje(String mensaje, {VoidCallback? onClose}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text("Información"),
         content: Text(mensaje),
         actions: [
-          TextButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
+          TextButton(
+            child: Text("OK"),
+            onPressed: () {
+              Navigator.pop(context); // Cierra el diálogo
+              if (onClose != null) {
+                onClose(); // Ejecuta la acción extra
+              }
+            },
+          )
         ],
       ),
     );
