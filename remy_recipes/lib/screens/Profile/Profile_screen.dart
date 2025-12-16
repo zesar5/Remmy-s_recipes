@@ -256,14 +256,28 @@ Future<void> _cargarRecetasGuardadas() async {
 
         return GestureDetector(
           onTap: () async {
-            final refrescar = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => DetalleRecetaPage(
-                    receta: receta, authService: widget.authService),
-              ),
-            );
-            if (refrescar == true) _cargarRecetasGuardadas();
+            try {
+              print("🖱️ Tap detectado en receta ${receta.id}");
+              final recetaCompleta = await obtenerRecetaPorId(
+                widget.authService.accessToken!,
+                receta.id!,
+              );
+              print("📦 Receta completa recibida: $recetaCompleta");
+
+              final refrescar = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DetalleRecetaPage(
+                    receta: recetaCompleta,
+                    authService: widget.authService),
+                ),
+              );
+              print("🔄 Regresó de DetalleRecetaPage: $refrescar");
+              if (refrescar == true) _cargarRecetasGuardadas();
+            } catch (e, s) {
+            print("🔥 ERROR en onTap: $e");
+            print(s);
+            }
           },
           child: Card(
             elevation: 4,

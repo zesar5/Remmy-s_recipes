@@ -9,9 +9,9 @@ router.get("/usuario/:userId", auth, (req, res, next) => {
         console.log("📌 PARAM userId:", req.params.userId);
         next();
     },recetaController.obtenerRecetaUsuario);
+router.get("/:id", recetaController.obtenerRecetaPorId);
 router.get("/home", recetaController.obtenerRecetaVisibles);
 router.get('/', recetaController.getRecetas);
-router.get("/:id", recetaController.obtenerRecetaPorId);
 router.post("/", auth, recetaController.crearReceta);
 router.put("/:id", auth, recetaController.actualizarReceta);
 router.delete("/:id", auth, recetaController.eliminarReceta);

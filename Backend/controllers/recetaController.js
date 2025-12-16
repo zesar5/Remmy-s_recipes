@@ -34,16 +34,24 @@ exports.getRecetas = async (req, res) => {
 //---------------------------
 exports.obtenerRecetaPorId = async (req, res) => {
     try {
+        console.log("🚀 ENTRÓ A obtenerRecetaPorId"); // <-- PRINT 1
+        console.log("📌 req.params.id:", req.params.id); // <-- PRINT 2
+        console.log("📌 req.userId:", req.userId);
+
         const receta = await RecetaModel.obtenerPorId(req.params.id);
+        console.log("📦 Receta obtenida de DB:", receta);
 
         if(!receta) return res.status(404).json({ mensaje: "Receta no encontrada" });
 
         if(!receta.publica && receta.usuarioId !== req.userId){
+            console.log("⚠️ Acceso denegado");
             return res.status(403).json({ mensaje: "No tienes permiso para ver esta receta" });
         }
 
+        console.log("✅ Respondiendo con receta");
         res.json(receta);
     } catch(err) {
+        console.log("🔥 ERROR:", err);
         res.status(500).json({ error: err.message });
     }
 };

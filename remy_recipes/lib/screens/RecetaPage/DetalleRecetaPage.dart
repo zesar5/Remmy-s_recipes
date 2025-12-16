@@ -9,10 +9,6 @@ import 'dart:convert';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
 
-
-
-
-
 class DetalleRecetaPage extends StatelessWidget {
   final Receta receta;
   final AuthService authService;

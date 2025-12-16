@@ -83,7 +83,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
       'Authorization': 'Bearer $token',
     },
   );
-
+  print("📦 Recetas recibidas: $response");
   print('⬅️ STATUS CODE: ${response.statusCode}');
   print('⬅️ BODY: ${response.body}');
 
@@ -93,6 +93,29 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
   } else {
     print('Error al obtener recetas del usuario: ${response.statusCode}');
     return [];
+  }
+}
+
+Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
+  print("➡️ Llamando a backend para receta ID: $recetaId");
+  final url = Uri.parse('$_baseUrl/recetas/$recetaId');
+  print("🌐 URL completa: $url");
+
+  final response = await http.get(
+    url,
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  print("⬅️ Status code: ${response.statusCode}"); // <-- PRINT 3
+  print("⬅️ Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+      print("✅ Receta recibida: $data");
+      return Receta.fromJson(data); // tu modelo Receta debe parsear ingredientes y pasos
+  } else {
+      print("⚠️ Error al obtener receta");
+      throw Exception('Error al obtener receta por ID');
   }
 }
 

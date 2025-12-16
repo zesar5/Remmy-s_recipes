@@ -82,32 +82,42 @@ const RecetaModel = {
     },
 
     obtenerPorId: async (id) => {
+        console.log("🔎 Consultando receta en DB, Id:", id);
         const [rows] = await db.query("SELECT * FROM Receta WHERE Id_receta = ?", [id]);
-        if(rows.length === 0) return null;
+        if(rows.length === 0){ 
+            console.log("⚠️ No se encontró la receta en DB");
+            return null;
+        }
 
         const receta = rows[0];
+        console.log("📦 Datos básicos de receta:", receta);
 
         // Obtener ingredientes
         const [ingredientes] = await db.query(
             "SELECT nombre, cantidad FROM Ingrediente WHERE Id_receta = ?",
             [id]
         );
+        console.log("📋 Ingredientes:", ingredientes);
 
         // Obtener pasos
         const [pasos] = await db.query(
             "SELECT descripcion FROM Paso WHERE Id_receta = ?",
             [id]
         );
+        console.log("📝 Pasos:", pasos);
 
         // Obtener imagen
         const [imagenes] = await db.query(
             "SELECT imagen FROM receta_imagen WHERE Id_receta = ?",
             [id]
         );
+        console.log("🖼️ Imagen:", imagenes.length ? 'Sí' : 'No');
 
         receta.ingredientes = ingredientes;
         receta.pasos = pasos;
-        receta.imagen = imagenes.length ? imagenes[0].imagen : null;
+        receta.imagen = imagenes.length
+            ? `data:image/jpeg;base64,${imagenes[0].imagen.toString('base64')}`
+            : null;
 
         return new RecetaEntity(receta);
     },
