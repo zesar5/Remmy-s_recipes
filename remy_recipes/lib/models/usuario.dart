@@ -37,7 +37,7 @@ class Usuario {
   // Constructor para crear un objeto Usuario desde una respuesta JSON (PerfilOut)
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
-      id: json['Id_usuario']?.toString() ?? '',
+      id: (json['Id_usuario'] ?? json['id'])?.toString() ?? '',
       userName: json['nombre'] ?? '',
       pais: json['pais'],
       email: json['email'] ?? '',

@@ -1,5 +1,3 @@
-const { param } = require("../routes/recetaRoutes");
-
 const { RecetaModel } = require("../models/receta");
 
 //-----------------------------
@@ -106,10 +104,18 @@ exports.eliminarReceta = async (req, res) => {
 //  RECETA POR USUARIO
 //---------------------------
 exports.obtenerRecetaUsuario = async (req, res) => {
+    console.log("📥 CONTROLLER obtenerRecetaUsuario");
+    console.log("📌 req.params.userId:", req.params.userId);
+    console.log("📌 req.userId (token):", req.userId);
+    
     try{
-        const recetas = await RecetaModel.obtenerPorUsuario(req.userId);
+        const userId = req.params.userId;
+        const recetas = await RecetaModel.obtenerPorUsuario(userId);
+        console.log("📦 RECETAS BD:", recetas.length);
+
         res.json(recetas);
     }catch(err){
+        console.log("🔥 ERROR CONTROLLER:", err);
         res.status(500).json({ error: err.message});
     }
 };

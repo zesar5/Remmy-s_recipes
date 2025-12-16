@@ -24,8 +24,24 @@ class RecetaEntity {
 // ----------------------------------------
 const RecetaModel = {
     obtenerPorUsuario: async (userId) =>{
-        const [rows] = await db.query("SELECT * FROM receta WHERE Id_usuario = ?", [userId]);
-        return rows.map(r => new RecetaEntity(r));
+        const [rows] = await db.query(
+            `SELECT 
+                r.Id_receta,
+                r.titulo,
+                i.imagen
+            FROM receta r
+            LEFT JOIN receta_imagen i ON i.Id_receta = r.Id_receta
+            WHERE r.Id_usuario = ?`,
+            [userId]
+        );
+
+        const recetas = rows.map(row => ({
+            id: row.Id_receta,
+            titulo: row.titulo,
+            imagenBase64: row.imagen ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` : null
+        }));
+
+        return recetas;
     },
     obtenerVisibles: async (userId = null) => {
         let query = "SELECT * FROM receta WHERE publica = 1";
