@@ -59,7 +59,7 @@ Future<void> _cargarRecetasGuardadas() async {
         recetasGuardadas = recetas;
       });
     } catch (e) {
-      print("Error cargando recetas del usuario: $e");
+      print("Error cargando recetas del usuario SOY INUTIL: $e");
     }
   }
 
@@ -249,10 +249,17 @@ Future<void> _cargarRecetasGuardadas() async {
       itemBuilder: (context, index) {
         final receta = recetasGuardadas[index];
         Uint8List? imageBytes;
-        if (receta.imagenBase64 != null && receta.imagenBase64!.isNotEmpty) {
-          final base64Str = receta.imagenBase64!.split(',').last;
-          imageBytes = base64Decode(base64Str);
-        }
+        final String? base64String = receta.imagenBase64;
+          if (base64String != null && base64String.contains(',')) {
+            try {
+              final base64Image = base64String.split(',').last;
+              if (base64Image.isNotEmpty) {
+                imageBytes = base64Decode(base64Image);
+              }
+            } catch (e) {
+              print('ERROR DECODING IMAGE: $e');
+            }
+          }
 
         return GestureDetector(
           onTap: () async {

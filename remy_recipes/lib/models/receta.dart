@@ -53,8 +53,8 @@ class Receta {
   factory Receta.fromJson(Map<String, dynamic> json) {
    
     return Receta(
-      id: json['Id_receta']?.toString(),
-      titulo: json['titulo'] as String,
+      id: json['Id_receta']?.toString() ?? json['id']?.toString(),
+      titulo: json['titulo']?.toString() ?? 'Sin título',
       ingredientes: (json['ingredientes'] as List<dynamic>?)
         ?.map((i) => Ingrediente(nombre: i['nombre'], cantidad: i['cantidad']))
         .toList(),
@@ -64,20 +64,21 @@ class Receta {
       duracion: json['duracion'] != null
         ? int.parse(json['duracion'].toString())
         : null,
-      pais: json['pais'] as String,
-      alergenos: json['alergenos'] as String,
-      estacion: json['estacion'] as String,
-      idUsuario: json['usuarioId'] as int,
-      imagenBase64: json['imagen'] as String?,
+      pais: json['pais']?.toString(),
+      alergenos: json['alergenos']?.toString(),
+      estacion: json['estacion']?.toString(),
+      idUsuario: json['usuarioId'] as int?,
+      imagenBase64: json['imagen']?.toString(),
     );
   }
 
   // PARA HOME (GRID)
   factory Receta.fromHomeJson(Map<String, dynamic> json) {
+     print('🟢 fromHomeJson recibido: $json');
     return Receta(
       id: json['id'] != null ? json['id'].toString() : (json['Id_receta']?.toString()),
-      titulo: json['titulo'] as String,
-      imagenBase64: json['imagenBase64'] as String?,
+      titulo: json['titulo']?.toString() ?? 'Sin título',
+      imagenBase64: json['imagenBase64']as String?,
     );
   }
 

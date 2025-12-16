@@ -83,17 +83,28 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
       'Authorization': 'Bearer $token',
     },
   );
-  print("📦 Recetas recibidas: $response");
   print('⬅️ STATUS CODE: ${response.statusCode}');
   print('⬅️ BODY: ${response.body}');
 
-  if(response.statusCode == 200){
-    final List data = json.decode(response.body);
-    return data.map((e) => Receta.fromJson(e)).toList();
-  } else {
-    print('Error al obtener recetas del usuario: ${response.statusCode}');
+  if (response.statusCode != 200) {
     return [];
   }
+
+  final decoded = json.decode(response.body);
+
+  print('🧪 decoded runtimeType: ${decoded.runtimeType}');
+  print('🧪 decoded value: $decoded');
+
+  if (decoded is! List) {
+    throw Exception('❌ El backend NO devolvió una lista');
+  }
+
+  final List<Receta> recetas = decoded.map<Receta>((e) {
+    print('🟢 elemento del map: $e');
+    return Receta.fromHomeJson(e as Map<String, dynamic>);
+  }).toList();
+
+  return recetas;
 }
 
 Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {

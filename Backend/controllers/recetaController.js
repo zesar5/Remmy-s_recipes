@@ -146,6 +146,7 @@ exports.obtenerRecetaUsuario = async (req, res) => {
         const userId = req.params.userId;
         const recetas = await RecetaModel.obtenerPorUsuario(userId);
         console.log("📦 RECETAS BD:", recetas.length);
+        console.log(recetas);
 
         res.json(recetas);
     }catch(err){
