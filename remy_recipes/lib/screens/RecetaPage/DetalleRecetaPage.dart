@@ -69,10 +69,23 @@ class DetalleRecetaPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            if (receta.imagenBase64 != null)
-              Image.memory(
-                base64Decode(receta.imagenBase64!),
+            if (receta.imagenBase64 != null) ...[
+              Builder(
+                builder: (context) {
+                  final cleanBase64 = receta.imagenBase64!
+                    .replaceFirst(
+                    RegExp(r'data:image/[^;]+;base64,'),
+                    '',
+                  );
+
+                  return Image.memory(
+                    base64Decode(cleanBase64),
+                    fit: BoxFit.cover,
+                  );
+                },
               ),
+              const SizedBox(height: 16),
+            ],
             const SizedBox(height: 16),
             const Text("Ingredientes", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ...receta.ingredientes!.map(

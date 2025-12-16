@@ -89,7 +89,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
 
   if(response.statusCode == 200){
     final List data = json.decode(response.body);
-    return data.map((e) => Receta.fromHomeJson(e)).toList();
+    return data.map((e) => Receta.fromJson(e)).toList();
   } else {
     print('Error al obtener recetas del usuario: ${response.statusCode}');
     return [];
@@ -103,7 +103,10 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
 
   final response = await http.get(
     url,
-    headers: {'Authorization': 'Bearer $token'},
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token'
+    },
   );
 
   print("⬅️ Status code: ${response.statusCode}"); // <-- PRINT 3
@@ -116,6 +119,43 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
   } else {
       print("⚠️ Error al obtener receta");
       throw Exception('Error al obtener receta por ID');
+  }
+}
+
+Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
+  final url = Uri.parse('$_baseUrl/recetas/publicas/$recetaId');
+  print("🔎 URL receta pública: $url");
+
+  final response = await http.get(url); // sin token
+  print("⬅️ Status code: ${response.statusCode}");
+  print("⬅️ Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    print("✅ Receta recibida: $data");
+    return Receta.fromJson(data);
+  } else {
+    print("⚠️ Error al obtener receta pública: ${response.statusCode}");
+    throw Exception('Error al obtener receta pública por ID');
+  }
+}
+
+Future<List<Receta>> obtenerRecetasPublicas() async {
+  final url = Uri.parse('$_baseUrl/recetas/publicas');
+
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      return data.map((e) => Receta.fromHomeJson(e)).toList();
+    } else {
+      print('Error al obtener recetas públicas: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error desconocido al obtener recetas públicas: $e');
+    return [];
   }
 }
 

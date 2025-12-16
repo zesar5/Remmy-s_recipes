@@ -3,13 +3,37 @@ const { RecetaModel } = require("../models/receta");
 //-----------------------------
 //   OBTENER RECETA VISIBLE
 //-----------------------------
-exports.obtenerRecetaVisibles = async (req, res) => {
+exports.obtenerRecetasPublicas = async (req, res) => {
     try {
-        const recetas = await RecetaModel.obtenerVisibles(req.userId);
+        const recetas = await RecetaModel.obtenerVisibles();
         res.json(recetas);
     } catch(err) {
         res.status(500).json({ error: err.message });
     }
+};
+
+exports.obtenerRecetaPublicaPorId = async (req, res) => {
+  try {
+    console.log("🔎 obtenerRecetaPublicaPorId ID:", req.params.id);
+
+    const receta = await RecetaModel.obtenerPorId(req.params.id);
+
+    if (!receta) {
+      console.log("⚠️ Receta no encontrada");
+      return res.status(404).json({ mensaje: "Receta no encontrada" });
+    }
+
+    if (!receta.publica) {
+      console.log("⚠️ Receta privada");
+      return res.status(403).json({ mensaje: "Receta privada" });
+    }
+
+    console.log("✅ Receta pública encontrada:", receta.titulo);
+    res.json(receta);
+  } catch (err) {
+    console.log("🔥 ERROR obtenerRecetaPublicaPorId:", err);
+    res.status(500).json({ error: err.message });
+  }
 };
 
 //--------------------------------
@@ -112,6 +136,8 @@ exports.eliminarReceta = async (req, res) => {
 //  RECETA POR USUARIO
 //---------------------------
 exports.obtenerRecetaUsuario = async (req, res) => {
+    console.log("🚀 ENTRÓ A /recetas/usuario/:userId");
+    console.log("📌 PARAM userId:", req.params.userId);
     console.log("📥 CONTROLLER obtenerRecetaUsuario");
     console.log("📌 req.params.userId:", req.params.userId);
     console.log("📌 req.userId (token):", req.userId);

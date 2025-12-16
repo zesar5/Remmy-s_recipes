@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../services/recetas_service.dart';
 import 'package:flutter/material.dart';
 import 'package:remy_recipes/models/receta.dart';
 import '../Profile/Profile_screen.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 import '../recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
+import '../RecetaPage/DetalleRecetaPage.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
@@ -63,7 +65,7 @@ class _MainPageState extends State<MainPage> {
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
-        recipes = data.map((e) => Receta.fromJson(e as Map<String, dynamic>)).toList();
+        recipes = data.map((e) => Receta.fromHomeJson(e as Map<String, dynamic>)).toList();
 
         setState(() {
           recipes = data.map((e) => Receta.fromJson(e)).toList();
@@ -180,7 +182,7 @@ class _MainPageState extends State<MainPage> {
                       itemCount: recipes.length,
                       itemBuilder: (_, i) {
                         final Receta r = recipes[i];
-                        return RecipeButton(recipe: r);
+                        return RecipeButton(recipe: r, authService: widget.authService,);
                       },
                   ),
               ),
@@ -238,19 +240,7 @@ Widget _topIcon(IconData icon, {VoidCallback? onTap}) {
 }
 }
 
-class Receta {
-  final String titulo;
-  final String imagenBase64;
 
-  Receta({required this.titulo, required this.imagenBase64});
-
-  factory Receta.fromJson(Map<String, dynamic> json) {
-    return Receta(
-      titulo: json['titulo'] as String,
-      imagenBase64: json['imagenBase64'] ?? '', // si llega null, ponemos ''
-    );
-  }
-}
 
 
 // =======================================================
@@ -258,15 +248,17 @@ class Receta {
 // =======================================================
 class RecipeButton extends StatelessWidget {
   final Receta recipe;
+  final AuthService authService;
 
-  const RecipeButton({super.key, required this.recipe});
+  const RecipeButton({super.key, required this.recipe, required this.authService,});
 
   @override
   Widget build(BuildContext context) {
     Uint8List? imageBytes;
-    if (recipe.imagenBase64.isNotEmpty) {
+    final String? base64String = recipe.imagenBase64;
+    if (base64String != null && base64String.isNotEmpty) {
       try {
-        final base64Image = recipe.imagenBase64.split(',').last;
+        final base64Image = base64String.split(',').last;
         imageBytes = base64Decode(base64Image);
       } catch (e) {
       print('ERROR DECODING IMAGE: $e');
@@ -275,7 +267,27 @@ class RecipeButton extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: () {},
+      onTap: () async {
+        print("🖱️ Click en receta con id: ${recipe.id}");
+        try {
+          final recetaCompleta = await obtenerRecetaPublicaPorId(recipe.id!);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DetalleRecetaPage(
+                receta: recetaCompleta,
+                authService: authService,
+              ),
+            ),
+          );
+        } catch (e) {
+          print("🔥 ERROR al cargar receta pública: $e");
+          print("Error al cargar receta pública: $e");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("No se pudo cargar la receta")),
+          );
+        }
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

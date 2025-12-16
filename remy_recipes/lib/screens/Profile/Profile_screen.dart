@@ -258,6 +258,7 @@ Future<void> _cargarRecetasGuardadas() async {
           onTap: () async {
             try {
               print("🖱️ Tap detectado en receta ${receta.id}");
+              print("🔄 token de DetalleRecetaPage: ${widget.authService}");
               final recetaCompleta = await obtenerRecetaPorId(
                 widget.authService.accessToken!,
                 receta.id!,

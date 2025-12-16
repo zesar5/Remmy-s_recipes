@@ -61,11 +61,13 @@ class Receta {
       pasos: (json['pasos'] as List<dynamic>?)
         ?.map((p) => Paso(descripcion: p['descripcion']))
         .toList(),
-      duracion: json['tiempo_preparacion'] as int,
-      pais: json['origen'] as String,
+      duracion: json['duracion'] != null
+        ? int.parse(json['duracion'].toString())
+        : null,
+      pais: json['pais'] as String,
       alergenos: json['alergenos'] as String,
       estacion: json['estacion'] as String,
-      idUsuario: json['Id_usuario'] as int,
+      idUsuario: json['usuarioId'] as int,
       imagenBase64: json['imagen'] as String?,
     );
   }
@@ -73,7 +75,7 @@ class Receta {
   // PARA HOME (GRID)
   factory Receta.fromHomeJson(Map<String, dynamic> json) {
     return Receta(
-      id: json['id']?.toString(),
+      id: json['id'] != null ? json['id'].toString() : (json['Id_receta']?.toString()),
       titulo: json['titulo'] as String,
       imagenBase64: json['imagenBase64'] as String?,
     );

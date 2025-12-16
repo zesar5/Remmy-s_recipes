@@ -234,12 +234,15 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 25),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/home');
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (_) => HomeScreen(
+                      authService: widget.authService, // puedes pasar el mismo AuthService
+                    ),
+                  ),
+                );
               },
-              child: const Text(
-                'Omitir',
-                style: TextStyle(color: Colors.blue),
-              ),
+              child: const Text('Omitir', style: TextStyle(color: Colors.blue)),
             ),
 
             const SizedBox(height: 30),
