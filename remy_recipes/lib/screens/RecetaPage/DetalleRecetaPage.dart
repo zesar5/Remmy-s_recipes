@@ -13,35 +13,40 @@ class DetalleRecetaPage extends StatelessWidget {
   final Receta receta;
   final AuthService authService;
 
-  const DetalleRecetaPage({Key? key, required this.receta, required this.authService,}) : super(key: key);
+  const DetalleRecetaPage({
+    Key? key,
+    required this.receta,
+    required this.authService,
+  }) : super(key: key);
 
   @override
   void _confirmarEliminar(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Text('Eliminar receta'),
-      content: const Text('¿Seguro que deseas eliminar esta receta?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        TextButton(
-          onPressed: () async {
-            await eliminarReceta(int.parse(receta.id!));
-            Navigator.pop(context);
-            Navigator.pop(context, true);
-          },
-          child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Eliminar receta'),
+        content: const Text('¿Seguro que deseas eliminar esta receta?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await eliminarReceta(int.parse(receta.id!));
+              Navigator.pop(context);
+              Navigator.pop(context, true);
+            },
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         title: Text(receta.titulo),
         actions: [
           IconButton(
@@ -50,7 +55,10 @@ class DetalleRecetaPage extends StatelessWidget {
               final actualizado = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => RecipeFormPage(token: authService.accessToken!, recetaEditar: receta),
+                  builder: (_) => RecipeFormPage(
+                    token: authService.accessToken!,
+                    recetaEditar: receta,
+                  ),
                 ),
               );
 
@@ -72,8 +80,7 @@ class DetalleRecetaPage extends StatelessWidget {
             if (receta.imagenBase64 != null) ...[
               Builder(
                 builder: (context) {
-                  final cleanBase64 = receta.imagenBase64!
-                    .replaceFirst(
+                  final cleanBase64 = receta.imagenBase64!.replaceFirst(
                     RegExp(r'data:image/[^;]+;base64,'),
                     '',
                   );
@@ -87,15 +94,19 @@ class DetalleRecetaPage extends StatelessWidget {
               const SizedBox(height: 16),
             ],
             const SizedBox(height: 16),
-            const Text("Ingredientes", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Ingredientes",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             ...receta.ingredientes!.map(
               (i) => Text("• ${i.cantidad} ${i.nombre}"),
             ),
             const SizedBox(height: 16),
-            const Text("Pasos", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ...receta.pasos!.map(
-              (p) => Text("- ${p.descripcion}"),
+            const Text(
+              "Pasos",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            ...receta.pasos!.map((p) => Text("- ${p.descripcion}")),
           ],
         ),
       ),
