@@ -1,64 +1,70 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart'as http;
-import 'package:remy_recipes/main.dart';
-// Importamos el modelo de usuario actualizado que creamos antes
+import 'package:http/http.dart' as http;
+import 'package:remy_recipes/main.dart'; // ← Probablemente para constantes globales
 import '../models/usuario.dart';
 
-const String _baseUrl = 'http://10.0.2.2:8000';
-//const String _baseUrl = 'http://localhost:8000';
+const String _baseUrl =
+    'http://10.0.2.2:8000'; // Emulador Android → localhost del host
 
 // ==========================================================================
-// 2. SERVICIO DE AUTENTICACION (Conexion con Node.js Backend)
+//          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)
 // ==========================================================================
+// Este servicio maneja todo lo relacionado con login, registro, perfil y token.
+// Es el puente entre Flutter y el backend Node.js/Express
 
 class AuthService {
-  // Simula el almacenamiento del token de sesion (usar Secure Storage en produccion)
- 
+  // Almacenamiento en memoria del token y usuario actual
+  // En producción → usar flutter_secure_storage o hive con cifrado
   String? _accessToken;
   String? get accessToken => _accessToken;
-  Usuario? _currentUser;
 
+  Usuario? _currentUser;
   Usuario? get currentUser => _currentUser;
 
-  // ============================
-  // LOGIN
-  // ============================
+  // ==============================================
+  //                     LOGIN
+  // ==============================================
 
+  /// Realiza login enviando email + contraseña al backend
+  /// Si éxito → guarda token y carga perfil completo
   Future<bool> login({required String email, required String password}) async {
-    // La ruta es CORRECTA: /auth/login
     final url = Uri.parse('$_baseUrl/usuarios/login');
-   
-    //print('TOKEN ENVIADO AL BACKEND: ${authService.accessToken}');
+
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        //'Authorization': 'Bearer ${authService.accessToken}',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'email': email, // Clave que espera Node.js para el LOGIN
-        'contrasena': password, // Clave que espera Node.js para el LOGIN
+        'email': email,
+        'contrasena': password, // ← Clave exacta que espera el backend
       }),
     );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      _accessToken = data['token'];
+
+      _accessToken = data['token']; // Guardamos el JWT
       final userId = int.parse(data['id'].toString());
+
       print('TOKEN JWT GUARDADO: $_accessToken');
       print('ID USUARIO GUARDADO: $userId');
-      // Usamos fetchProfile para obtener el perfil completo usando el nuevo modelo corregido
+
+      // Cargamos el perfil completo usando el nuevo token
       return await fetchProfile(userId);
     } else {
+      // Manejo de errores del backend (401, 500, etc.)
       final errorData = json.decode(response.body);
-      throw Exception(errorData['mensaje'] ?? 'Credenciales incorrectas o error de servidor.');
+      throw Exception(
+        errorData['mensaje'] ?? 'Credenciales incorrectas o error de servidor.',
+      );
     }
   }
 
- // ==========================================================================
- // FUNCIÓN DE REGISTRO CORREGIDA
- // ==========================================================================
+  // ==============================================
+  //                   REGISTRO
+  // ==============================================
+
+  /// Registra un nuevo usuario y, si éxito, hace login automático
   Future<bool> register({
     required String nombreUsuario,
     required String email,
@@ -67,13 +73,13 @@ class AuthService {
     String? pais,
     String? descripcion,
     int? anioNacimiento,
-    String? fotoPerfil,
+    String? fotoPerfil, // base64 completo (data:image/...;base64,...)
   }) async {
     final url = Uri.parse('$_baseUrl/usuarios/registro');
 
-    // Creamos una instancia temporal del modelo solo para usar el toJsonRegistro
+    // Creamos instancia temporal del modelo Usuario solo para usar toJsonRegistro()
     final newUser = Usuario(
-      id: '', // ID temporal, no se usa para el registro POST
+      id: '', // No se usa en registro
       userName: nombreUsuario,
       pais: pais,
       email: email,
@@ -83,64 +89,73 @@ class AuthService {
       anioNacimiento: anioNacimiento,
       fotoPerfil: fotoPerfil,
     );
-   
-    // Convertimos los datos del formulario a JSON usando el método corregido del modelo
+
     final response = await http.post(
-  url,
-  headers: {'Content-Type': 'application/json'},
-  // Llama al método sin argumentos
-  body: json.encode(newUser.toJsonRegistro()),
-);
-//lo he cambiado
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(newUser.toJsonRegistro()),
+    );
+
     if (response.statusCode == 200) {
-  // 🔗 LOGIN AUTOMÁTICO DESPUÉS DEL REGISTRO
-  return await login(
-    email: email,
-    password: contrasena,
-  );
-} else {
-      // Manejo de errores
+      // Registro exitoso → login automático (muy buena práctica UX)
+      return await login(email: email, password: contrasena);
+    } else {
+      // Manejo detallado de errores
       try {
         final errorData = json.decode(response.body);
-        final errorMessage = errorData['mensaje'] ?? 'Error desconocido al registrar.';
+        final errorMessage =
+            errorData['mensaje'] ?? 'Error desconocido al registrar.';
         throw Exception(errorMessage);
       } catch (e) {
-        throw Exception('Error de servidor (${response.statusCode}): No se pudo completar el registro.');
+        throw Exception(
+          'Error de servidor (${response.statusCode}): No se pudo completar el registro.',
+        );
       }
     }
   }
 
-  // ==========================================================================
-  // FUNCIÓN FETCH PROFILE CORREGIDA (usa el nuevo modelo Usuario.fromJson)
-  // ==========================================================================
+  // ==============================================
+  //              OBTENER PERFIL DEL USUARIO
+  // ==============================================
+
+  /// Obtiene el perfil completo del usuario usando el token JWT
+  /// Actualiza _currentUser con los datos del backend
   Future<bool> fetchProfile(int userId) async {
     if (_accessToken == null) return false;
 
-    // RUTA CORRECTA: /perfil/{idUsuario}
     final url = Uri.parse('$_baseUrl/usuarios/perfil/$userId');
 
     final response = await http.get(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_accessToken',
+        'Authorization': 'Bearer $_accessToken', // ← Token obligatorio aquí
       },
     );
 
     if (response.statusCode == 200) {
-      // Node.js devuelve directamente el objeto Usuario Entity
-      // Usamos el factory CORREGIDO que entiende 'nombre', 'id', 'email', etc.
+      // El backend devuelve directamente el objeto usuario
+      // Usamos el factory fromJson que mapea correctamente los campos
       _currentUser = Usuario.fromJson(json.decode(response.body));
       return true;
     } else {
+      // Si falla → limpiamos sesión (token inválido o expirado)
       _accessToken = null;
       _currentUser = null;
-      throw Exception('Error al obtener el perfil. ID no válido o error de servidor.');
+      throw Exception(
+        'Error al obtener el perfil. ID no válido o error de servidor.',
+      );
     }
   }
 
+  // ==============================================
+  //                     LOGOUT
+  // ==============================================
+
+  /// Limpia la sesión actual (token y usuario)
   void logout() {
     _accessToken = null;
     _currentUser = null;
+    // En producción: también borrar de secure storage
   }
 }

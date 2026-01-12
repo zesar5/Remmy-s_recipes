@@ -1,99 +1,150 @@
 const { Usuario } = require("../models/usuario");
 const jwt = require("jsonwebtoken");
 
-//--------------------------
-//    LOGIN USUARIO
-//--------------------------
+// ────────────────────────────────────────────────
+//                  LOGIN USUARIO
+// ────────────────────────────────────────────────
 
+/**
+ * Endpoint: POST /login
+ *
+ * Autenticación básica con email + contraseña (sin hash en este ejemplo)
+ *
+ * Respuestas posibles:
+ * - 200 → { mensaje, token, id, userName, email }
+ * - 400 → faltan campos
+ * - 401 → credenciales incorrectas
+ * - 500 → error de base de datos
+ */
 exports.loginUsuario = async (req, res) => {
-    const {email, contrasena} = req.body;
+  const { email, contrasena } = req.body;
 
-    if(!email || !contrasena){
-        return res.status(400).json({ mensaje: "Email y contraseña son requeridos" })
+  // Validación básica de campos requeridos
+  if (!email || !contrasena) {
+    return res.status(400).json({
+      mensaje: "Email y contraseña son requeridos",
+    });
+  }
+
+  try {
+    // ⚠️ IMPORTANTE: Aquí se compara la contraseña en texto plano
+    // Esto es inseguro en producción → debería usar bcrypt + hash
+    const [rows] = await require("../config/db").query(
+      "SELECT * FROM usuario WHERE email = ? AND contrasena = ?",
+      [email, contrasena]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({
+        mensaje: "Credenciales incorrectas",
+      });
     }
 
-    try{
-        const [rows] = await require("../config/db").query(
-            "SELECT * FROM usuario WHERE email = ? AND contrasena = ?",
-            [email, contrasena]
-        );
+    const usuario = rows[0];
 
-        if(rows.length === 0){
-            return res.status(401).json({ mensaje: "Credenciales incorrectas" });
-        }
+    // Generamos token JWT con el id del usuario
+    const token = jwt.sign(
+      { id: usuario.Id_usuario }, // payload
+      process.env.JWT_SECRET, // clave secreta (debe estar en .env)
+      { expiresIn: "24h" } // duración del token
+    );
 
-        const usuario = rows[0];
+    console.log("JWT generado:", token);
 
-        const token = jwt.sign(
-            { id: usuario.Id_usuario },
-            process.env.JWT_SECRET,
-            { expiresIn: "24h" }
-        );
-
-        console.log("JWT generado:", token);
-        res.json({
-            mensaje: "Login exitoso",
-            token,
-            id: usuario.Id_usuario,
-            userName: usuario.nombre,
-            email: usuario.email
-        });
-
-    }catch(err){
-        res.status(500).json({ error: err.message });
-    }
-}
-
-//--------------------------
-//    REGISTRAR USUARIO
-//--------------------------
-exports.registrarUsuario = async (req, res) => {
-    const data = req.body;
-
-    if (data.contrasena !== data.contrasena2) {
-        return res.status(400).json({ mensaje: "Las credenciales no coinciden" });
-    }
-
-    try {
-        // Verificar si el usuario ya existe
-        const existe = await Usuario.existeUsuario(data.nombre);
-        if (existe) {
-            return res.status(400).json({ mensaje: "El usuario ya existe" });
-        }
-
-        // Crear usuario
-        console.log("Datos a registrar:", data);
-        const idUsuario = await Usuario.crearUsuario(data);
-
-        // Guardar imagen si existe
-        if (data.fotoPerfil) {
-            await Usuario.guardarImagen(idUsuario, data.fotoPerfil);
-        }
-
-        res.json({ mensaje: "Usuario creado", id: idUsuario });
-
-    } catch (err) {
-        console.error("Error al registrar usuario:", err);
-        res.status(500).json({ error: err.message });
-    }
+    // Respuesta exitosa con datos útiles para el frontend
+    res.json({
+      mensaje: "Login exitoso",
+      token,
+      id: usuario.Id_usuario,
+      userName: usuario.nombre,
+      email: usuario.email,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-//--------------------------
-//    OBTENER PERFIL
-//--------------------------
-exports.obtenerPerfil = async (req, res) => {
-    const { id } = req.params;
+// ────────────────────────────────────────────────
+//               REGISTRAR NUEVO USUARIO
+// ────────────────────────────────────────────────
 
-    try {
-        const perfil = await Usuario.obtenerPerfil(id);
+/**
+ * Endpoint: POST /register
+ *
+ * Crea un nuevo usuario en el sistema
+ *
+ * Validaciones:
+ * - Contraseñas coinciden
+ * - Nombre de usuario no esté ya tomado
+ *
+ * Opcional: guarda foto de perfil (base64 o similar)
+ */
+exports.registrarUsuario = async (req, res) => {
+  const data = req.body;
 
-        if (!perfil) {
-            return res.status(404).json({ mensaje: "Usuario no encontrado" });
-        }
+  // Verificación básica de coincidencia de contraseñas
+  if (data.contrasena !== data.contrasena2) {
+    return res.status(400).json({
+      mensaje: "Las contraseñas no coinciden",
+    });
+  }
 
-        res.json(perfil);
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+  try {
+    // 1. Verificar si ya existe un usuario con ese nombre
+    const existe = await Usuario.existeUsuario(data.nombre);
+    if (existe) {
+      return res.status(400).json({
+        mensaje: "El usuario ya existe",
+      });
     }
+
+    // 2. Crear el usuario en la base de datos
+    console.log("Datos a registrar:", data);
+    const idUsuario = await Usuario.crearUsuario(data);
+
+    // 3. Guardar foto de perfil si se envió
+    if (data.fotoPerfil) {
+      await Usuario.guardarImagen(idUsuario, data.fotoPerfil);
+    }
+
+    // Respuesta exitosa
+    res.json({
+      mensaje: "Usuario creado",
+      id: idUsuario,
+    });
+  } catch (err) {
+    console.error("Error al registrar usuario:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// ────────────────────────────────────────────────
+//                 OBTENER PERFIL USUARIO
+// ────────────────────────────────────────────────
+
+/**
+ * Endpoint: GET /perfil/:id   o   /usuarios/:id
+ *
+ * Devuelve la información pública/visible del perfil de un usuario
+ *
+ * Normalmente usado para:
+ * - Ver perfil propio
+ * - Ver perfil de otros usuarios
+ */
+exports.obtenerPerfil = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const perfil = await Usuario.obtenerPerfil(id);
+
+    if (!perfil) {
+      return res.status(404).json({
+        mensaje: "Usuario no encontrado",
+      });
+    }
+
+    res.json(perfil);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
