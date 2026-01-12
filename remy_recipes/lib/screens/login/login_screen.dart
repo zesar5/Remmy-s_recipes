@@ -2,6 +2,8 @@ import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
 import '../home/home_screen.dart';
+import '../../constants/app_strings.dart';
+
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 // ==========================================================================
@@ -39,17 +41,17 @@ class _LoginScreenState extends State<LoginScreen> {
     // Validaciones locales (como en WPF)
     if (correo.isEmpty) {
       setState(() => _errorCorreo = true);
-      _showErrorDialog('Campo vacío', 'Por favor, introduce tu correo electrónico.');
+      _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
       return;
     }
     if (!_esCorreoValido(correo)) {
       setState(() => _errorCorreo = true);
-      _showErrorDialog('Correo inválido', 'El formato del correo no es válido.');
+      _showErrorDialog(AppStrings.correoInvalido, AppStrings.correoInvalidoMsg);
       return;
     }
     if (contrasena.isEmpty) {
       setState(() => _errorContrasena = true);
-      _showErrorDialog('Campo vacío', 'Por favor, introduce tu contraseña.');
+      _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
       return;
     }
 
@@ -73,11 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } else {
-        _showErrorDialog('Error de inicio de sesión', 'Credenciales incorrectas.');
+        _showErrorDialog(AppStrings.errorInicioSesion, AppStrings.credencialesIncorrectas);
       }
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog('Error de conexión', e.toString().replaceFirst('Exception: ', ''));
+      _showErrorDialog(AppStrings.errorConexion, e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -99,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text(message),
         actions: [
           TextButton(
-            child: const Text('OK'),
+            child: const Text(AppStrings.ok),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
         ],
@@ -119,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 50),
 
             const Text(
-              "Remmy's Recipes",
+              AppStrings.appName,
               style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'Alegreya',
@@ -142,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Correo electrónico",
+                AppStrings.correoElectronico,
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -168,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Contraseña",
+                AppStrings.contrasena,
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -203,18 +205,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
             TextButton(
               onPressed: () => _showErrorDialog(
-                'Recuperar contraseña',
-                'Te enviaremos un enlace para restablecer tu contraseña.',
+                AppStrings.recuperarContrasena,
+                AppStrings.recuperarContrasenaMsg,
               ),
               child: const Text(
-                'He olvidado la contraseña',
+                AppStrings.olvidarContrasena,
                 style: TextStyle(color: Colors.blue),
               ),
             ),
 
             const SizedBox(height: 10),
             _buildActionButton(
-              text: 'Iniciar Sesión',
+              text: AppStrings.iniciarSesion,
               color: Colors.black,
               textColor: Colors.white,
               onPressed: _isLoading ? null : _handleLogin,
@@ -223,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
             const SizedBox(height: 20),
             _buildActionButton(
-              text: 'Registrarse',
+              text: AppStrings.registrarse,
               color: Colors.black,
               textColor: Colors.white,
               onPressed: () {
@@ -242,17 +244,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
               },
-              child: const Text('Omitir', style: TextStyle(color: Colors.blue)),
+              child: const Text(AppStrings.omitir, style: TextStyle(color: Colors.blue)),
             ),
 
             const SizedBox(height: 30),
             const Text(
-              "Al hacer click, aceptas nuestros Términos de",
+              AppStrings.aceptarTerminos,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.blue),
             ),
             const Text(
-              "servicio y Política de privacidad",
+              AppStrings.politicaPrivacidad,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black),
             ),

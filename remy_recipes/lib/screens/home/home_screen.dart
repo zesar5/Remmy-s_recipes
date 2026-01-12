@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import '../recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
+import '../../constants/app_strings.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
@@ -117,7 +118,7 @@ class _MainPageState extends State<MainPage> {
               children: [
                 // Título de la app
                 const Text(
-                  "Remmy's Recipes",
+                  AppStrings.appName,
                  style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'Alegreya',
@@ -156,7 +157,7 @@ class _MainPageState extends State<MainPage> {
               // ★ Título de sección
               const Text(
                 
-                "Recetas",
+                AppStrings.recetas,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -170,7 +171,7 @@ class _MainPageState extends State<MainPage> {
                 child: loading
                   ? const Center(child: CircularProgressIndicator())
                   : recipes.isEmpty
-                    ? const Center(child: Text('No hay recetas'))
+                    ? const Center(child: Text(AppStrings.noHayRecetas))
                     : GridView.builder(
                       padding: const EdgeInsets.only(bottom: 10),
                       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -209,7 +210,7 @@ class _MainPageState extends State<MainPage> {
             onTap: () {
               if (widget.authService.currentUser == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Debes iniciar sesión")),
+                  const SnackBar(content: Text(AppStrings.debesIniciarSesion)),
                 );
                 return;
               }
@@ -284,7 +285,7 @@ class RecipeButton extends StatelessWidget {
           print("🔥 ERROR al cargar receta pública: $e");
           print("Error al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("No se pudo cargar la receta")),
+            const SnackBar(content: Text(AppStrings.errorCargarReceta)),
           );
         }
       },

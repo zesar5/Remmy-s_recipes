@@ -8,6 +8,7 @@ import '../recipes/recipes_form_page.dart';
 import 'dart:convert';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
+import '../../constants/app_strings.dart';
 
 class DetalleRecetaPage extends StatelessWidget {
   final Receta receta;
@@ -24,12 +25,12 @@ class DetalleRecetaPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Eliminar receta'),
-        content: const Text('¿Seguro que deseas eliminar esta receta?'),
+        title: const Text(AppStrings.eliminarReceta),
+        content: const Text(AppStrings.confirmarEliminarReceta),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: const Text(AppStrings.cancelar),
           ),
           TextButton(
             onPressed: () async {
@@ -37,7 +38,7 @@ class DetalleRecetaPage extends StatelessWidget {
               Navigator.pop(context);
               Navigator.pop(context, true);
             },
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: const Text(AppStrings.eliminar, style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -95,7 +96,7 @@ class DetalleRecetaPage extends StatelessWidget {
             ],
             const SizedBox(height: 16),
             const Text(
-              "Ingredientes",
+              AppStrings.ingredientes,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             ...receta.ingredientes!.map(
@@ -103,7 +104,7 @@ class DetalleRecetaPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              "Pasos",
+              AppStrings.pasos,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             ...receta.pasos!.map((p) => Text("- ${p.descripcion}")),

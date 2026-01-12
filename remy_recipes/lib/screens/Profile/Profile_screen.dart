@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../register/register_screen.dart';
 import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
+import '../../constants/app_strings.dart';
+
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 
@@ -134,13 +136,13 @@ Future<void> _cargarRecetasGuardadas() async {
             child: TextButton(
               onPressed: _editarPerfil,
               child: const Text(
-                "Editar perfil",
+                AppStrings.editarPerfil,
                 style: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
           ),
           const SizedBox(height: 12),
-          const Text("Descripción:", style: TextStyle(fontSize: 15)),
+          const Text(AppStrings.descripcion, style: TextStyle(fontSize: 15)),
           const SizedBox(height: 4),
           Container(
             width: 260,
@@ -150,7 +152,7 @@ Future<void> _cargarRecetasGuardadas() async {
               color: const Color(0xFFDEB887),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text(user.descripcion ?? "Sin descripción",
+            child: Text(user.descripcion ?? AppStrings.sinDescripcion,
                 style: const TextStyle(fontSize: 13)),
           ),
         ],
@@ -165,10 +167,10 @@ Future<void> _cargarRecetasGuardadas() async {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _menuButton("❤", "favoritos"),
+          _menuButton("❤", AppStrings.favoritos),
           _menuButton("🔖", "guardados"),
           _menuButton("🏠", "home"),
-          _menuButton("👥", "personas"),
+          _menuButton("👥", AppStrings.personas),
         ],
       ),
     );
@@ -234,7 +236,7 @@ Future<void> _cargarRecetasGuardadas() async {
   Widget _buildRecetasGuardadas() {
     if (recetasGuardadas.isEmpty) {
       return const Center(
-        child: Text('No tienes recetas guardadas',
+        child: Text(AppStrings.noRecetasGuardadas,
             style: TextStyle(fontSize: 16)),
       );
     }
@@ -321,7 +323,7 @@ Future<void> _cargarRecetasGuardadas() async {
   Widget _buildHome() {
     return const Center(
       child: Text(
-        "Vista principal del perfil.",
+        AppStrings.vistaPrincipalPerfil,
         style: TextStyle(fontSize: 16),
       ),
     );
@@ -340,7 +342,7 @@ Future<void> _cargarRecetasGuardadas() async {
         const SizedBox(height: 10),
         ElevatedButton(
             onPressed: onAdd,
-            child: const Text("Añadir elemento desde descripción")),
+            child: const Text(AppStrings.anadirElemento)),
         const SizedBox(height: 10),
         Expanded(
           child: ListView.builder(
@@ -376,11 +378,11 @@ Future<void> _cargarRecetasGuardadas() async {
 
   void _cambiarFoto() {
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Aquí abrirías selector de imagen")));
+        const SnackBar(content: Text(AppStrings.abrirSelectorImagen)));
   }
 
   void _editarPerfil() {
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Aquí abrirías edición de perfil")));
+        const SnackBar(content: Text(AppStrings.abrirEditarPerfil)));
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart'as http;
 import '../screens/login/login_screen.dart';
 import '../screens/register/register_screen.dart';
+import '../constants/app_strings.dart';
 const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 
@@ -54,7 +55,7 @@ class Receta {
    
     return Receta(
       id: json['Id_receta']?.toString() ?? json['id']?.toString(),
-      titulo: json['titulo']?.toString() ?? 'Sin título',
+      titulo: json['titulo']?.toString() ?? AppStrings.sinTitulo,
       ingredientes: (json['ingredientes'] as List<dynamic>?)
         ?.map((i) => Ingrediente(nombre: i['nombre'], cantidad: i['cantidad']))
         .toList(),
