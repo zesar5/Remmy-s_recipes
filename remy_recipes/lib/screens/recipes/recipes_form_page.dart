@@ -5,6 +5,7 @@ import 'dart:convert';
 import '/models/receta.dart';
 import '/services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
+import '../../constants/app_strings.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 
@@ -138,7 +139,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("Seleccionar alérgenos"),
+              title: const Text(AppStrings.seleccionarAlergenos),
               content: SizedBox(
                 width: double.maxFinite,
                 child: ListView(
@@ -164,7 +165,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancelar"),
+                  child: const Text(AppStrings.cancelar),
                 ),
                 TextButton(
                   onPressed: () {
@@ -173,7 +174,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     });
                     Navigator.pop(context);
                   },
-                  child: const Text("Aceptar"),
+                  child: const Text(AppStrings.aceptar),
                 ),
               ],
             );
@@ -267,12 +268,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Error'),
+        title: const Text(AppStrings.error),
         content: Text(mensaje),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text(AppStrings.ok),
           ),
         ],
       ),
@@ -289,7 +290,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       backgroundColor: const Color(0xFFDEB887),
       appBar: AppBar(
         title: Text(
-          widget.recetaEditar == null ? "Añadir Nueva Receta" : "Editar Receta",
+          widget.recetaEditar == null ? AppStrings.anadirNuevaReceta : AppStrings.editarReceta,
         ),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
@@ -300,7 +301,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Remmy's Recipes",
+              AppStrings.appName,
               style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'Alegreya',
@@ -310,7 +311,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             const SizedBox(height: 20),
 
             // SELECCIÓN DE IMAGEN
-            const Text("Añadir imagen:", style: TextStyle(fontSize: 20)),
+            const Text(AppStrings.anadirImagen, style: TextStyle(fontSize: 20)),
             const SizedBox(height: 5),
             GestureDetector(
               onTap: pickImage,
@@ -345,7 +346,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
             // TÍTULO
             const Text(
-              "Título:",
+              AppStrings.titulo,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             TextField(
@@ -357,7 +358,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
             // INGREDIENTES DINÁMICOS
             const Text(
-              "Ingredientes:",
+              AppStrings.ingredientesLabel,
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             ),
             ...ingredients.asMap().entries.map((entry) {
@@ -373,7 +374,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                         controller: TextEditingController(text: ing.nombre),
                         onChanged: (val) => ing.nombre = val,
                         decoration: const InputDecoration(
-                          hintText: 'Ingrediente',
+                          hintText: AppStrings.ingredienteHint,
                         ),
                       ),
                     ),
@@ -383,7 +384,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       child: TextField(
                         controller: TextEditingController(text: ing.cantidad),
                         onChanged: (val) => ing.cantidad = val,
-                        decoration: const InputDecoration(hintText: 'Cantidad'),
+                        decoration: const InputDecoration(hintText: AppStrings.cantidadHint),
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -400,7 +401,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             }),
             ElevatedButton(
               onPressed: addIngredient,
-              child: const Text('Agregar Ingrediente'),
+              child: const Text(AppStrings.agregarIngrediente),
             ),
 
             const SizedBox(height: 30),
@@ -416,7 +417,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: _guardarReceta,
-                child: const Text('Guardar Receta'),
+                child: const Text(AppStrings.guardarReceta),
               ),
             ),
           ],

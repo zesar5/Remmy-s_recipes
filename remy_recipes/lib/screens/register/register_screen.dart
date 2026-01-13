@@ -5,6 +5,7 @@ import '../login/login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import '../../constants/app_strings.dart';
 
 const String _baseUrl = 'http://10.0.2.2:8000';
 
@@ -214,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: [
               const Text(
-                "Remmy's Recipes",
+                AppStrings.appName,
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
 
@@ -249,7 +250,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Añadir foto de perfil",
+                    AppStrings.agregarFotoPerfil,
                     style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
                 ],
@@ -258,7 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 25),
 
               // Campos de texto y dropdowns
-              campoTexto("Usuario", controller: name, error: errorName),
+              campoTexto(AppStrings.usuario, controller: name, error: errorName),
 
               const SizedBox(height: 10),
 
@@ -273,7 +274,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                "Correo electrónico",
+                AppStrings.correo,
                 controller: correo,
                 error: errorCorreo,
                 errorTextMessage: errorCorreoMensaje,
@@ -282,7 +283,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                "Contraseña",
+                AppStrings.contrasenaRegistro,
                 controller: contrasenya,
                 esPassword: true,
                 error: errorContrasenya,
@@ -291,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                "Confirmar contraseña",
+                AppStrings.confirmarContrasena,
                 controller: confirmarContrasenya,
                 esPassword: true,
                 error: errorConfirmar,
@@ -300,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                "Descripción (opcional)",
+                AppStrings.descripcionOpcional,
                 controller: descripcion,
                 maxLineas: 5,
               ),
@@ -315,7 +316,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   minimumSize: const Size(250, 40),
                 ),
                 onPressed: registrar,
-                child: const Text("Registrarse"),
+                child: const Text(AppStrings.registrarse),
               ),
             ],
           ),
@@ -398,7 +399,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Año nacimiento"),
+        const Text(AppStrings.anioNacimiento),
         const SizedBox(height: 5),
         DropdownButtonFormField<int>(
           value: anioSeleccionado,
