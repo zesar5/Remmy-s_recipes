@@ -53,6 +53,122 @@ class _MainPageState extends State<MainPage> {
     fetchRecipes(); // Carga las recetas al iniciar la pantalla
   }
 
+  void _openSearchSheet(BuildContext context){
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_){
+        return DraggableScrollableSheet(
+          initialChildSize: 0.25,
+          minChildSize: 0.15,
+          maxChildSize: 0.85,
+          builder: (context, scrollController){
+            return Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFFF2F2F2),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    //Lengueta superior
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade400,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    //barra de búsqueda
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: "Buscar receta...",
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: [
+                        _combo("País origen", ["España", "Italia", "México"]),
+                        _combo("Estaciones", ["Verano", "Otoño", "Invierno"]),
+                        _combo("Duración", ["30 min", "60 min", "90 min"]),
+                        _combo("Alérgenos", ["Gluten", "Lácteos", "Frutos secos"]),
+                        SizedBox(
+                          width: double.infinity,
+                          child: _combo(
+                            "Grupo alimenticio",
+                            ["Carne", "Pescado", "Vegetariano"],
+                          )
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade800,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+
+                      onPressed: (){
+                        //Aquí se lanzaría la búsqueda real
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Aplicar filtros"),
+                    ),
+                  ],
+                )
+              )
+            );
+          },
+        );
+      },
+    );
+  }
+  Widget _combo(String label, List<String> items){
+    return SizedBox(
+      width: 160,
+      child: DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: label,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+              ),
+          ),
+          items: items
+          .map(
+            (e) => DropdownMenuItem(value:e,
+             child: Text(e),
+             ),
+            )
+            .toList(),
+            onChanged: (value){},
+      ),
+    );
+  }
+
   /// Obtiene las recetas para la home (versión ligera: solo id, título e imagen)
   /// Actualmente usa http directo → sería mejor usar RecetasService
   Future<void> fetchRecipes() async {
@@ -211,7 +327,10 @@ class _MainPageState extends State<MainPage> {
         _topIcon(Icons.menu),
         Row(
           children: [
-            _topIcon(Icons.search),
+            _topIcon(Icons.search,
+            onTap: (){
+              _openSearchSheet(context);
+            }),
             const SizedBox(width: 5),
 
             // Icono de perfil → navega solo si está logueado
