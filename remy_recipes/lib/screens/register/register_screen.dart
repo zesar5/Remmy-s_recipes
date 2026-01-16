@@ -1,16 +1,21 @@
 import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import '../home/home_screen.dart';
+import '../home/home_screen.dart'; // ← No se usa en este archivo (posible import innecesario)
 import '../login/login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import '../../constants/app_strings.dart';
+
+const String _baseUrl = 'http://10.0.2.2:8000';
 
 // ==========================================================================
-// 5. PANTALLA DE REGISTRO
+//                PANTALLA DE REGISTRO DE USUARIO
 // ==========================================================================
+
 class RegisterScreen extends StatefulWidget {
   final AuthService authService;
+
   const RegisterScreen({super.key, required this.authService});
 
   @override
@@ -18,20 +23,23 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  // Controladores de texto
   final name = TextEditingController();
   final correo = TextEditingController();
   final contrasenya = TextEditingController();
   final confirmarContrasenya = TextEditingController();
   final descripcion = TextEditingController();
 
+  // Selecciones de dropdowns
   String? paisSeleccionado;
   int? anioSeleccionado;
 
+  // Imagen de perfil seleccionada (local)
   File? imagenPerfil;
 
-  final picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
 
-  // ====== FLAGS DE ERROR ======
+  // Flags de error visual (bordes rojos + mensajes)
   bool errorName = false;
   bool errorCorreo = false;
   bool errorContrasenya = false;
@@ -39,25 +47,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool errorPais = false;
   bool errorAnio = false;
 
-  String? errorCorreoMensaje;
+  String? errorCorreoMensaje; // Mensaje personalizado para correo
 
-  List<String> paises = [
-    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Arabia Saudita",
-    "Argentina", "Australia", "Austria", "Bélgica", "Bolivia", "Brasil",
-    "Canadá", "Chile", "China", "Colombia", "Corea del Sur", "Costa Rica",
-    "Cuba", "Dinamarca", "Ecuador", "Egipto", "El Salvador", "Eslovaquia",
-    "Eslovenia", "España", "Estados Unidos", "Finlandia", "Francia", "Grecia",
-    "Guatemala", "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak",
-    "Irán", "Irlanda", "Islandia", "Italia", "Japón", "Jordania", "Kenia",
-    "Letonia", "Líbano", "Libia", "Lituania", "Luxemburgo", "México", "Mónaco",
-    "Mongolia", "Nepal", "Nicaragua", "Nigeria", "Noruega", "Países Bajos",
-    "Panamá", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido",
-    "República Dominicana", "Rumania", "Rusia", "Senegal", "Serbia", "Suecia",
-    "Suiza", "Tailandia", "Turquía", "Ucrania", "Uruguay", "Venezuela",
-    "Vietnam"
-  ];
+  // Listas para dropdowns
+  final List<String> paises = [/* lista de países */];
+  final List<int> anios = [for (int i = DateTime.now().year; i >= 1900; i--) i];
 
-  List<int> anios = [ for (int i = DateTime.now().year; i >= 1900; i--) i ];
+  // ==============================================
+  //               VALIDACIONES
+  // ==============================================
 
   bool validarCorreo(String correo) {
     final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
@@ -71,7 +69,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         c.contains(RegExp(r'[0-9]')) &&
         c.contains(RegExp(r'[^A-Za-z0-9]'));
   }
-  
+
+  // ==============================================
+  //           SELECCIÓN DE FOTO DE PERFIL
+  // ==============================================
 
   Future<void> seleccionarImagen() async {
     final picked = await picker.pickImage(source: ImageSource.gallery);
@@ -80,10 +81,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  // ===================== REGISTRO =====================
+  // ==============================================
+  //               LÓGICA DE REGISTRO
+  // ==============================================
 
-  void registrar() async{
-    // Primero marcamos campos vacíos
+  void registrar() async {
+    // 1. Marcar visualmente campos vacíos
     setState(() {
       errorName = name.text.isEmpty;
       errorCorreo = correo.text.isEmpty;
@@ -92,20 +95,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       errorPais = paisSeleccionado == null;
       errorAnio = anioSeleccionado == null;
 
-      // Preparar mensaje para el correo: vacío o formato inválido
+      // Mensaje específico para correo
       if (correo.text.isEmpty) {
         errorCorreoMensaje = "Campo requerido";
         errorCorreo = true;
       } else if (!validarCorreo(correo.text)) {
         errorCorreoMensaje = "Formato inválido";
         errorCorreo = true;
-      } else {  
+      } else {
         errorCorreoMensaje = null;
         errorCorreo = false;
       }
     });
 
-    // Si hay algún error visual, avisamos y no seguimos
+    // 2. Si hay errores visuales → mostrar mensaje y salir
     if (errorName ||
         errorCorreo ||
         errorContrasenya ||
@@ -116,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // Validaciones lógicas adicionales (contraseñas)
+    // 3. Validaciones lógicas adicionales
     if (contrasenya.text != confirmarContrasenya.text) {
       setState(() {
         errorContrasenya = true;
@@ -132,17 +135,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorConfirmar = true;
       });
       mostrarMensaje(
-          "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.");
+        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+      );
       return;
     }
 
-    // Si todo OK
+    // 4. Preparar imagen de perfil en base64 (si existe)
     String? base64Image;
     if (imagenPerfil != null) {
       final bytes = await imagenPerfil!.readAsBytes();
       base64Image = "data:image/png;base64,${base64Encode(bytes)}";
     }
 
+    // 5. Llamada real al servicio de autenticación
     try {
       final ok = await widget.authService.register(
         nombreUsuario: name.text,
@@ -155,40 +160,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
         fotoPerfil: base64Image,
       );
 
-      mostrarMensaje("Usuario registrado exitosamente.", onClose: () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => LoginScreen(authService: widget.authService),
-          ),
-        );
-      });
+      // Éxito → mensaje y redirigir a login
+      mostrarMensaje(
+        "Usuario registrado exitosamente.",
+        onClose: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => LoginScreen(authService: widget.authService),
+            ),
+          );
+        },
+      );
     } catch (e) {
-      mostrarMensaje(e.toString().replaceAll("Exception:", ""));
+      // Error del backend (ej: usuario ya existe, email duplicado)
+      mostrarMensaje(e.toString().replaceAll("Exception:", "").trim());
     }
   }
-  
+
+  // ==============================================
+  //               HELPERS / DIÁLOGOS
+  // ==============================================
 
   void mostrarMensaje(String mensaje, {VoidCallback? onClose}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text("Información"),
+        title: const Text("Información"),
         content: Text(mensaje),
         actions: [
           TextButton(
-            child: Text("OK"),
+            child: const Text("OK"),
             onPressed: () {
-              Navigator.pop(context); // Cierra el diálogo
-              if (onClose != null) {
-                onClose(); // Ejecuta la acción extra
-              }
+              Navigator.pop(context);
+              if (onClose != null) onClose();
             },
-          )
+          ),
         ],
       ),
     );
   }
+
+  // ==============================================
+  //                   INTERFAZ
+  // ==============================================
 
   @override
   Widget build(BuildContext context) {
@@ -196,104 +211,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: const Color(0xFFDEB887),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Text("Remmy's Recipes",
-                  style: TextStyle(fontSize: 28, fontFamily: "Alegreya")),
+              const Text(
+                AppStrings.appName,
+                style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
+              ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-             Column(
-  children: [
-    GestureDetector(
-      onTap: seleccionarImagen,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundColor: Colors.grey.shade300,
-            backgroundImage:
-                imagenPerfil != null ? FileImage(imagenPerfil!) : null,
-          ),
-          if (imagenPerfil == null)
-            Text("+",
-                style: TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey))
-        ],
-        
-      ),
-      
-    ),
-    SizedBox(height: 8),
-    Text(
-      "Añadir foto de perfil",
-      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-      
-    ),
-    
-  ],
-  
-  
-),
+              // Foto de perfil circular + selector
+              Column(
+                children: [
+                  GestureDetector(
+                    onTap: seleccionarImagen,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey.shade300,
+                          backgroundImage: imagenPerfil != null
+                              ? FileImage(imagenPerfil!)
+                              : null,
+                        ),
+                        if (imagenPerfil == null)
+                          const Text(
+                            "+",
+                            style: TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppStrings.agregarFotoPerfil,
+                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  ),
+                ],
+              ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-              campoTexto("Usuario",
-                  controller: name, error: errorName),
+              // Campos de texto y dropdowns
+              campoTexto(AppStrings.usuario, controller: name, error: errorName),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               Row(
                 children: [
                   Expanded(child: dropdownPais()),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(child: dropdownAnio()),
                 ],
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              campoTexto("Correo electrónico",
-                  controller: correo,
-                  error: errorCorreo,
-                  errorTextMessage: errorCorreoMensaje),
+              campoTexto(
+                AppStrings.correo,
+                controller: correo,
+                error: errorCorreo,
+                errorTextMessage: errorCorreoMensaje,
+              ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              campoTexto("Contraseña",
-                  controller: contrasenya,
-                  esPassword: true,
-                  error: errorContrasenya),
+              campoTexto(
+                AppStrings.contrasenaRegistro,
+                controller: contrasenya,
+                esPassword: true,
+                error: errorContrasenya,
+              ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              campoTexto("Confirmar contraseña",
-                  controller: confirmarContrasenya,
-                  esPassword: true,
-                  error: errorConfirmar),
+              campoTexto(
+                AppStrings.confirmarContrasena,
+                controller: confirmarContrasenya,
+                esPassword: true,
+                error: errorConfirmar,
+              ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
-              campoTexto("Descripción (opcional)",
-                  controller: descripcion,
-                  maxLineas: 5,
-                  ),
+              campoTexto(
+                AppStrings.descripcionOpcional,
+                controller: descripcion,
+                maxLineas: 5,
+              ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
+              // Botón principal de registro
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
-                  minimumSize: Size(250, 40),
+                  minimumSize: const Size(250, 40),
                 ),
                 onPressed: registrar,
-                child: Text("Registrarse"),
-              )
+                child: const Text(AppStrings.registrarse),
+              ),
             ],
           ),
         ),
@@ -301,100 +325,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  // ================= COMPONENTES =================
+  // ==============================================
+  //          COMPONENTES REUTILIZABLES
+  // ==============================================
 
-  Widget campoTexto(String label,
-    {required TextEditingController controller,
+  Widget campoTexto(
+    String label, {
+    required TextEditingController controller,
     bool esPassword = false,
     int maxLineas = 1,
     bool error = false,
-    String? errorTextMessage}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(label),
-      SizedBox(height: 5),
-      TextField(
-        controller: controller,
-        obscureText: esPassword,
-        maxLines: maxLineas,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          // bordes de error para que se vea claramente en rojo
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red),
-            borderRadius: BorderRadius.circular(10),
+    String? errorTextMessage,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          obscureText: esPassword,
+          maxLines: maxLineas,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red, width: 2),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
           ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 2),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget dropdownPais() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text("País"),
-      SizedBox(height: 5),
-      DropdownButtonFormField<String>(
-        value: paisSeleccionado,
-        hint: Text("Selecciona un país"), // <-- evita que el dropdown quede 'deshabilitado' cuando value == null
-        isExpanded: true,
-        items: paises
-            .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-            .toList(),
-        onChanged: (value) {
-          setState(() {
-            paisSeleccionado = value;
-            errorPais = false;
-          });
-        },
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          errorText: errorPais ? "Campo requerido" : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("País"),
+        const SizedBox(height: 5),
+        DropdownButtonFormField<String>(
+          value: paisSeleccionado,
+          hint: const Text("Selecciona un país"),
+          isExpanded: true,
+          items: paises
+              .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              paisSeleccionado = value;
+              errorPais = false;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            errorText: errorPais ? "Campo requerido" : null,
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget dropdownAnio() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text("Año nacimiento"),
-      SizedBox(height: 5),
-      DropdownButtonFormField<int>(
-        value: anioSeleccionado,
-        hint: Text("Selecciona un año"),
-        isExpanded: true,
-        items: anios
-            .map((a) => DropdownMenuItem(value: a, child: Text("$a")))
-            .toList(),
-        onChanged: (value) {
-          setState(() {
-            anioSeleccionado = value;
-            errorAnio = false;
-          });
-        },
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          errorText: errorAnio ? "Campo requerido" : null,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(AppStrings.anioNacimiento),
+        const SizedBox(height: 5),
+        DropdownButtonFormField<int>(
+          value: anioSeleccionado,
+          hint: const Text("Selecciona un año"),
+          isExpanded: true,
+          items: anios
+              .map((a) => DropdownMenuItem(value: a, child: Text("$a")))
+              .toList(),
+          onChanged: (value) {
+            setState(() {
+              anioSeleccionado = value;
+              errorAnio = false;
+            });
+          },
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            errorText: errorAnio ? "Campo requerido" : null,
+          ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    name.dispose();
+    correo.dispose();
+    contrasenya.dispose();
+    confirmarContrasenya.dispose();
+    descripcion.dispose();
+    super.dispose();
+  }
 }

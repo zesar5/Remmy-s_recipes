@@ -4,6 +4,8 @@ import '../register/register_screen.dart';
 import '../home/home_screen.dart';
 import '../../constants/app_strings.dart';
 
+const String _baseUrl = 'http://10.0.2.2:8000';
+//const String _baseUrl = 'http://localhost:8000';
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION 
 // ==========================================================================

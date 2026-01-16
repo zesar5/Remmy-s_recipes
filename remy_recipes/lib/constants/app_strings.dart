@@ -59,4 +59,31 @@ class AppStrings {
 
   //MODELOS
   static const sinTitulo = "Sin título";
+
+  static const anadirImagen = "Añadir imagen:";
+  static const titulo = "Título:"; 
+  static const ingredientesLabel = "Ingredientes:";
+  static const ingredienteHint = "Ingrediente";
+  static const cantidadHint = "Cantidad";
+  static const agregarIngrediente = "Agregar Ingrediente";
+  static const guardarReceta = "Guardar Receta";
+  static const anadirNuevaReceta = "Añadir Nueva Receta";
+  static const editarReceta = "Editar Receta";
+  static const seleccionarAlergenos = "Seleccionar alérgenos";
+  static const aceptar = "Aceptar";
+
+  // REGISTRO
+  static const usuario = "Usuario";
+  static const correo = "Correo electrónico";
+  static const contrasenaRegistro = "Contraseña";
+  static const confirmarContrasena = "Confirmar contraseña";
+  static const descripcionOpcional = "Descripción (opcional)";
+  static const pais = "País";
+  static const seleccionarPais = "Selecciona un país";
+  static const anioNacimiento = "Año nacimiento";
+  static const seleccionarAnio = "Selecciona un año";
+  static const registrarUsuarioExitoso = "Usuario registrado exitosamente.";
+  static const agregarFotoPerfil = "Añadir foto de perfil";
+  static const informacion = "Información";
+  static const error = "Error";
 }

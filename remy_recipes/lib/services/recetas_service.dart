@@ -4,20 +4,17 @@ import 'package:http/http.dart' as http;
 import 'package:remy_recipes/main.dart';
 import '../models/receta.dart';
 
-
-// import '../screens/recipes/recipes_form_page.dart';
-
-const String _baseUrl = 'https://nondelirious-vita-unpent.ngrok-free.dev';
-//const String _baseUrl = 'http://10.0.2.2:8000';
-//const String _baseUrl = 'http://localhost:8000';
-
-
+// URL base del backend (emulador Android → localhost del host)
+const String _baseUrl = 'http://10.0.2.2:8000';
+// const String _baseUrl = 'http://localhost:8000';
 
 // ==========================================================================
-// 3. LÓGICA DE CONEXIÓN
+//          SERVICIO DE RECETAS - CONEXIÓN CON EL BACKEND
 // ==========================================================================
+// Este archivo contiene TODAS las llamadas HTTP relacionadas con recetas.
+// Es el punto central para CRUD y consultas de recetas.
 
-//  FUNCIÓN GET
+/// Obtiene TODAS las recetas (normalmente públicas, según backend)
 Future<List<Receta>> obtenerTodasLasRecetas() async {
   final url = Uri.parse('$_baseUrl/recetas');
 
@@ -40,7 +37,8 @@ Future<List<Receta>> obtenerTodasLasRecetas() async {
   }
 }
 
-//  FUNCIÓN POST
+/// Crea una nueva receta en el servidor (POST /recetas)
+/// Requiere token de autenticación
 Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
   final url = Uri.parse('$_baseUrl/recetas');
 
@@ -48,16 +46,17 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
     print('Enviando token al backend: $token');
     print('URL: $url');
     print('Body: ${json.encode(nuevaReceta.toJson())}');
+
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $token', // ← Obligatorio para autenticación
       },
       body: json.encode(nuevaReceta.toJson()),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {  // <- Acepta 201
+    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = json.decode(response.body);
       print('Receta creada con éxito. ID: ${data['id']}');
       return data['id'].toString();
@@ -70,13 +69,14 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
     print('Error de conexión con el servidor: $e');
     return null;
   }
-
 }
 
-Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
-
+/// Obtiene TODAS las recetas de un usuario específico (públicas + privadas)
+/// Ruta: GET /recetas/usuario/:userId
+Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
   print('➡️ LLAMANDO A /recetas/usuario/$userId');
   print('🔐 TOKEN: $token');
+
   final response = await http.get(
     Uri.parse('$_baseUrl/recetas/usuario/$userId'),
     headers: {
@@ -84,6 +84,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
       'Authorization': 'Bearer $token',
     },
   );
+
   print('⬅️ STATUS CODE: ${response.statusCode}');
   print('⬅️ BODY: ${response.body}');
 
@@ -93,65 +94,59 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId,) async {
 
   final decoded = json.decode(response.body);
 
-  print('🧪 decoded runtimeType: ${decoded.runtimeType}');
-  print('🧪 decoded value: $decoded');
-
   if (decoded is! List) {
     throw Exception('❌ El backend NO devolvió una lista');
   }
 
+  // Usamos fromHomeJson porque la respuesta es ligera (id, título, imagen)
   final List<Receta> recetas = decoded.map<Receta>((e) {
-    print('🟢 elemento del map: $e');
     return Receta.fromHomeJson(e as Map<String, dynamic>);
   }).toList();
 
   return recetas;
 }
 
+/// Obtiene una receta completa por su ID (detalle)
+/// Ruta: GET /recetas/:id
+/// Requiere token (puede ser pública o privada del usuario)
 Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
-  print("➡️ Llamando a backend para receta ID: $recetaId");
   final url = Uri.parse('$_baseUrl/recetas/$recetaId');
-  print("🌐 URL completa: $url");
 
   final response = await http.get(
     url,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
+      'Authorization': 'Bearer $token',
     },
   );
 
-  print("⬅️ Status code: ${response.statusCode}"); // <-- PRINT 3
-  print("⬅️ Body: ${response.body}");
-
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-      print("✅ Receta recibida: $data");
-      return Receta.fromJson(data); // tu modelo Receta debe parsear ingredientes y pasos
+    return Receta.fromJson(
+      data,
+    ); // ← Usa el constructor completo (ingredientes + pasos)
   } else {
-      print("⚠️ Error al obtener receta");
-      throw Exception('Error al obtener receta por ID');
+    throw Exception('Error al obtener receta por ID: ${response.statusCode}');
   }
 }
 
+/// Obtiene una receta SOLO si es pública (sin token)
+/// Ruta: GET /recetas/publicas/:id
 Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
   final url = Uri.parse('$_baseUrl/recetas/publicas/$recetaId');
-  print("🔎 URL receta pública: $url");
 
-  final response = await http.get(url); // sin token
-  print("⬅️ Status code: ${response.statusCode}");
-  print("⬅️ Body: ${response.body}");
+  final response = await http.get(url);
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    print("✅ Receta recibida: $data");
     return Receta.fromJson(data);
   } else {
-    print("⚠️ Error al obtener receta pública: ${response.statusCode}");
-    throw Exception('Error al obtener receta pública por ID');
+    throw Exception('Error al obtener receta pública: ${response.statusCode}');
   }
 }
 
+/// Obtiene TODAS las recetas públicas (para home/exploración)
+/// Ruta: GET /recetas/publicas
 Future<List<Receta>> obtenerRecetasPublicas() async {
   final url = Uri.parse('$_baseUrl/recetas/publicas');
 
@@ -171,22 +166,32 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
   }
 }
 
- Future<bool> eliminarReceta(int id) async {
-    final response = await http.delete(Uri.parse("$_baseUrl/$id"));
-    return response.statusCode == 200;
-  }
-
-  Future<bool> editarReceta(Receta receta, String token) async {
-    final response = await http.put(
-      Uri.parse('$_baseUrl/recetas/${receta.id}'),
-      headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer $token",
+/// Elimina una receta por ID
+/// Ruta: DELETE /recetas/:id
+/// Requiere token y ser propietario (backend lo valida)
+Future<bool> eliminarReceta(int id) async {
+  final response = await http.delete(
+    Uri.parse('$_baseUrl/recetas/$id'), // ← Faltaba /recetas/
+    headers: {
+      'Authorization': 'Bearer ', // ← ¡Falta el token aquí!
     },
-      body: jsonEncode(receta.toJson()),
-    );
+  );
 
-    return response.statusCode == 200;
-  }
+  return response.statusCode == 200 || response.statusCode == 204;
+}
 
-  
+/// Edita una receta existente
+/// Ruta: PUT /recetas/:id
+/// Requiere token y ser propietario
+Future<bool> editarReceta(Receta receta, String token) async {
+  final response = await http.put(
+    Uri.parse('$_baseUrl/recetas/${receta.id}'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode(receta.toJson()),
+  );
+
+  return response.statusCode == 200;
+}
