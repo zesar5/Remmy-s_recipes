@@ -10,7 +10,8 @@ import '../../services/auth_service.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
 import '../../constants/app_strings.dart';
 
-const String _baseUrl = 'http://10.0.2.2:8000';
+const String _baseUrl = 'https://nondelirious-vita-unpent.ngrok-free.dev';
+//const String _baseUrl = 'http://10.0.2.2:8000';
 //const String _baseUrl = 'http://localhost:8000';
 
 

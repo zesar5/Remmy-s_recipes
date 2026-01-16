@@ -16,6 +16,6 @@ app.use("/usuarios", require("./routes/usuarioRoutes"));
 app.use("/recetas", require("./routes/recetaRoutes"));
 
 // Iniciar servidor
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
