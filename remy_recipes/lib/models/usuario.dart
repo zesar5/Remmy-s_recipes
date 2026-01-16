@@ -1,14 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-
-import '../screens/login/login_screen.dart';
-import '../screens/register/register_screen.dart';
-
-// URL base del backend (para emulador Android)
-const String _baseUrl = 'http://10.0.2.2:8000';
-// const String _baseUrl = 'http://localhost:8000'; // ← para desarrollo en navegador o dispositivo físico
-
 // ==========================================================================
 //                  MODELO DE DATOS: USUARIO
 // ==========================================================================

@@ -1,13 +1,10 @@
 import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import '../home/home_screen.dart'; // ← No se usa en este archivo (posible import innecesario)
 import '../login/login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import '../../constants/app_strings.dart';
-
-const String _baseUrl = 'http://10.0.2.2:8000';
 
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO

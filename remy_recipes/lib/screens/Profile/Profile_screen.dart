@@ -1,4 +1,3 @@
-import 'package:remy_recipes/main.dart';
 import 'dart:typed_data';
 import '../../services/auth_service.dart';
 import '../../services/recetas_service.dart';
@@ -7,11 +6,7 @@ import '../../models/usuario.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../register/register_screen.dart';
-import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
 import '../../constants/app_strings.dart';
-
-const String _baseUrl = 'http://10.0.2.2:8000';
 
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:remy_recipes/main.dart';
 import '../models/receta.dart';
+import 'config.dart';
 
 // URL base del backend (emulador Android → localhost del host)
 const String _baseUrl = 'http://10.0.2.2:8000';
@@ -16,7 +16,7 @@ const String _baseUrl = 'http://10.0.2.2:8000';
 
 /// Obtiene TODAS las recetas (normalmente públicas, según backend)
 Future<List<Receta>> obtenerTodasLasRecetas() async {
-  final url = Uri.parse('$_baseUrl/recetas');
+  final url = Uri.parse('${ApiEndpoints.recetas}/recetas');
 
   try {
     final response = await http.get(url);

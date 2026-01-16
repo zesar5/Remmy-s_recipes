@@ -1,8 +1,6 @@
 import 'package:remy_recipes/screens/recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import '../register/register_screen.dart'; // ← Parece import innecesario aquí
-import 'package:remy_recipes/screens/home/home_screen.dart' hide Receta;
 import 'dart:convert';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';

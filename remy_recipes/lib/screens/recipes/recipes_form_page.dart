@@ -7,8 +7,6 @@ import '/services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../../constants/app_strings.dart';
 
-const String _baseUrl = 'http://10.0.2.2:8000';
-
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
 // ==========================================================================

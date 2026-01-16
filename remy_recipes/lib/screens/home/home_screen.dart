@@ -8,12 +8,7 @@ import 'dart:typed_data';
 import '../recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
-
-// URL base del backend (para emulador Android)
-// En producción deberías usar variables de entorno o configuración
-const String _baseUrl = 'http://10.0.2.2:8000';
-//const String _baseUrl = 'https://nondelirious-vita-unpent.ngrok-free.dev';
-// const String _baseUrl = 'http://localhost:8000';
+import '../../services/config.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -175,14 +170,14 @@ class _MainPageState extends State<MainPage> {
   Future<void> fetchRecipes() async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/recetas/?rangoInicio=1&rangoFin=4'),
+        Uri.parse(ApiEndpoints.homeRecetas),
       );
 
       print(response.body); // ← Útil para depuración
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
-        
+
         setState(() {
           // Aquí hay un error en el código original:
           // Primero usa fromHomeJson (correcto), pero luego sobrescribe con fromJson (incorrecto)

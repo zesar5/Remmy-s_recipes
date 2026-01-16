@@ -1,11 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:remy_recipes/main.dart'; // ← Probablemente para constantes globales
 import '../models/usuario.dart';
-
-const String _baseUrl =
-    'http://10.0.2.2:8000'; // Emulador Android → localhost del host
+import '../services/config.dart';
 
 // ==========================================================================
 //          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)
@@ -29,7 +25,7 @@ class AuthService {
   /// Realiza login enviando email + contraseña al backend
   /// Si éxito → guarda token y carga perfil completo
   Future<bool> login({required String email, required String password}) async {
-    final url = Uri.parse('$_baseUrl/usuarios/login');
+    final url = Uri.parse(ApiEndpoints.login);
 
     final response = await http.post(
       url,
@@ -75,7 +71,7 @@ class AuthService {
     int? anioNacimiento,
     String? fotoPerfil, // base64 completo (data:image/...;base64,...)
   }) async {
-    final url = Uri.parse('$_baseUrl/usuarios/registro');
+    final url = Uri.parse(ApiEndpoints.register);
 
     // Creamos instancia temporal del modelo Usuario solo para usar toJsonRegistro()
     final newUser = Usuario(
@@ -123,7 +119,7 @@ class AuthService {
   Future<bool> fetchProfile(int userId) async {
     if (_accessToken == null) return false;
 
-    final url = Uri.parse('$_baseUrl/usuarios/perfil/$userId');
+    final url = Uri.parse('${ApiEndpoints.perfil}/$userId');
 
     final response = await http.get(
       url,
