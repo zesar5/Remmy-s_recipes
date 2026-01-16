@@ -4,10 +4,6 @@ import 'package:http/http.dart' as http;
 import '../models/receta.dart';
 import 'config.dart';
 
-// URL base del backend (emulador Android → localhost del host)
-const String _baseUrl = 'http://10.0.2.2:8000';
-// const String _baseUrl = 'http://localhost:8000';
-
 // ==========================================================================
 //          SERVICIO DE RECETAS - CONEXIÓN CON EL BACKEND
 // ==========================================================================
@@ -40,7 +36,7 @@ Future<List<Receta>> obtenerTodasLasRecetas() async {
 /// Crea una nueva receta en el servidor (POST /recetas)
 /// Requiere token de autenticación
 Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
-  final url = Uri.parse('$_baseUrl/recetas');
+  final url = Uri.parse(ApiEndpoints.recetas);
 
   try {
     print('Enviando token al backend: $token');
@@ -78,7 +74,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
   print('🔐 TOKEN: $token');
 
   final response = await http.get(
-    Uri.parse('$_baseUrl/recetas/usuario/$userId'),
+    Uri.parse('${ApiEndpoints.obtenerRecetaUsuario}/$userId'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -110,7 +106,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
 /// Ruta: GET /recetas/:id
 /// Requiere token (puede ser pública o privada del usuario)
 Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
-  final url = Uri.parse('$_baseUrl/recetas/$recetaId');
+  final url = Uri.parse('${ApiEndpoints.recetas}/$recetaId');
 
   final response = await http.get(
     url,
@@ -133,7 +129,7 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
 /// Obtiene una receta SOLO si es pública (sin token)
 /// Ruta: GET /recetas/publicas/:id
 Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
-  final url = Uri.parse('$_baseUrl/recetas/publicas/$recetaId');
+  final url = Uri.parse('${ApiEndpoints.recetas}/publicas/$recetaId');
 
   final response = await http.get(url);
 
@@ -148,7 +144,7 @@ Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
 /// Obtiene TODAS las recetas públicas (para home/exploración)
 /// Ruta: GET /recetas/publicas
 Future<List<Receta>> obtenerRecetasPublicas() async {
-  final url = Uri.parse('$_baseUrl/recetas/publicas');
+  final url = Uri.parse('${ApiEndpoints.recetas}/publicas');
 
   try {
     final response = await http.get(url);
@@ -171,7 +167,7 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
 /// Requiere token y ser propietario (backend lo valida)
 Future<bool> eliminarReceta(int id) async {
   final response = await http.delete(
-    Uri.parse('$_baseUrl/recetas/$id'), // ← Faltaba /recetas/
+    Uri.parse('${ApiEndpoints.recetas}/$id'), // ← Faltaba /recetas/
     headers: {
       'Authorization': 'Bearer ', // ← ¡Falta el token aquí!
     },
@@ -185,7 +181,7 @@ Future<bool> eliminarReceta(int id) async {
 /// Requiere token y ser propietario
 Future<bool> editarReceta(Receta receta, String token) async {
   final response = await http.put(
-    Uri.parse('$_baseUrl/recetas/${receta.id}'),
+    Uri.parse('${ApiEndpoints.recetas}/${receta.id}'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
