@@ -9,7 +9,7 @@ class UsuarioEntity {
     this.nombre = obj.nombre;
     this.pais = obj.pais;
     this.email = obj.email;
-    this.contrasena = obj.contrasena; // ← ¡OJO! Contraseña en plano (muy inseguro)
+    this.contrasenaHash = obj.contrasenaHash; // ← ¡OJO! Contraseña en plano (muy inseguro)
     this.descripcion = obj.descripcion;
     this.anioNacimiento = obj.anioNacimiento;
   }
@@ -50,7 +50,7 @@ class Usuario {
         data.contrasena, // ← Aquí está el problema de seguridad
         data.descripcion,
         data.anioNacimiento,
-      ]
+      ],
     );
 
     return result.insertId;
@@ -71,7 +71,7 @@ class Usuario {
     await db.query(
       `INSERT INTO usuario_imagen (imagen, Id_usuario)
             VALUES (?, ?)`,
-      [buffer, idUsuario]
+      [buffer, idUsuario],
     );
   }
 
@@ -85,7 +85,7 @@ class Usuario {
   static async obtenerPerfil(id) {
     const [rows] = await db.query(
       "SELECT * FROM usuario WHERE Id_usuario = ?",
-      [id]
+      [id],
     );
 
     if (rows.length === 0) return null;

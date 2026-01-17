@@ -1,5 +1,6 @@
 const { Usuario } = require("../models/usuario");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 // ────────────────────────────────────────────────
 //                  LOGIN USUARIO
@@ -30,8 +31,8 @@ exports.loginUsuario = async (req, res) => {
     // ⚠️ IMPORTANTE: Aquí se compara la contraseña en texto plano
     // Esto es inseguro en producción → debería usar bcrypt + hash
     const [rows] = await require("../config/db").query(
-      "SELECT * FROM usuario WHERE email = ? AND contrasena = ?",
-      [email, contrasena]
+      "SELECT * FROM usuario WHERE email = ? ",
+      [email],
     );
 
     if (rows.length === 0) {
@@ -41,12 +42,19 @@ exports.loginUsuario = async (req, res) => {
     }
 
     const usuario = rows[0];
+    const passwordCorrecta = await bcrypt.compare(
+      contrasena,
+      usuario.contrasena,
+    );
+    if (!passwordCorrecta) {
+      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
+    }
 
     // Generamos token JWT con el id del usuario
     const token = jwt.sign(
       { id: usuario.Id_usuario }, // payload
       process.env.JWT_SECRET, // clave secreta (debe estar en .env)
-      { expiresIn: "24h" } // duración del token
+      { expiresIn: "24h" }, // duración del token
     );
 
     console.log("JWT generado:", token);
@@ -97,6 +105,10 @@ exports.registrarUsuario = async (req, res) => {
         mensaje: "El usuario ya existe",
       });
     }
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(data.contrasena, saltRounds);
+
+    data.contrasena = hash;
 
     // 2. Crear el usuario en la base de datos
     console.log("Datos a registrar:", data);
