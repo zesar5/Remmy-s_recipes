@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../models/usuario.dart';
 import '../services/config.dart';
@@ -10,6 +11,7 @@ import '../services/config.dart';
 // Es el puente entre Flutter y el backend Node.js/Express
 
 class AuthService {
+  final _storage = const FlutterSecureStorage();
   // Almacenamiento en memoria del token y usuario actual
   // En producción → usar flutter_secure_storage o hive con cifrado
   String? _accessToken;
@@ -17,6 +19,25 @@ class AuthService {
 
   Usuario? _currentUser;
   Usuario? get currentUser => _currentUser;
+  // ==============================================
+  //  MÉTODO PARA AUTO-LOGIN AL ARRANCAR
+  // ==============================================
+  Future<bool> tryAutoLogin() async {
+    final token = await _storage.read(key: 'jwt_token');
+    final userIdStr = await _storage.read(key: 'user_id');
+
+    if (token == null || userIdStr == null) return false;
+
+    _accessToken = token;
+    try {
+      // Intentamos cargar el perfil para verificar si el token sigue vigente
+      return await fetchProfile(int.parse(userIdStr));
+    } catch (e) {
+      // Si falla (token expirado), limpiamos todo
+      await logout();
+      return false;
+    }
+  }
 
   // ==============================================
   //                     LOGIN
@@ -42,9 +63,9 @@ class AuthService {
       _accessToken = data['token']; // Guardamos el JWT
       final userId = int.parse(data['id'].toString());
 
-      print('TOKEN JWT GUARDADO: $_accessToken');
-      print('ID USUARIO GUARDADO: $userId');
-
+      // NUEVO: Persistimos los datos para la próxima vez que abra la app
+      await _storage.write(key: 'jwt_token', value: _accessToken);
+      await _storage.write(key: 'user_id', value: userId.toString());
       // Cargamos el perfil completo usando el nuevo token
       return await fetchProfile(userId);
     } else {
@@ -149,9 +170,11 @@ class AuthService {
   // ==============================================
 
   /// Limpia la sesión actual (token y usuario)
-  void logout() {
+  Future <void> logout() async {
     _accessToken = null;
     _currentUser = null;
+    await _storage.delete(key: 'jwt_token');
+    await _storage.delete(key: 'user_id');
     // En producción: también borrar de secure storage
   }
 }
