@@ -35,7 +35,7 @@ exports.loginUsuario = async (req, res) => {
       "SELECT * FROM usuario WHERE email = ? ",
       [email],
     );
-
+    
     if (rows.length === 0) {
       return res.status(401).json({
         mensaje: t.invalidCredentials,
@@ -43,12 +43,15 @@ exports.loginUsuario = async (req, res) => {
     }
 
     const usuario = rows[0];
-    const passwordCorrecta = await bcrypt.compare(
+    /*const passwordCorrecta = await bcrypt.compare(
       contrasena,
       usuario.contrasena,
     );
     if (!passwordCorrecta) {
       return res.status(401).json({ mensaje: t.invalidCredentials });
+    if (!passwordCorrecta) {*/
+    if(contrasena !== usuario.contrasena){
+      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
     // Generamos token JWT con el id del usuario
