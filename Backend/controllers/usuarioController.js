@@ -42,11 +42,12 @@ exports.loginUsuario = async (req, res) => {
     }
 
     const usuario = rows[0];
-    const passwordCorrecta = await bcrypt.compare(
+    /*const passwordCorrecta = await bcrypt.compare(
       contrasena,
       usuario.contrasena,
     );
-    if (!passwordCorrecta) {
+    if (!passwordCorrecta) {*/
+    if(contrasena !== usuario.contrasena){
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
