@@ -23,61 +23,85 @@ class RecipeFormPage extends StatefulWidget {
 }
 
 class _RecipeFormPageState extends State<RecipeFormPage> {
-  // Variables de estado del formulario
-  String? imagePath; // Ruta local de la imagen seleccionada
-  final TextEditingController titleController = TextEditingController();
-
-  String? duration; // Tiempo en minutos (string del dropdown)
-  String? country;
-  List<String> selectedAllergens = [];
-  String? season;
-
-  List<Ingrediente> ingredients = []; // Lista dinámica de ingredientes
-  List<Paso> steps = []; // Lista dinámica de pasos
-
-  // Listas para los dropdowns
-  final List<String> durations = List.generate(
-    60,
-    (index) => ((index + 1) * 5).toString(),
-  ); // 5,10,15...300 min
-  final List<String> countries = [/* lista muy larga de países */];
-  final List<String> allergens = [
-    'Ninguna',
-    'Gluten',
-    'Lácteos / Lactosa' /* ... */,
-  ];
-  final List<String> seasons = [
-    'Todas',
-    'Primavera',
-    'Verano',
-    'Otoño',
-    'Invierno',
-  ];
-
-  final ImagePicker picker = ImagePicker();
-
   @override
   void initState() {
     super.initState();
 
-    // Si estamos editando una receta existente → precargamos todos los campos
     if (widget.recetaEditar != null) {
       final r = widget.recetaEditar!;
+
       titleController.text = r.titulo;
       duration = r.duracion?.toString();
       country = r.pais;
       selectedAllergens = (r.alergenos ?? '').split(',');
       season = r.estacion;
 
-      ingredients = (r.ingredientes ?? [])
-          .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
-          .toList();
+      // 👇 Ingredientes (String → Ingredient)
+      ingredients = (r.ingredientes??[]).map((i) {
+        return Ingrediente(
+          nombre: i.nombre,
+          cantidad: i.cantidad,
+        );
+      }).toList();
 
-      steps = (r.pasos ?? [])
-          .map((p) => Paso(descripcion: p.descripcion))
-          .toList();
+      steps = (r.pasos??[]).map((p) {
+         return Paso(descripcion: p.descripcion);
+      }).toList();
     }
   }
+
+  String? imagePath;
+  String title = '';
+  String? duration;
+  String? country;
+  List<String> selectedAllergens = [];
+  String? season;
+
+  List<Ingrediente> ingredients = [];
+  List<Paso> steps = [];
+
+  final TextEditingController titleController = TextEditingController();
+ 
+  final List<String> durations =
+    List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
+
+  final List<String> countries = [
+    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia","Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados",
+    "Baréin", "Bélgica", "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina",
+    "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre", 
+    "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil",
+    "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos", "Estonia", "Esuatini",
+    "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Guyana",
+    "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania",
+    "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Madagascar", "Malasia",
+    "Malaui", "Maldivas", "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México","Micronesia", "Moldavia", "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru",
+    "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", "Países Bajos","Pakistán", "Palaos", "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal",
+    "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda", "Rumanía","Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas",
+    "Santa Lucía", "Santo Tomé y Príncipe", "Senegal","Serbia", "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica",
+    "Sudán", "Sudán del Sur", "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", "Tuvalu",
+    "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
+    "Yibuti", "Zambia", "Zimbabue"
+  ];
+
+  final List<String> allergens = [
+    'Ninguna',
+    'Gluten',
+    'Lácteos / Lactosa',
+    'Huevo',
+    'Frutos secos',
+    'Cacahuete',
+    'Soja',
+    'Pescado',
+    'Mariscos',
+    'Sésamo',
+    'Mostaza',
+    'Apio',
+    'Sulfitos',
+    'Altramuces',
+  ];
+
+  final List<String> seasons = ['Todas', 'Primavera', 'Verano', 'Otoño', 'Invierno'];
+  final picker = ImagePicker();
 
   // ==============================================
   //               SELECCIÓN DE IMAGEN
@@ -187,9 +211,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   // ==============================================
 
   bool isFormValid() {
-    if (titleController.text.trim().isEmpty) return false;
-    if (imagePath == null && widget.recetaEditar?.imagenBase64 == null)
-      return false;
+    if (title.trim().isEmpty) return false;
+    if (imagePath == null) return false;
     if (duration == null) return false;
     if (country == null) return false;
     if (selectedAllergens.isEmpty) return false;
@@ -212,6 +235,38 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   //           GUARDAR / ACTUALIZAR RECETA
   // ==============================================
 
+  void onSubmit() {
+    if (isFormValid()) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Éxito'),
+          content: Text('Receta guardada con éxito'),
+          actions: [
+            TextButton(
+              onPressed:() => Navigator.of(context).pushNamed('/home'),
+              child: Text('OK'),
+            )
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Advertencia'),
+          content: Text('Error, no ha rellenado todos los campos'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            )
+          ],
+        ),
+      );
+    }
+  }
+
   Future<void> _guardarReceta() async {
     if (!isFormValid()) {
       _mostrarError('Debe rellenar todos los campos obligatorios');
@@ -222,8 +277,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     final receta = Receta(
       id: widget.recetaEditar?.id,
       titulo: titleController.text.trim(),
-      ingredientes: ingredients,
-      pasos: steps,
+      ingredientes: ingredients
+        .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
+        .toList(),
+      pasos: steps.map((s) => Paso(descripcion: s.descripcion)).toList(),
       duracion: int.parse(duration!),
       pais: country!,
       alergenos: selectedAllergens.join(','),
@@ -309,7 +366,14 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             const SizedBox(height: 20),
 
             // SELECCIÓN DE IMAGEN
-            const Text(AppStrings.anadirImagen, style: TextStyle(fontSize: 20)),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(AppStrings.anadirImagen,
+              style: TextStyle(
+                fontSize: 20,
+              )
+              ),
+            ),
             const SizedBox(height: 5),
             GestureDetector(
               onTap: pickImage,
@@ -322,42 +386,55 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child:
-                    imagePath == null &&
-                        widget.recetaEditar?.imagenBase64 == null
+                    imagePath == null //&& widget.recetaEditar?.imagenBase64 == null
                     ? const Center(
-                        child: Text('+', style: TextStyle(fontSize: 40)),
-                      )
-                    : imagePath != null
-                    ? (kIsWeb
-                          ? Image.network(imagePath!, fit: BoxFit.cover)
-                          : Image.file(File(imagePath!), fit: BoxFit.cover))
-                    : Image.memory(
-                        base64Decode(
-                          widget.recetaEditar!.imagenBase64!.split(',').last,
+                        child: Text('+', style: TextStyle(fontSize: 40),
                         ),
+                      )
+                      : kIsWeb ? Image.network(
+                        fit: BoxFit.fill,
+                        imagePath!,
+                        errorBuilder: (context, error, stackTrace) => const Center(child: Text("Error al cargar imagen web")),
+                      )
+                      
+                      // Importante: La clase File ya está importada en el inicio del archivo
+                      : Image.file(
+                        File(imagePath!),
                         fit: BoxFit.cover,
                       ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 15),
 
             // TÍTULO
-            const Text(
-              AppStrings.titulo,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                AppStrings.titulo,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
             ),
             TextField(
               controller: titleController,
-              style: const TextStyle(fontSize: 22),
+              onChanged: (val) => title = val,
+              style: const TextStyle(
+                fontSize: 22,       
+              ),
             ),
 
             const SizedBox(height: 30),
 
             // INGREDIENTES DINÁMICOS
-            const Text(
-              AppStrings.ingredientesLabel,
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Ingredientes:",
+              style: TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 18,),
+              ),
             ),
             ...ingredients.asMap().entries.map((entry) {
               int idx = entry.key;
@@ -369,7 +446,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     Expanded(
                       flex: 2,
                       child: TextField(
-                        controller: TextEditingController(text: ing.nombre),
+                        key: ValueKey("ingredient_name_$idx"),
+                        controller: TextEditingController(text: ing.nombre)
+                        ..selection= TextSelection.collapsed(offset: ing.nombre.length),
                         onChanged: (val) => ing.nombre = val,
                         decoration: const InputDecoration(
                           hintText: AppStrings.ingredienteHint,
@@ -380,42 +459,184 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     Expanded(
                       flex: 1,
                       child: TextField(
-                        controller: TextEditingController(text: ing.cantidad),
+                        key: ValueKey("ingredient_qty_$idx"),
+                        controller: TextEditingController(text: ing.cantidad)
+                        ..selection = TextSelection.collapsed(offset: ing.cantidad.length),
                         onChanged: (val) => ing.cantidad = val,
                         decoration: const InputDecoration(hintText: AppStrings.cantidadHint),
-                      ),
                     ),
+                  ),
+
+                  const SizedBox(width: 5),
+                  // Botón eliminar
+                  ElevatedButton(
+                    onPressed: () => removeIngredient(idx),
+                    child: const Text('-'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  )
+                ],
+              ),
+            );
+            }).toList(),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addIngredient, 
+              child: const Text('Agregar Ingrediente'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+
+            SizedBox(height: 15),
+
+            // Pasos
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Pasos:",
+              style: TextStyle(
+               fontWeight: FontWeight.w600, fontSize: 18
+              ),
+              ),
+            ),
+            // ... (mapeo de pasos)
+            ...steps.asMap().entries.map((entry) {
+                int idx = entry.key;
+                Paso step = entry.value;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: ValueKey("step_desc_$idx"),
+                          controller: TextEditingController(text: step.descripcion)
+                            ..selection = TextSelection.collapsed(offset: step.descripcion.length),
+                          onChanged: (val) => step.descripcion= val,
+                          decoration: const InputDecoration(
+                            hintText: 'Paso',
+                          ),
+                        ),
+                      ),
                     const SizedBox(width: 5),
                     ElevatedButton(
-                      onPressed: () => removeIngredient(idx),
+                      onPressed: () => removeStep(idx),
+                      child: const Text('-'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                      child: const Text('-'),
                     ),
                   ],
                 ),
               );
-            }),
+            }).toList(),
+            SizedBox(height: 10),
             ElevatedButton(
-              onPressed: addIngredient,
-              child: const Text(AppStrings.agregarIngrediente),
+              onPressed: addStep, 
+              child: const Text('Agregar Paso'), 
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
 
-            // PASOS DINÁMICOS (similar a ingredientes)
+            // Combo boxes (Duración y País)
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: duration,
+                    decoration: const InputDecoration(
+                      labelText: 'Duración (min)',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: durations
+                        .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                        .toList(),
+                    onChanged: (val) => setState(() => duration = val),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: country,
+                    decoration: const InputDecoration(
+                      labelText: 'País',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: countries
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (val) => setState(() => country = val),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            
+            // Combo boxes (Alérgenos y Estación)
+            Row(
+              children: [
+                Expanded(
+                child: GestureDetector(
+                onTap: () => _showAllergenSelector(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Alérgenos',
+                    ),
+                    controller: TextEditingController(
+                      text: selectedAllergens.isEmpty
+                          ? ''
+                          : selectedAllergens.join(', '),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: season,
+                    decoration: const InputDecoration(
+                      labelText: 'Estación',
+                      // Tema aplicado automáticamente
+                    ),
+                    items: seasons
+                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                        .toList(),
+                    onChanged: (val) => setState(() => season = val),
+                  ),
+                ),
+              ],
+            ),
 
-            // DROPDOWNS: DURACIÓN + PAÍS
-            // DROPDOWN: ESTACIÓN + SELECTOR ALÉRGENOS (con diálogo)
+            SizedBox(height: 50),
 
-            // BOTÓN GUARDAR
+            // Botón guardar (usamos un estilo similar al de Login/Register)
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: _guardarReceta,
                 child: const Text(AppStrings.guardarReceta),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                ),
               ),
             ),
           ],

@@ -9,6 +9,7 @@ import '../recipes/recipes_form_page.dart';
 import '../../services/auth_service.dart';
 import '../RecetaPage/DetalleRecetaPage.dart';
 import '../../services/config.dart';
+import '../../constants/app_strings.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -177,14 +178,13 @@ class _MainPageState extends State<MainPage> {
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
+        recipes = data.map((e) => Receta.fromHomeJson(e as Map<String, dynamic>)).toList();
 
         setState(() {
           // Aquí hay un error en el código original:
           // Primero usa fromHomeJson (correcto), pero luego sobrescribe con fromJson (incorrecto)
           // La versión corregida debería ser solo una de las dos
-          recipes = data
-              .map((e) => Receta.fromHomeJson(e as Map<String, dynamic>))
-              .toList();
+          recipes = data.map((e) => Receta.fromJson(e)).toList();
           loading = false;
         });
 
@@ -239,7 +239,7 @@ class _MainPageState extends State<MainPage> {
               Column(
                 children: [
                   const Text(
-                    "Remmy's Recipes",
+                    AppStrings.appName,
                     style: TextStyle(
                       fontSize: 28,
                       fontFamily: 'Alegreya',
@@ -276,7 +276,7 @@ class _MainPageState extends State<MainPage> {
 
               // Título de la sección de recetas
               const Text(
-                "Recetas",
+                AppStrings.recetas,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
 
@@ -287,7 +287,7 @@ class _MainPageState extends State<MainPage> {
                 child: loading
                     ? const Center(child: CircularProgressIndicator())
                     : recipes.isEmpty
-                    ? const Center(child: Text('No hay recetas'))
+                    ? const Center(child: Text(AppStrings.noHayRecetas))
                     : GridView.builder(
                         padding: const EdgeInsets.only(bottom: 10),
                         gridDelegate:
@@ -335,7 +335,7 @@ class _MainPageState extends State<MainPage> {
               onTap: () {
                 if (widget.authService.currentUser == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Debes iniciar sesión")),
+                    const SnackBar(content: Text(AppStrings.debesIniciarSesion)),
                   );
                   return;
                 }
@@ -419,7 +419,7 @@ class RecipeButton extends StatelessWidget {
         } catch (e) {
           print("🔥 ERROR al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("No se pudo cargar la receta")),
+            const SnackBar(content: Text(AppStrings.errorCargarReceta)),
           );
         }
       },

@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // Imagen de perfil seleccionada (local)
   File? imagenPerfil;
 
-  final ImagePicker picker = ImagePicker();
+  final picker = ImagePicker();
 
   // Flags de error visual (bordes rojos + mensajes)
   bool errorName = false;
@@ -46,9 +46,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? errorCorreoMensaje; // Mensaje personalizado para correo
 
-  // Listas para dropdowns
-  final List<String> paises = [/* lista de países */];
-  final List<int> anios = [for (int i = DateTime.now().year; i >= 1900; i--) i];
+  List<String> paises = [
+    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Arabia Saudita",
+    "Argentina", "Australia", "Austria", "Bélgica", "Bolivia", "Brasil",
+    "Canadá", "Chile", "China", "Colombia", "Corea del Sur", "Costa Rica",
+    "Cuba", "Dinamarca", "Ecuador", "Egipto", "El Salvador", "Eslovaquia",
+    "Eslovenia", "España", "Estados Unidos", "Finlandia", "Francia", "Grecia",
+    "Guatemala", "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak",
+    "Irán", "Irlanda", "Islandia", "Italia", "Japón", "Jordania", "Kenia",
+    "Letonia", "Líbano", "Libia", "Lituania", "Luxemburgo", "México", "Mónaco",
+    "Mongolia", "Nepal", "Nicaragua", "Nigeria", "Noruega", "Países Bajos",
+    "Panamá", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido",
+    "República Dominicana", "Rumania", "Rusia", "Senegal", "Serbia", "Suecia",
+    "Suiza", "Tailandia", "Turquía", "Ucrania", "Uruguay", "Venezuela",
+    "Vietnam"
+  ];
+
+  List<int> anios = [ for (int i = DateTime.now().year; i >= 1900; i--) i ];
 
   // ==============================================
   //               VALIDACIONES
@@ -171,7 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       // Error del backend (ej: usuario ya existe, email duplicado)
-      mostrarMensaje(e.toString().replaceAll("Exception:", "").trim());
+      mostrarMensaje(e.toString().replaceAll("Exception:", ""));
     }
   }
 

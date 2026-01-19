@@ -11,7 +11,7 @@ class RecetaEntity {
     this.pais = obj.origen;
     this.alergenos = obj.alergenos;
     this.estacion = obj.estacion;
-    this.publica = !!obj.publica; // convertimos a booleano
+    this.publica = obj.publica; // convertimos a booleano
     this.usuarioId = obj.Id_usuario;
     this.ingredientes = obj.ingredientes || [];
     this.pasos = obj.pasos || [];
@@ -40,14 +40,14 @@ const RecetaModel = {
     );
 
     // Transformamos las filas en formato más amigable para el frontend
-    return rows.map((row) => ({
-      id: row.Id_receta,
-      titulo: row.titulo,
-      imagenBase64: row.imagen
-        ? `data:image/jpeg;base64,${row.imagen.toString("base64")}`
-        : null,
-    }));
-  },
+    const recetas = rows.map(row => ({
+            id: row.Id_receta,
+            titulo: row.titulo,
+            imagenBase64: row.imagen ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` : null
+        }));
+
+        return recetas;
+    },
 
   /**
    * Obtiene recetas visibles (públicas)
@@ -63,7 +63,7 @@ const RecetaModel = {
     }
 
     const [rows] = await db.query(query, params);
-    return rows.map((r) => new RecetaEntity(r));
+    return rows.map(r => new RecetaEntity(r));
   },
 
   /**
@@ -84,7 +84,7 @@ const RecetaModel = {
       [minId, maxId]
     );
 
-    return rows.map((row) => ({
+    return rows.map(row => ({
       Id_receta: row.Id_receta,
       titulo: row.titulo,
       imagenBase64: row.imagen
@@ -130,7 +130,7 @@ const RecetaModel = {
 
     // Armamos el objeto final
     receta.ingredientes = ingredientes;
-    receta.pasos = pasos.map((p) => p.descripcion); // solo las descripciones
+    receta.pasos = pasos; // solo las descripciones
     receta.imagen = imagenes.length
       ? `data:image/jpeg;base64,${imagenes[0].imagen.toString("base64")}`
       : null;
@@ -172,7 +172,7 @@ const RecetaModel = {
 
     // Pasos
     if (data.pasos?.length) {
-      const pasosPromises = data.pasos.map((p) =>
+      const pasosPromises = data.pasos.map(p =>
         db.query("INSERT INTO Paso (descripcion, Id_receta) VALUES (?, ?)", [
           p.descripcion,
           recetaId,
@@ -183,7 +183,7 @@ const RecetaModel = {
 
     // Ingredientes
     if (data.ingredientes?.length) {
-      const ingredientesPromises = data.ingredientes.map((i) =>
+      const ingredientesPromises = data.ingredientes.map(i =>
         db.query(
           "INSERT INTO Ingrediente (nombre, cantidad, Id_receta) VALUES (?, ?, ?)",
           [i.nombre, i.cantidad, recetaId]

@@ -60,10 +60,10 @@ class Usuario {
       'email': email,
       'contrasena': contrasena,
       'contrasena2': contrasena2, // el backend valida que coincidan
-      if (pais != null) 'pais': pais,
-      if (descripcion != null) 'descripcion': descripcion,
-      if (anioNacimiento != null) 'anioNacimiento': anioNacimiento,
-      if (fotoPerfil != null) 'fotoPerfil': fotoPerfil,
+      'pais': pais,
+      'descripcion': descripcion,
+      'anioNacimiento': anioNacimiento,
+      'fotoPerfil': fotoPerfil,
 
       // Nota importante:
       //   - No enviamos 'id' (lo genera el backend)

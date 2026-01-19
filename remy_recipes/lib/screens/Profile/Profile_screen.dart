@@ -326,10 +326,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
           onTap: () async {
             try {
               print("🖱️ Tap detectado en receta ${receta.id}");
+              print("🔄 token de DetalleRecetaPage: ${widget.authService}");
               final recetaCompleta = await obtenerRecetaPorId(
                 widget.authService.accessToken!,
                 receta.id!,
               );
+              print("📦 Receta completa recibida: $recetaCompleta");
 
               final refrescar = await Navigator.push(
                 context,

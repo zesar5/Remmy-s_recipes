@@ -119,7 +119,10 @@ class AuthService {
 
     if (response.statusCode == 200) {
       // Registro exitoso → login automático (muy buena práctica UX)
-      return await login(email: email, password: contrasena);
+      return await login(
+        email: email,
+        password: contrasena,
+      );
     } else {
       // Manejo detallado de errores
       try {

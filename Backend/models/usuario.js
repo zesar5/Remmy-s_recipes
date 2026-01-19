@@ -31,13 +31,7 @@ class Usuario {
     return rows.length > 0;
   }
 
-  /**
-   * Crea un nuevo usuario en la base de datos
-   * @param {Object} data - Datos del formulario de registro
-   * @returns {number} ID del usuario recién creado
-   *
-   * IMPORTANTE: Actualmente guarda la contraseña en texto plano → ¡Muy inseguro!
-   */
+  //crear usuario
   static async crearUsuario(data) {
     const [result] = await db.query(
       `INSERT INTO usuario
@@ -56,11 +50,7 @@ class Usuario {
     return result.insertId;
   }
 
-  /**
-   * Guarda la foto de perfil del usuario (almacenada como binario en BD)
-   * @param {number} idUsuario
-   * @param {string} base64Image - Imagen en formato data:image/...;base64,...
-   */
+  //Guardar imagen
   static async guardarImagen(idUsuario, base64Image) {
     // Quitamos el prefijo "data:image/jpeg;base64," (o similar)
     const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");
@@ -75,13 +65,7 @@ class Usuario {
     );
   }
 
-  /**
-   * Obtiene los datos básicos del perfil de un usuario por su ID
-   * @param {number} id
-   * @returns {UsuarioEntity|null} Objeto usuario o null si no existe
-   *
-   * Nota: NO incluye la imagen de perfil en esta consulta
-   */
+  // Obtener perfil
   static async obtenerPerfil(id) {
     const [rows] = await db.query(
       "SELECT * FROM usuario WHERE Id_usuario = ?",

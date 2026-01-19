@@ -89,9 +89,7 @@ class Receta {
       if (alergenos != null)'alergenos': alergenos,
       if (estacion != null)'estacion': estacion,
       if (idUsuario != null) 'Id_usuario': idUsuario,
-     
       if (imagenBase64 != null) 'imagen': imagenBase64,
     };
   }
 }
-
