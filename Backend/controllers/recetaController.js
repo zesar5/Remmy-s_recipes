@@ -1,4 +1,6 @@
 const { RecetaModel } = require("../models/receta");
+const getMessages = require("../i18n");
+
 // Importamos el modelo que contiene todos los métodos que hablan directamente con la base de datos
 
 // ────────────────────────────────────────────────
@@ -33,12 +35,12 @@ exports.obtenerRecetaPublicaPorId = async (req, res) => {
 
     if (!receta) {
       console.log("⚠️ Receta no encontrada");
-      return res.status(404).json({ mensaje: "Receta no encontrada" });
+      return res.status(404).json({ mensaje: t.recipeNotFound });
     }
 
     if (!receta.publica) {
       console.log("⚠️ Receta privada");
-      return res.status(403).json({ mensaje: "Receta privada" });
+      return res.status(403).json({ mensaje: t.recipePrivate });
     }
 
     console.log("✅ Receta pública encontrada:", receta.titulo);
@@ -68,7 +70,7 @@ exports.getRecetas = async (req, res) => {
     res.status(200).json(recetas);
   } catch (error) {
     res.status(500).json({
-      message: "Error obteniendo recetas",
+      message: t.errorFetchingRecipes,
       error: error.message,
     });
   }
@@ -96,14 +98,14 @@ exports.obtenerRecetaPorId = async (req, res) => {
     console.log("📦 Receta obtenida de DB:", receta);
 
     if (!receta)
-      return res.status(404).json({ mensaje: "Receta no encontrada" });
+      return res.status(404).json({ mensaje: t.recipeNotFound });
 
     // Regla clave de privacidad
     if (!receta.publica && receta.usuarioId !== req.userId) {
       console.log("⚠️ Acceso denegado");
       return res
         .status(403)
-        .json({ mensaje: "No tienes permiso para ver esta receta" });
+        .json({ mensaje: t.noPermissionView });
     }
 
     console.log("✅ Respondiendo con receta");
@@ -131,7 +133,7 @@ exports.crearReceta = async (req, res) => {
     const id = await RecetaModel.crear(req.body, req.userId);
 
     res.status(200).json({
-      mensaje: "Receta creada",
+      mensaje: t.recipeCreated,
       id,
     });
   } catch (err) {
@@ -151,16 +153,16 @@ exports.actualizarReceta = async (req, res) => {
     );
 
     if (esPropietario === null)
-      return res.status(404).json({ mensaje: "Receta no encontrada" });
+      return res.status(404).json({ mensaje: t.recipeNotFound });
 
     if (!esPropietario)
       return res
         .status(403)
-        .json({ mensaje: "No tienes permiso para editar esta receta" });
+        .json({ mensaje: t.noPermissionEdit });
 
     await RecetaModel.actualizar(req.params.id, req.body);
 
-    res.json({ mensaje: "Receta actualizada" });
+    res.json({ mensaje: t.recipeUpdated });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -178,16 +180,16 @@ exports.eliminarReceta = async (req, res) => {
     );
 
     if (esPropietario === null)
-      return res.status(404).json({ mensaje: "Receta no encontrada" });
+      return res.status(404).json({ mensaje: t.recipeNotFound });
 
     if (!esPropietario)
       return res
         .status(403)
-        .json({ mensaje: "No tienes permiso para eliminar esta receta" });
+        .json({ mensaje: t.noPermissionDelete });
 
     await RecetaModel.eliminar(req.params.id);
 
-    res.json({ mensaje: "Receta eliminada" });
+    res.json({ mensaje: t.recipeDeleted });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

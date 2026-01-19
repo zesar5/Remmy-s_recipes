@@ -1,6 +1,7 @@
 const { Usuario } = require("../models/usuario");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const getMessages = require("../i18n");
 
 // ────────────────────────────────────────────────
 //                  LOGIN USUARIO
@@ -23,7 +24,7 @@ exports.loginUsuario = async (req, res) => {
   // Validación básica de campos requeridos
   if (!email || !contrasena) {
     return res.status(400).json({
-      mensaje: "Email y contraseña son requeridos",
+      mensaje: t.loginRequiredFields,
     });
   }
 
@@ -37,7 +38,7 @@ exports.loginUsuario = async (req, res) => {
 
     if (rows.length === 0) {
       return res.status(401).json({
-        mensaje: "Credenciales incorrectas",
+        mensaje: t.invalidCredentials,
       });
     }
 
@@ -47,7 +48,7 @@ exports.loginUsuario = async (req, res) => {
       usuario.contrasena,
     );
     if (!passwordCorrecta) {
-      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
+      return res.status(401).json({ mensaje: t.invalidCredentials });
     }
 
     // Generamos token JWT con el id del usuario
@@ -61,7 +62,7 @@ exports.loginUsuario = async (req, res) => {
 
     // Respuesta exitosa con datos útiles para el frontend
     res.json({
-      mensaje: "Login exitoso",
+      mensaje: t.loginSuccess,
       token,
       id: usuario.Id_usuario,
       userName: usuario.nombre,
@@ -93,7 +94,7 @@ exports.registrarUsuario = async (req, res) => {
   // Verificación básica de coincidencia de contraseñas
   if (data.contrasena !== data.contrasena2) {
     return res.status(400).json({
-      mensaje: "Las contraseñas no coinciden",
+      mensaje: t.passwordsDontMatch,
     });
   }
 
@@ -102,7 +103,7 @@ exports.registrarUsuario = async (req, res) => {
     const existe = await Usuario.existeUsuario(data.nombre);
     if (existe) {
       return res.status(400).json({
-        mensaje: "El usuario ya existe",
+        mensaje: t.userAlreadyExists,
       });
     }
     const saltRounds = 10;
@@ -121,7 +122,7 @@ exports.registrarUsuario = async (req, res) => {
 
     // Respuesta exitosa
     res.json({
-      mensaje: "Usuario creado",
+      mensaje: t.userCreated,
       id: idUsuario,
     });
   } catch (err) {
@@ -151,7 +152,7 @@ exports.obtenerPerfil = async (req, res) => {
 
     if (!perfil) {
       return res.status(404).json({
-        mensaje: "Usuario no encontrado",
+        mensaje: t.userNotFound,
       });
     }
 

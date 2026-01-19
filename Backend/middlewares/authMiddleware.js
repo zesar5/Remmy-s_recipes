@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const getMessages = require("../i18n");
 
 // Este middleware se utiliza para PROTEGER rutas que requieren que el usuario esté autenticado
 module.exports = function (req, res, next) {
@@ -12,7 +13,7 @@ module.exports = function (req, res, next) {
   if (!authHeader) {
     console.log("❌ NO HAY TOKEN");
     return res.status(401).json({
-      mensaje: "Debes iniciar sesión",
+      mensaje: t.mustLogin
     });
   }
 
@@ -26,7 +27,7 @@ module.exports = function (req, res, next) {
   // 4. Validación extra: aunque venga el header, podría no tener token después de "Bearer"
   if (!token) {
     return res.status(401).json({
-      mensaje: "Token no proporcionado",
+      mensaje: t.tokenMissing,
     });
   }
 
@@ -51,7 +52,7 @@ module.exports = function (req, res, next) {
     // Cualquier problema con el token (expirado, inválido, manipulado, etc)
     console.log("❌ TOKEN INVÁLIDO");
     return res.status(401).json({
-      mensaje: "Token inválido",
+      mensaje: t.tokenInvalid,
     });
   }
 };
