@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+import 'package:remy_recipes/screens/login/login_screen.dart';
+
 import '../../services/auth_service.dart';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
@@ -154,21 +156,26 @@ class _PerfilScreenState extends State<PerfilScreen> {
           const SizedBox(height: 10),
 
           // Botón "Editar perfil" (aún placeholder)
-          Container(
-            width: 120,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade400,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextButton(
-              onPressed: _editarPerfil,
-              child: const Text(
-                AppStrings.editarPerfil,
-                style: TextStyle(color: Colors.black, fontSize: 16),
-              ),
-            ),
-          ),
+          PopupMenuButton<String>( 
+            onSelected: (value){ 
+              if (value == 'editar'){ 
+                _editarPerfil(); 
+              } else if (value == 'cerrar'){ 
+                _cerrarSesion(); 
+              } 
+            }, 
+            itemBuilder: (BuildContext context) => [ 
+
+              const PopupMenuItem<String>( 
+                value: 'editar', 
+                child: Text ('Editar perfil'), 
+                ), 
+                const PopupMenuItem<String>(value: 'editar', 
+                child: Text('Cerrar sesión'), 
+                 ), 
+            ], 
+            icon: const Icon(Icons.more_vert, color: Colors.black), 
+          ), 
 
           const SizedBox(height: 12),
 
@@ -446,4 +453,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
     ).showSnackBar(const SnackBar(content: Text(AppStrings.abrirEditarPerfil)));
     // Pendiente: pantalla de edición de perfil
   }
+
+  void _cerrarSesion(){ 
+    //Llama al logoout del AuthService 
+    widget.authService.logout(); 
+    //Navega a la pantalla de login 
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(authService: widget.authService)), ); 
+  } 
 }
