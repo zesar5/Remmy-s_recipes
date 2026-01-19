@@ -6,7 +6,8 @@ const getMessages = require("../i18n");
 // INICIO
 // ---------------------
 router.get("/", (req, res) => {
-    res.json({mensaje: t.apiRunning });
+    const messages = getMessages(req);
+    res.json({mensaje: messages.apiRunning });
 });
 
 module.exports = router;

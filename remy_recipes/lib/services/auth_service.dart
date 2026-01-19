@@ -27,6 +27,7 @@ class AuthService {
   Future<bool> login({required String email, required String password}) async {
     final url = Uri.parse(ApiEndpoints.login);
 
+    print("ha pasado por esta funcion que es login");
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -35,6 +36,9 @@ class AuthService {
         'contrasena': password, // ← Clave exacta que espera el backend
       }),
     );
+
+    print("STATUS CODE: ${response.statusCode}");
+    print("RESPONSE BODY: ${response.body}");
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

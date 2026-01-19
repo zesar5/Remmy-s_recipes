@@ -34,7 +34,7 @@ exports.loginUsuario = async (req, res) => {
       "SELECT * FROM usuario WHERE email = ? ",
       [email],
     );
-
+    
     if (rows.length === 0) {
       return res.status(401).json({
         mensaje: "Credenciales incorrectas",
