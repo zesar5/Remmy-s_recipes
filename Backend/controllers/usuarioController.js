@@ -20,6 +20,7 @@ const getMessages = require("../i18n");
  */
 exports.loginUsuario = async (req, res) => {
   const { email, contrasena } = req.body;
+  const t = getMessages(req);
 
   // Validación básica de campos requeridos
   if (!email || !contrasena) {
@@ -93,6 +94,7 @@ exports.loginUsuario = async (req, res) => {
  */
 exports.registrarUsuario = async (req, res) => {
   const data = req.body;
+  const t = getMessages(req);
 
   // Verificación básica de coincidencia de contraseñas
   if (data.contrasena !== data.contrasena2) {
@@ -149,6 +151,7 @@ exports.registrarUsuario = async (req, res) => {
  */
 exports.obtenerPerfil = async (req, res) => {
   const { id } = req.params;
+  const t = getMessages(req);
 
   try {
     const perfil = await Usuario.obtenerPerfil(id);

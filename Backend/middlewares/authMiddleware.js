@@ -3,6 +3,7 @@ const getMessages = require("../i18n");
 
 // Este middleware se utiliza para PROTEGER rutas que requieren que el usuario esté autenticado
 module.exports = function (req, res, next) {
+  const t = getMessages(req);
   console.log("🔐 AUTH MIDDLEWARE");
   console.log("📌 HEADER AUTH:", req.headers.authorization);
 

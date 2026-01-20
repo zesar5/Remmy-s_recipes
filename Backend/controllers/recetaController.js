@@ -62,6 +62,7 @@ exports.obtenerRecetaPublicaPorId = async (req, res) => {
  */
 exports.getRecetas = async (req, res) => {
   try {
+    const t = getMessages(req);
     const rangoInicio = parseInt(req.query.rangoInicio) || 1;
     const rangoFin = parseInt(req.query.rangoFin) || 6;
 
@@ -90,6 +91,7 @@ exports.getRecetas = async (req, res) => {
  */
 exports.obtenerRecetaPorId = async (req, res) => {
   try {
+    const t = getMessages(req);
     console.log("🚀 ENTRÓ A obtenerRecetaPorId");
     console.log("📌 req.params.id:", req.params.id);
     console.log("📌 req.userId:", req.userId);
@@ -126,6 +128,7 @@ exports.obtenerRecetaPorId = async (req, res) => {
  */
 exports.crearReceta = async (req, res) => {
   try {
+    const t = getMessages(req);
     console.log("REQ.BODY:", req.body);
     console.log("Tipo de req.body:", typeof req.body);
     console.log("Tamaño de la imagen:", req.body.imagen?.length);
@@ -147,6 +150,7 @@ exports.crearReceta = async (req, res) => {
  */
 exports.actualizarReceta = async (req, res) => {
   try {
+    const t = getMessages(req);
     const esPropietario = await RecetaModel.verificarPropietario(
       req.params.id,
       req.userId
@@ -174,6 +178,7 @@ exports.actualizarReceta = async (req, res) => {
  */
 exports.eliminarReceta = async (req, res) => {
   try {
+    const t = getMessages(req);
     const esPropietario = await RecetaModel.verificarPropietario(
       req.params.id,
       req.userId
