@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:remy_recipes/screens/login/login_screen.dart';
-
+import 'package:logger/logger.dart';
 import '../../services/auth_service.dart';
 import '../../services/recetas_service.dart';
 import '../../models/receta.dart';
@@ -24,11 +24,13 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
+
+  final Logger logger = Logger();
+  
   late Usuario user;
   List<Receta> recetasGuardadas = []; // Recetas propias del usuario
   List<String> favoritos = []; // Lista simulada/pendiente de implementación
   List<String> personas = []; // Lista simulada/pendiente de implementación
-
   String currentView = "home"; // Vista activa en el menú inferior
   String hovered = ""; // Para efecto hover (más útil en web)
 
@@ -83,9 +85,35 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFDEB887), // Color característico de la app
+        elevation: 0, // Sin sombra para que se integre con la cabecera
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'editar') {
+                _editarPerfil();
+              } else if (value == 'cerrar') {
+                _cerrarSesion();
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'editar',
+                child: Text('Editar perfil'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'cerrar',
+                child: Text('Cerrar sesión'),
+              ),
+            ],
+            icon: const Icon(Icons.more_vert, color: Colors.black),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          // Cabecera con foto, nombre, botón editar y descripción
+          // Cabecera con foto, nombre y descripción (sin el menú, que ahora está en AppBar)
           _buildHeader(),
 
           // Barra de navegación inferior (menú de vistas)
@@ -152,30 +180,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
             user.userName,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-
-          const SizedBox(height: 10),
-
-          // Botón "Editar perfil" (aún placeholder)
-          PopupMenuButton<String>( 
-            onSelected: (value){ 
-              if (value == 'editar'){ 
-                _editarPerfil(); 
-              } else if (value == 'cerrar'){ 
-                _cerrarSesion(); 
-              } 
-            }, 
-            itemBuilder: (BuildContext context) => [ 
-
-              const PopupMenuItem<String>( 
-                value: 'editar', 
-                child: Text ('Editar perfil'), 
-                ), 
-                const PopupMenuItem<String>(value: 'editar', 
-                child: Text('Cerrar sesión'), 
-                 ), 
-            ], 
-            icon: const Icon(Icons.more_vert, color: Colors.black), 
-          ), 
 
           const SizedBox(height: 12),
 
@@ -456,10 +460,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
     // Pendiente: pantalla de edición de perfil
   }
 
-  void _cerrarSesion(){ 
-    //Llama al logoout del AuthService 
-    widget.authService.logout(); 
-    //Navega a la pantalla de login 
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(authService: widget.authService)), ); 
-  } 
+  void _cerrarSesion() {
+    // Llama al logout del AuthService
+    widget.authService.logout();
+    // Navega a la pantalla de login
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(authService: widget.authService),
+      ),
+    );
+  }
 }

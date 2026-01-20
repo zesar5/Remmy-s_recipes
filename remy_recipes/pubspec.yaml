@@ -35,6 +35,10 @@ dependencies:
   http: ^1.2.1
   image_picker: ^1.1.0 
 
+  #Hemos añadido la dependencia 'logger' para un loggin estructurado en frontend
+
+  logger: ^2.0.2+1
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -66,4 +70,5 @@ flutter:
       fonts:
         # Regular (peso por defecto si no se especifica)
         - asset: assets/Alegreya-VariableFont_wght.ttf
+
        
