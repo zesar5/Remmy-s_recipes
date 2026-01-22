@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import '../models/usuario.dart';
-import '../services/config.dart';
+import '../data/models/usuario.dart';
+import 'config.dart';
 
 // ==========================================================================
 //          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)

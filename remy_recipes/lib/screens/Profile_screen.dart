@@ -1,14 +1,14 @@
 import 'dart:typed_data';
-import 'package:remy_recipes/screens/login/login_screen.dart';
+import 'package:remy_recipes/screens/login_screen.dart';
 import 'package:logger/logger.dart';
-import '../../services/auth_service.dart';
-import '../../services/recetas_service.dart';
-import '../../models/receta.dart';
-import '../../models/usuario.dart';
-import '../RecetaPage/DetalleRecetaPage.dart';
+import '../services/auth_service.dart';
+import '../services/recetas_service.dart';
+import '../data/models/receta.dart';
+import '../data/models/usuario.dart';
+import 'DetalleRecetaPage.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../constants/app_strings.dart';
+import '../data/constants/app_strings.dart';
 
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO

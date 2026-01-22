@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  dio: ^5.4.0
+  flutter_dotenv: ^5.1.0
+
   # Hemos añadido la dependencia 'http' aquí
   http: ^1.2.1
   image_picker: ^1.1.0 

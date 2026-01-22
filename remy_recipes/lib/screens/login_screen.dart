@@ -1,7 +1,7 @@
-import '../../services/auth_service.dart';
+import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import '../home/home_screen.dart';
-import '../../constants/app_strings.dart';
+import 'home_screen.dart';
+import '../data/constants/app_strings.dart';
 
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION 

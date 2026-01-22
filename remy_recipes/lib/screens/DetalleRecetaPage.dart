@@ -1,10 +1,10 @@
-import 'package:remy_recipes/screens/recipes/recipes_form_page.dart';
-import '../../services/auth_service.dart';
+import 'package:remy_recipes/screens/recipes_form_page.dart';
+import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import '../../services/recetas_service.dart';
-import '../../models/receta.dart';
-import '../../constants/app_strings.dart';
+import '../services/recetas_service.dart';
+import '../data/models/receta.dart';
+import '../data/constants/app_strings.dart';
 
 // =======================================================
 //          PANTALLA DE DETALLE DE RECETA

@@ -1,15 +1,15 @@
 import 'dart:convert';
-import '../../services/recetas_service.dart';
+import '../services/recetas_service.dart';
 import 'package:flutter/material.dart';
-import 'package:remy_recipes/models/receta.dart';
-import '../Profile/Profile_screen.dart';
+import 'package:remy_recipes/data/models/receta.dart';
+import 'Profile_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
-import '../recipes/recipes_form_page.dart';
-import '../../services/auth_service.dart';
-import '../RecetaPage/DetalleRecetaPage.dart';
-import '../../services/config.dart';
-import '../../constants/app_strings.dart';
+import 'recipes_form_page.dart';
+import '../services/auth_service.dart';
+import 'DetalleRecetaPage.dart';
+import '../services/config.dart';
+import '../data/constants/app_strings.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)

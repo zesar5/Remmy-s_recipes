@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
-import '/models/receta.dart';
-import '/services/recetas_service.dart';
+import '../data/models/receta.dart';
+import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
-import '../../constants/app_strings.dart';
+import '../data/constants/app_strings.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA

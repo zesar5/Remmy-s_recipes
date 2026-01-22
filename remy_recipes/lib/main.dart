@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:remy_recipes/screens/home/home_screen.dart';
+import 'package:remy_recipes/screens/home_screen.dart';
 import 'services/auth_service.dart';
-import 'screens/login/login_screen.dart';
-import 'screens/register/register_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 
 
 final AuthService authService = AuthService();

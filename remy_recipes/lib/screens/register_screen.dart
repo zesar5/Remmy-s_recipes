@@ -1,10 +1,10 @@
-import '../../services/auth_service.dart';
+import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import '../login/login_screen.dart';
+import 'login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-import '../../constants/app_strings.dart';
+import '../data/constants/app_strings.dart';
 
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
