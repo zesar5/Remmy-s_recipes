@@ -37,15 +37,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       season = r.estacion;
 
       // 👇 Ingredientes (String → Ingredient)
-      ingredients = (r.ingredientes??[]).map((i) {
-        return Ingrediente(
-          nombre: i.nombre,
-          cantidad: i.cantidad,
-        );
+      ingredients = (r.ingredientes ?? []).map((i) {
+        return Ingrediente(nombre: i.nombre, cantidad: i.cantidad);
       }).toList();
 
-      steps = (r.pasos??[]).map((p) {
-         return Paso(descripcion: p.descripcion);
+      steps = (r.pasos ?? []).map((p) {
+        return Paso(descripcion: p.descripcion);
       }).toList();
     }
   }
@@ -61,26 +58,206 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   List<Paso> steps = [];
 
   final TextEditingController titleController = TextEditingController();
- 
-  final List<String> durations =
-    List.generate(60, (index) => ((index + 1) * 5).toString()); // 5-300
+
+  final List<String> durations = List.generate(
+    60,
+    (index) => ((index + 1) * 5).toString(),
+  ); // 5-300
 
   final List<String> countries = [
-    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia","Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados",
-    "Baréin", "Bélgica", "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina",
-    "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre", 
-    "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil",
-    "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos", "Estonia", "Esuatini",
-    "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Guyana",
-    "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania",
-    "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Madagascar", "Malasia",
-    "Malaui", "Maldivas", "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México","Micronesia", "Moldavia", "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru",
-    "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", "Países Bajos","Pakistán", "Palaos", "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal",
-    "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda", "Rumanía","Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas",
-    "Santa Lucía", "Santo Tomé y Príncipe", "Senegal","Serbia", "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica",
-    "Sudán", "Sudán del Sur", "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", "Tuvalu",
-    "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela", "Vietnam", "Yemen",
-    "Yibuti", "Zambia", "Zimbabue"
+    "Afganistán",
+    "Albania",
+    "Alemania",
+    "Andorra",
+    "Angola",
+    "Antigua y Barbuda",
+    "Arabia Saudita",
+    "Argelia",
+    "Argentina",
+    "Armenia",
+    "Australia",
+    "Austria",
+    "Azerbaiyán",
+    "Bahamas",
+    "Bangladés",
+    "Barbados",
+    "Baréin",
+    "Bélgica",
+    "Belice",
+    "Benín",
+    "Bielorrusia",
+    "Birmania",
+    "Bolivia",
+    "Bosnia y Herzegovina",
+    "Botsuana",
+    "Brasil",
+    "Brunéi",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Bután",
+    "Cabo Verde",
+    "Camboya",
+    "Camerún",
+    "Canadá",
+    "Catar",
+    "Chad",
+    "Chile",
+    "China",
+    "Chipre",
+    "Ciudad del Vaticano",
+    "Colombia",
+    "Comoras",
+    "Corea del Norte",
+    "Corea del Sur",
+    "Costa de Marfil",
+    "Costa Rica",
+    "Croacia",
+    "Cuba",
+    "Dinamarca",
+    "Dominica",
+    "Ecuador",
+    "Egipto",
+    "El Salvador",
+    "Emiratos Árabes Unidos",
+    "Eritrea",
+    "Eslovaquia",
+    "Eslovenia",
+    "España",
+    "Estados Unidos",
+    "Estonia",
+    "Esuatini",
+    "Etiopía",
+    "Filipinas",
+    "Finlandia",
+    "Fiyi",
+    "Francia",
+    "Gabón",
+    "Gambia",
+    "Georgia",
+    "Ghana",
+    "Granada",
+    "Grecia",
+    "Guatemala",
+    "Guinea",
+    "Guinea-Bisáu",
+    "Guinea Ecuatorial",
+    "Guyana",
+    "Haití",
+    "Honduras",
+    "Hungría",
+    "India",
+    "Indonesia",
+    "Irak",
+    "Irán",
+    "Irlanda",
+    "Islandia",
+    "Islas Marshall",
+    "Islas Salomón",
+    "Israel",
+    "Italia",
+    "Jamaica",
+    "Japón",
+    "Jordania",
+    "Kazajistán",
+    "Kenia",
+    "Kirguistán",
+    "Kiribati",
+    "Kuwait",
+    "Laos",
+    "Lesoto",
+    "Letonia",
+    "Líbano",
+    "Liberia",
+    "Libia",
+    "Liechtenstein",
+    "Lituania",
+    "Luxemburgo",
+    "Madagascar",
+    "Malasia",
+    "Malaui",
+    "Maldivas",
+    "Malí",
+    "Malta",
+    "Marruecos",
+    "Mauricio",
+    "Mauritania",
+    "México",
+    "Micronesia",
+    "Moldavia",
+    "Mónaco",
+    "Mongolia",
+    "Montenegro",
+    "Mozambique",
+    "Namibia",
+    "Nauru",
+    "Nepal",
+    "Nicaragua",
+    "Níger",
+    "Nigeria",
+    "Noruega",
+    "Nueva Zelanda",
+    "Omán",
+    "Países Bajos",
+    "Pakistán",
+    "Palaos",
+    "Panamá",
+    "Papúa Nueva Guinea",
+    "Paraguay",
+    "Perú",
+    "Polonia",
+    "Portugal",
+    "Reino Unido",
+    "República Centroafricana",
+    "República Checa",
+    "República del Congo",
+    "República Democrática del Congo",
+    "República Dominicana",
+    "Ruanda",
+    "Rumanía",
+    "Rusia",
+    "Samoa",
+    "San Cristóbal y Nieves",
+    "San Marino",
+    "San Vicente y las Granadinas",
+    "Santa Lucía",
+    "Santo Tomé y Príncipe",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leona",
+    "Singapur",
+    "Siria",
+    "Somalia",
+    "Sri Lanka",
+    "Sudáfrica",
+    "Sudán",
+    "Sudán del Sur",
+    "Suecia",
+    "Suiza",
+    "Surinam",
+    "Tailandia",
+    "Tanzania",
+    "Tayikistán",
+    "Timor Oriental",
+    "Togo",
+    "Tonga",
+    "Trinidad y Tobago",
+    "Túnez",
+    "Turkmenistán",
+    "Turquía",
+    "Tuvalu",
+    "Ucrania",
+    "Uganda",
+    "Uruguay",
+    "Uzbekistán",
+    "Vanuatu",
+    "Venezuela",
+    "Vietnam",
+    "Yemen",
+    "Yibuti",
+    "Zambia",
+    "Zimbabue",
   ];
 
   final List<String> allergens = [
@@ -100,7 +277,13 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     'Altramuces',
   ];
 
-  final List<String> seasons = ['Todas', 'Primavera', 'Verano', 'Otoño', 'Invierno'];
+  final List<String> seasons = [
+    'Todas',
+    'Primavera',
+    'Verano',
+    'Otoño',
+    'Invierno',
+  ];
   final picker = ImagePicker();
 
   // ==============================================
@@ -145,6 +328,16 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   void removeStep(int index) {
     setState(() {
       steps.removeAt(index);
+    });
+  }
+
+  void reorderSteps(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final Paso item = steps.removeAt(oldIndex);
+      steps.insert(newIndex, item);
     });
   }
 
@@ -244,9 +437,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
           content: Text('Receta guardada con éxito'),
           actions: [
             TextButton(
-              onPressed:() => Navigator.of(context).pushNamed('/home'),
+              onPressed: () => Navigator.of(context).pushNamed('/home'),
               child: Text('OK'),
-            )
+            ),
           ],
         ),
       );
@@ -260,7 +453,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text('OK'),
-            )
+            ),
           ],
         ),
       );
@@ -278,8 +471,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       id: widget.recetaEditar?.id,
       titulo: titleController.text.trim(),
       ingredientes: ingredients
-        .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
-        .toList(),
+          .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
+          .toList(),
       pasos: steps.map((s) => Paso(descripcion: s.descripcion)).toList(),
       duracion: int.parse(duration!),
       pais: country!,
@@ -345,7 +538,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       backgroundColor: const Color(0xFFDEB887),
       appBar: AppBar(
         title: Text(
-          widget.recetaEditar == null ? AppStrings.anadirNuevaReceta : AppStrings.editarReceta,
+          widget.recetaEditar == null
+              ? AppStrings.anadirNuevaReceta
+              : AppStrings.editarReceta,
         ),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
@@ -368,10 +563,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // SELECCIÓN DE IMAGEN
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(AppStrings.anadirImagen,
-              style: TextStyle(
-                fontSize: 20,
-              )
+              child: Text(
+                AppStrings.anadirImagen,
+                style: TextStyle(fontSize: 20),
               ),
             ),
             const SizedBox(height: 5),
@@ -386,22 +580,22 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child:
-                    imagePath == null //&& widget.recetaEditar?.imagenBase64 == null
+                    imagePath ==
+                        null //&& widget.recetaEditar?.imagenBase64 == null
                     ? const Center(
-                        child: Text('+', style: TextStyle(fontSize: 40),
-                        ),
+                        child: Text('+', style: TextStyle(fontSize: 40)),
                       )
-                      : kIsWeb ? Image.network(
+                    : kIsWeb
+                    ? Image.network(
                         fit: BoxFit.fill,
                         imagePath!,
-                        errorBuilder: (context, error, stackTrace) => const Center(child: Text("Error al cargar imagen web")),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                              child: Text("Error al cargar imagen web"),
+                            ),
                       )
-                      
-                      // Importante: La clase File ya está importada en el inicio del archivo
-                      : Image.file(
-                        File(imagePath!),
-                        fit: BoxFit.cover,
-                      ),
+                    // Importante: La clase File ya está importada en el inicio del archivo
+                    : Image.file(File(imagePath!), fit: BoxFit.cover),
               ),
             ),
 
@@ -412,18 +606,13 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 AppStrings.titulo,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             TextField(
               controller: titleController,
               onChanged: (val) => title = val,
-              style: const TextStyle(
-                fontSize: 22,       
-              ),
+              style: const TextStyle(fontSize: 22),
             ),
 
             const SizedBox(height: 30),
@@ -431,9 +620,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             // INGREDIENTES DINÁMICOS
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Ingredientes:",
-              style: TextStyle(
-                fontWeight: FontWeight.w600, fontSize: 18,),
+              child: Text(
+                "Ingredientes:",
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
               ),
             ),
             ...ingredients.asMap().entries.map((entry) {
@@ -448,7 +637,9 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       child: TextField(
                         key: ValueKey("ingredient_name_$idx"),
                         controller: TextEditingController(text: ing.nombre)
-                        ..selection= TextSelection.collapsed(offset: ing.nombre.length),
+                          ..selection = TextSelection.collapsed(
+                            offset: ing.nombre.length,
+                          ),
                         onChanged: (val) => ing.nombre = val,
                         decoration: const InputDecoration(
                           hintText: AppStrings.ingredienteHint,
@@ -461,77 +652,27 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       child: TextField(
                         key: ValueKey("ingredient_qty_$idx"),
                         controller: TextEditingController(text: ing.cantidad)
-                        ..selection = TextSelection.collapsed(offset: ing.cantidad.length),
-                        onChanged: (val) => ing.cantidad = val,
-                        decoration: const InputDecoration(hintText: AppStrings.cantidadHint),
-                    ),
-                  ),
-
-                  const SizedBox(width: 5),
-                  // Botón eliminar
-                  ElevatedButton(
-                    onPressed: () => removeIngredient(idx),
-                    child: const Text('-'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                  )
-                ],
-              ),
-            );
-            }).toList(),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: addIngredient, 
-              child: const Text('Agregar Ingrediente'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-            ),
-
-            SizedBox(height: 15),
-
-            // Pasos
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Pasos:",
-              style: TextStyle(
-               fontWeight: FontWeight.w600, fontSize: 18
-              ),
-              ),
-            ),
-            // ... (mapeo de pasos)
-            ...steps.asMap().entries.map((entry) {
-                int idx = entry.key;
-                Paso step = entry.value;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          key: ValueKey("step_desc_$idx"),
-                          controller: TextEditingController(text: step.descripcion)
-                            ..selection = TextSelection.collapsed(offset: step.descripcion.length),
-                          onChanged: (val) => step.descripcion= val,
-                          decoration: const InputDecoration(
-                            hintText: 'Paso',
+                          ..selection = TextSelection.collapsed(
+                            offset: ing.cantidad.length,
                           ),
+                        onChanged: (val) => ing.cantidad = val,
+                        decoration: const InputDecoration(
+                          hintText: AppStrings.cantidadHint,
                         ),
                       ),
+                    ),
+
                     const SizedBox(width: 5),
+                    // Botón eliminar
                     ElevatedButton(
-                      onPressed: () => removeStep(idx),
+                      onPressed: () => removeIngredient(idx),
                       child: const Text('-'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ],
@@ -540,16 +681,106 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             }).toList(),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: addStep, 
-              child: const Text('Agregar Paso'), 
+              onPressed: addIngredient,
+              child: const Text('Agregar Ingrediente'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
 
-            const SizedBox(height: 50),
+            SizedBox(height: 15),
+
+            // Pasos
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Pasos:",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                ReorderableListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  buildDefaultDragHandles: false,
+                  itemCount: steps.length,
+                  onReorder: reorderSteps,
+                  itemBuilder: (context, idx) {
+                    final step = steps[idx];
+                    return Padding(
+                      key: ValueKey("step_key_${step.hashCode}"),
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Row(
+                        children: [
+                          ReorderableDragStartListener(
+                            index: idx,
+                            child: const Icon(
+                              Icons.drag_handle,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller:
+                                  TextEditingController(text: step.descripcion)
+                                    ..selection = TextSelection.collapsed(
+                                      offset: step.descripcion.length,
+                                    ),
+                              onChanged: (val) => step.descripcion = val,
+                              decoration: const InputDecoration(
+                                hintText: 'Paso',
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 5),
+
+                          ElevatedButton(
+                            onPressed: () => removeStep(idx),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text("-"),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                ElevatedButton(
+                  onPressed: addStep,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Agregar Paso'),
+                ),
+                const SizedBox(height: 50),
+              ],
+            ),
 
             // Combo boxes (Duración y País)
             Row(
@@ -584,27 +815,25 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               ],
             ),
             SizedBox(height: 10),
-            
+
             // Combo boxes (Alérgenos y Estación)
             Row(
               children: [
                 Expanded(
-                child: GestureDetector(
-                onTap: () => _showAllergenSelector(context),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Alérgenos',
-                    ),
-                    controller: TextEditingController(
-                      text: selectedAllergens.isEmpty
-                          ? ''
-                          : selectedAllergens.join(', '),
+                  child: GestureDetector(
+                    onTap: () => _showAllergenSelector(context),
+                    child: AbsorbPointer(
+                      child: TextFormField(
+                        decoration: InputDecoration(labelText: 'Alérgenos'),
+                        controller: TextEditingController(
+                          text: selectedAllergens.isEmpty
+                              ? ''
+                              : selectedAllergens.join(', '),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
                 SizedBox(width: 10),
                 Expanded(
                   child: DropdownButtonFormField<String>(
@@ -632,10 +861,11 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 onPressed: _guardarReceta,
                 child: const Text(AppStrings.guardarReceta),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
