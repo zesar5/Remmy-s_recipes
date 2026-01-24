@@ -44,6 +44,12 @@ class _MainPageState extends State<MainPage> {
   // Controla si estamos cargando datos
   bool loading = true;
 
+  String? _textoBusqueda;
+  String? _pais;
+  String? _estacion;
+  int? _duracion;
+  String? _alergenos;
+
   @override
   void initState() {
     super.initState();
@@ -86,8 +92,11 @@ class _MainPageState extends State<MainPage> {
                     ),
                     //barra de búsqueda
                     TextField(
+                      onChanged: (value){
+                        _textoBusqueda = value;
+                      },
                       decoration: InputDecoration(
-                        hintText: "Buscar receta...",
+                        hintText: "Buscar receta o receta por ingrediente...",
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -102,17 +111,10 @@ class _MainPageState extends State<MainPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _combo("País origen", ["España", "Italia", "México"]),
-                        _combo("Estaciones", ["Verano", "Otoño", "Invierno"]),
-                        _combo("Duración", ["30 min", "60 min", "90 min"]),
-                        _combo("Alérgenos", ["Gluten", "Lácteos", "Frutos secos"]),
-                        SizedBox(
-                          width: double.infinity,
-                          child: _combo(
-                            "Grupo alimenticio",
-                            ["Carne", "Pescado", "Vegetariano"],
-                          )
-                        ),
+                        _combo("origen", ["España", "Italia", "México"]),
+                        _combo("estaciones", ["Verano", "Otoño", "Invierno"]),
+                        _combo("duración", ["30 min", "60 min", "90 min"]),
+                        _combo("alergenos", ["Gluten", "Lácteos", "Frutos secos"]),
                       ],
                     ),
 
@@ -128,6 +130,7 @@ class _MainPageState extends State<MainPage> {
 
                       onPressed: (){
                         //Aquí se lanzaría la búsqueda real
+                        _aplicarFiltro();
                         Navigator.pop(context);
                       },
                       child: const Text("Aplicar filtros"),
@@ -141,27 +144,70 @@ class _MainPageState extends State<MainPage> {
       },
     );
   }
-  Widget _combo(String label, List<String> items){
+  void _aplicarFiltro() async {
+    setState(() => loading = true);
+
+    final recetasFiltradas = await recetaFiltrada(
+      texto: _textoBusqueda,
+      pais: _pais,
+      estacion: _estacion,
+      duracion: _duracion,
+      alergenos: _alergenos,
+      token: widget.authService.accessToken,
+    );
+
+    setState(() {
+      recipes = recetasFiltradas;
+      loading = false;
+
+      _textoBusqueda = '';
+      _pais = null;
+      _estacion = null;
+      _duracion = null;
+      _alergenos = null;
+    });
+  }
+
+   Widget _combo(String tipo, List<String> opciones) {
     return SizedBox(
       width: 160,
       child: DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            labelText: label,
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-              ),
+        decoration: InputDecoration(
+          labelText: tipo,
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
           ),
-          items: items
-          .map(
-            (e) => DropdownMenuItem(value:e,
-             child: Text(e),
-             ),
+        ),
+        items: opciones
+            .map(
+              (e) => DropdownMenuItem(
+                value: e,
+                child: Text(e),
+              ),
             )
             .toList(),
-            onChanged: (value){},
+        onChanged: (value) {
+          setState(() {
+            switch (tipo) {
+              case 'origen':
+                _pais = value;
+                break;
+              case 'estaciones':
+                _estacion = value;
+                break;
+              case 'duración':
+                _duracion =
+                    int.tryParse(value!.replaceAll(' min', ''));
+                break;
+              case 'alergenos':
+                _alergenos = value;
+                break;
+            }
+          });
+        },
       ),
     );
   }
@@ -184,7 +230,7 @@ class _MainPageState extends State<MainPage> {
           // Aquí hay un error en el código original:
           // Primero usa fromHomeJson (correcto), pero luego sobrescribe con fromJson (incorrecto)
           // La versión corregida debería ser solo una de las dos
-          recipes = data.map((e) => Receta.fromJson(e)).toList();
+          recipes = data.map((e) => Receta.fromHomeJson(e)).toList();
           loading = false;
         });
 
@@ -386,17 +432,18 @@ class RecipeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // Decodificamos la imagen base64 para mostrarla
     Uint8List? imageBytes;
-    final String? base64String = recipe.imagenBase64;
 
-    if (base64String != null && base64String.isNotEmpty) {
-      try {
-        // Quitamos el prefijo "data:image/...;base64," y decodificamos
-        final base64Image = base64String.split(',').last;
-        imageBytes = base64Decode(base64Image);
-      } catch (e) {
-        print('ERROR DECODING IMAGE: $e');
-      }
-    }
+        final String? base64String = recipe.imagenBase64;
+        if (base64String != null && base64String.isNotEmpty) {
+          try {
+            final base64Image = base64String.contains(',') 
+              ? base64String.split(',').last 
+              : base64String;
+            imageBytes = base64Decode(base64Image);
+          } catch (e) {
+            print('ERROR DECODING IMAGE: $e');
+          }
+        }
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),

@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ApiConfig {
   // Usa dotenv.env para obtener valores, con fallbacks por si no están definidos
   static String get baseUrl =>
-      dotenv.env['API_BASE_URL'] ?? 'https://localhos:3000';
+      dotenv.env['API_BASE_URL'] ?? 'https://localhost:3000';
   static String get apiKey => dotenv.env['API_KEY'] ?? 'default_key';
 
   // Agrega más configuraciones según necesites

@@ -226,3 +226,27 @@ exports.obtenerRecetaUsuario = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.obtenerRecetasFiltradas = async (req, res) => {
+  try{
+    const filtros = req.body;
+
+    //Si el usuario está autenticado, añadimos su id
+    if (req.user?.id) {
+      filtros.userId = req.user.id;
+    }
+
+    if (filtros.alergenos && typeof filtros.alergenos === 'string') {
+      filtros.alergenos = filtros.alergenos.split(',').map(a => a.trim());
+    }
+
+    const recetas = await RecetaModel.recetasFiltradas(filtros);
+
+    res.status(200).json(recetas);
+  }catch(err){
+    console.error("❌ Error al obtener recetas filtradas:", err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+}

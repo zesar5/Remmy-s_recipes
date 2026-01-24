@@ -223,6 +223,81 @@ const RecetaModel = {
     if (rows.length === 0) return null;
     return rows[0].Id_usuario === userId;
   },
+
+  recetasFiltradas: async (filtros = {}) => {
+    let query = `
+      SELECT DISTINCT r.*
+      FROM receta r
+      LEFT JOIN Ingrediente i ON i.Id_receta = r.Id_receta
+    `;
+    let where = [];
+    let params = [];
+
+    // 🔍 Texto libre → título + ingredientes
+    if (filtros.texto) {
+      const palabras = filtros.texto.split(" ").filter(t => t.trim() !== "");
+      if (palabras.length) {
+        const likeClauses = palabras
+          .map(() => "(r.titulo LIKE ? OR i.nombre LIKE ?)")
+          .join(" AND ");
+        where.push(likeClauses);
+        palabras.forEach(p => {
+          params.push(`%${p}%`, `%${p}%`); // una vez para titulo, otra para ingrediente
+        });
+      }
+    }
+
+    // 🌍 País / origen
+    if (filtros.pais) {
+      where.push("r.origen = ?");
+      params.push(filtros.pais);
+    }
+
+    // ⏱️ Duración máxima
+    if (filtros.duracionMax) {
+      where.push("r.tiempo_preparacion <= ?");
+      params.push(filtros.duracion);
+    }
+
+    // 🌦️ Estación
+    if (filtros.estacion) {
+      where.push("r.estacion = ?");
+      params.push(filtros.estacion);
+    }
+
+    // ⚠️ Alérgenos (si es string o array)
+    if (filtros.alergenos?.length) {
+      filtros.alergenos.forEach(a => {
+        where.push("LOWER(r.alergenos) NOT LIKE ?");
+        params.push(`%${a.toLowerCase()}%`);
+      });
+    }
+
+    // 👁️ Visibilidad
+    if (filtros.soloPublicas) {
+      where.push("r.publica = 1");
+    } else if (filtros.userId) {
+      where.push("(r.publica = 1 OR r.Id_usuario = ?)");
+      params.push(filtros.userId);
+    }
+
+    // 🧩 Unimos condiciones
+    if (where.length) {
+      query += " WHERE " + where.join(" AND ");
+    }
+
+    // 🔽 Orden opcional
+    query += " ORDER BY r.Id_receta DESC";
+
+    //Paginación
+    const limit = parseInt(filtros.limit) || 20;
+    const offset = parseInt(filtros.offset) || 0;
+    query += " LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
+    const [rows] = await db.query(query, params);
+    return rows.map(r => new RecetaEntity(r));
+  }
 };
 
 module.exports = { RecetaEntity, RecetaModel };

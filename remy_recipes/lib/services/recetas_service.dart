@@ -191,3 +191,49 @@ Future<bool> editarReceta(Receta receta, String token) async {
 
   return response.statusCode == 200;
 }
+
+//Filtrar recetas con datos introducidos por el usuario
+Future<List<Receta>> recetaFiltrada({
+  String? texto,
+  String? pais,
+  String? estacion,
+  int? duracion,
+  String? alergenos,
+  String? token,
+}) async {
+  final url = Uri.parse('${ApiEndpoints.recetas}/filtrar');
+
+  final filtros = {
+    if (texto != null && texto.isNotEmpty) 'texto': texto,
+    if (pais != null) 'pais': pais,
+    if (estacion != null) 'estacion': estacion,
+    if (duracion != null) 'duracion': duracion,
+    if (alergenos != null) 'alergenos': alergenos,
+  };
+
+  print('🔍 Filtros enviados: $filtros');
+
+  try {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(filtros),
+    );
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      return data.map((e) => Receta.fromHomeJson(e)).toList();
+    } else {
+      print('Error en filtro: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error filtrando recetas: $e');
+    return [];
+  }
+}
