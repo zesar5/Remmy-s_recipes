@@ -18,4 +18,5 @@ app.use("/recetas", require("./routes/recetaRoutes"));
 // Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    logger.info('Mensaje informativo', `Servidor seguro corriendo en https://localhost:${PORT}`);
 });
