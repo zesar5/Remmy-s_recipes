@@ -1,8 +1,8 @@
 // Descomenta la que necesites:
 //const String baseUrl = 'https://nondelirious-vita-unpent.ngrok-free.dev'; // URL dada por Ngrok
-//const String baseUrl = 'http://10.0.2.2:8000'; // Para emulador de Android
+//const String baseUrl = 'https://10.0.2.2:8000'; // Para emulador de Android
 const String baseUrl = 'http://localhost:8000'; // Para navegador/iOS
-//const String baseUrl = 'http://192.168.1.XX:8000'; // Para dispositivo físico (tu IP local)
+//const String baseUrl = 'https://192.168.1.XX:8000'; // Para dispositivo físico (tu IP local)
 
 class ApiEndpoints {
   static const String login = '$baseUrl/usuarios/login';

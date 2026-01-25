@@ -3,3 +3,10 @@ key.pem
 cert.pem
 localhost-key.pem
 localhost.pem
+
+# No subir archivos de entorno ni claves privadas
+.env
+
+# No se suben los log
+app.log
+error.log

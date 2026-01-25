@@ -1,5 +1,6 @@
 const { RecetaModel } = require("../models/receta");
 const getMessages = require("../i18n");
+const logger = require('../logger');
 
 // Importamos el modelo que contiene todos los métodos que hablan directamente con la base de datos
 
@@ -16,6 +17,7 @@ exports.obtenerRecetasPublicas = async (req, res) => {
     const recetas = await RecetaModel.obtenerVisibles();
     res.json(recetas); // 200 OK por defecto
   } catch (err) {
+    logger.error('Error al obtener recetas publicas', {err: err.message});
     res.status(500).json({ error: err.message });
   }
 };
@@ -34,11 +36,13 @@ exports.obtenerRecetaPublicaPorId = async (req, res) => {
     const receta = await RecetaModel.obtenerPorId(req.params.id);
 
     if (!receta) {
+      logger.error('Error al obtener recetas publica');
       console.log("⚠️ Receta no encontrada");
       return res.status(404).json({ mensaje: t.recipeNotFound });
     }
 
     if (!receta.publica) {
+      logger.error('Error al obtener receta por ser privada');
       console.log("⚠️ Receta privada");
       return res.status(403).json({ mensaje: t.recipePrivate });
     }
@@ -46,6 +50,7 @@ exports.obtenerRecetaPublicaPorId = async (req, res) => {
     console.log("✅ Receta pública encontrada:", receta.titulo);
     res.json(receta);
   } catch (err) {
+    logger.error('Error al obtener recetas publicas por id', {err: err.message});
     console.log("🔥 ERROR obtenerRecetaPublicaPorId:", err);
     res.status(500).json({ error: err.message });
   }
@@ -69,10 +74,11 @@ exports.getRecetas = async (req, res) => {
     const recetas = await RecetaModel.getByRange(rangoInicio, rangoFin);
 
     res.status(200).json(recetas);
-  } catch (error) {
+  } catch (err) {
+    logger.error('Error al obtener recetas', { err: err.message });
     res.status(500).json({
       message: t.errorFetchingRecipes,
-      error: error.message,
+      error: err.message,
     });
   }
 };
@@ -99,11 +105,14 @@ exports.obtenerRecetaPorId = async (req, res) => {
     const receta = await RecetaModel.obtenerPorId(req.params.id);
     console.log("📦 Receta obtenida de DB:", receta);
 
-    if (!receta)
+    if (!receta){
+      logger.error('Error al obtener recetas: receta no encontrada');
       return res.status(404).json({ mensaje: t.recipeNotFound });
+    }
 
     // Regla clave de privacidad
     if (!receta.publica && receta.usuarioId !== req.userId) {
+      logger.error('Error por ser receta privada');
       console.log("⚠️ Acceso denegado");
       return res
         .status(403)
@@ -113,8 +122,9 @@ exports.obtenerRecetaPorId = async (req, res) => {
     console.log("✅ Respondiendo con receta");
     res.json(receta);
   } catch (err) {
+    logger.error('Error al obtener receta por id: ', { err: err.message });
     console.log("🔥 ERROR:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ err: err.message });
   }
 };
 
@@ -140,6 +150,7 @@ exports.crearReceta = async (req, res) => {
       id,
     });
   } catch (err) {
+    logger.error('Error al crear una receta: ', { err: err.message });
     res.status(500).json({ mensaje: err.message });
   }
 };
@@ -156,18 +167,23 @@ exports.actualizarReceta = async (req, res) => {
       req.userId
     );
 
-    if (esPropietario === null)
+    if (esPropietario === null){
+      logger.error('Error al editar receta: receta no encontrada');
       return res.status(404).json({ mensaje: t.recipeNotFound });
+    }
 
-    if (!esPropietario)
+    if (!esPropietario){
+      logger.error('Error al editar receta: no es creador de ella');
       return res
         .status(403)
         .json({ mensaje: t.noPermissionEdit });
+    }
 
     await RecetaModel.actualizar(req.params.id, req.body);
 
     res.json({ mensaje: t.recipeUpdated });
   } catch (err) {
+    logger.error('Error al actualizar receta: ', { err: err.message });
     res.status(500).json({ error: err.message });
   }
 };
@@ -184,18 +200,23 @@ exports.eliminarReceta = async (req, res) => {
       req.userId
     );
 
-    if (esPropietario === null)
+    if (esPropietario === null){
+      logger.error('Error al eliminar receta: receta no encontrada');
       return res.status(404).json({ mensaje: t.recipeNotFound });
+    }
 
-    if (!esPropietario)
+    if (!esPropietario){
+      logger.error('Error al eliminar receta: no es creador de ella');
       return res
         .status(403)
         .json({ mensaje: t.noPermissionDelete });
+    }
 
     await RecetaModel.eliminar(req.params.id);
 
     res.json({ mensaje: t.recipeDeleted });
   } catch (err) {
+    logger.error('Error al eliminar receta: ', { err: err.message });
     res.status(500).json({ error: err.message });
   }
 };
@@ -222,6 +243,7 @@ exports.obtenerRecetaUsuario = async (req, res) => {
 
     res.json(recetas);
   } catch (err) {
+    logger.error('Error al obtener receta de usuario: ', { err: err.message });
     console.log("🔥 ERROR CONTROLLER:", err);
     res.status(500).json({ error: err.message });
   }
