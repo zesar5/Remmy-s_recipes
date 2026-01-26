@@ -201,7 +201,41 @@ class AuthService {
       );
     }
   }
+  // ==============================================
+  //               Prueba editar perfil
+  // ==============================================
+  Future<void> updateProfile({
+    required String nombreUsuario,
+    String? descripcion,
+    String? fotoPerfil,
+  }) async {
 
+  logger.i('Iniciando actualización de perfil');  // Log de inicio
+  logger.d('Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}');  // Debug enmascarado
+
+    final url = Uri.parse('$baseUrl/user/profile');  // Usa baseUrl de config.dart, no ApiEndpoints
+    final response = await http.put(  // O POST, dependiendo de tu backend
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode({
+        'userName': nombreUsuario,
+        'descripcion': descripcion,
+        'fotoPerfil': fotoPerfil,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      _currentUser = Usuario.fromJson(data['user'] ?? data); 
+       logger.i('Perfil actualizado exitosamente');  // Log de éxito
+    } else {
+      logger.e('Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}');  // Log de error
+      throw Exception('Error updating profile: ${response.body}');
+    }
+  }
   // ==============================================
   //                     LOGOUT
   // ==============================================

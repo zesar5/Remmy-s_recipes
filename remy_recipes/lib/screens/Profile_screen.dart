@@ -15,6 +15,8 @@ import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
+import 'EditProfileScreen.dart';
+
 
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO
@@ -550,12 +552,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }*/
 
   void _editarPerfil() {
-     logger.i('Acción pendiente: Editar perfil - Mostrando SnackBar');  // Log de acción (indica que es pendiente)
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text(AppStrings.abrirEditarPerfil)));
-    // Pendiente: pantalla de edición de perfil
-  }
+      logger.i('Navegando a pantalla de edición de perfil');  // Log de navegación
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => EditProfileScreen(authService: widget.authService),
+    ),
+  ).then((_) {
+    // Después de editar, refrescar el perfil
+    logger.i('Regresando de edición - Refrescando perfil');  // Log de acción
+    setState(() {
+      user = widget.authService.currentUser!;  // Refrescar datos del usuario
+    });
+  });
+}
 
   void _cerrarSesion() {
      logger.i('Cerrando sesión - Llamando a logout y navegando a login');  // Log de acción
