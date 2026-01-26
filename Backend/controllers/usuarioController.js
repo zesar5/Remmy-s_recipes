@@ -2,7 +2,7 @@ const { Usuario } = require("../models/usuario");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const getMessages = require("../i18n");
-const logger = require('../logger');
+const logger = require("../logger");
 
 // ────────────────────────────────────────────────
 //                  LOGIN USUARIO
@@ -37,9 +37,11 @@ exports.loginUsuario = async (req, res) => {
       "SELECT * FROM usuario WHERE email = ? ",
       [email],
     );
-    
+
     if (rows.length === 0) {
-      logger.info('Intento de login fallido: Iniciar sesión sin datos introducidos');
+      logger.info(
+        "Intento de login fallido: Iniciar sesión sin datos introducidos",
+      );
       return res.status(401).json({
         mensaje: t.invalidCredentials,
       });
@@ -53,8 +55,10 @@ exports.loginUsuario = async (req, res) => {
     if (!passwordCorrecta) {
       return res.status(401).json({ mensaje: t.invalidCredentials });
     if (!passwordCorrecta) {*/
-    if(contrasena !== usuario.contrasena){
-      logger.info('Intento de login fallido: contraseña incorrecta', { username });
+    if (contrasena !== usuario.contrasena) {
+      logger.info("Intento de login fallido: contraseña incorrecta", {
+        username,
+      });
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
@@ -67,8 +71,8 @@ exports.loginUsuario = async (req, res) => {
 
     console.log("JWT generado:", token);
 
-    if(logger.isDebugEnabled()){
-      logger.debug('Login exitoso', {username});
+    if (logger.isDebugEnabled()) {
+      logger.debug("Login exitoso", { username });
     }
 
     // Respuesta exitosa con datos útiles para el frontend
@@ -80,7 +84,7 @@ exports.loginUsuario = async (req, res) => {
       email: usuario.email,
     });
   } catch (err) {
-    logger.error('Error de registro', { error: err.message });
+    logger.error("Error de registro", { error: err.message });
     res.status(500).json({ error: err.message });
   }
 };
@@ -106,7 +110,9 @@ exports.registrarUsuario = async (req, res) => {
 
   // Verificación básica de coincidencia de contraseñas
   if (data.contrasena !== data.contrasena2) {
-    logger.info('Fallo de registro: las contraseñas no coinciden a la hora de registrarse');
+    logger.info(
+      "Fallo de registro: las contraseñas no coinciden a la hora de registrarse",
+    );
     return res.status(400).json({
       mensaje: t.passwordsDontMatch,
     });
@@ -116,7 +122,7 @@ exports.registrarUsuario = async (req, res) => {
     // 1. Verificar si ya existe un usuario con ese nombre
     const existe = await Usuario.existeUsuario(data.nombre);
     if (existe) {
-      logger.info('Fallo de registro: usuario ya existe en la base de datos');
+      logger.info("Fallo de registro: usuario ya existe en la base de datos");
       return res.status(400).json({
         mensaje: t.userAlreadyExists,
       });
@@ -136,8 +142,8 @@ exports.registrarUsuario = async (req, res) => {
       await Usuario.guardarImagen(idUsuario, data.fotoPerfil);
     }
 
-    if(logger.isDebugEnabled()){ 
-      logger.debug('Registro exitoso', { username });
+    if (logger.isDebugEnabled()) {
+      logger.debug("Registro exitoso", { username });
     }
 
     // Respuesta exitosa
@@ -146,7 +152,7 @@ exports.registrarUsuario = async (req, res) => {
       id: idUsuario,
     });
   } catch (err) {
-    logger.error('Error de registro', { err: err.message });
+    logger.error("Error de registro", { err: err.message });
     console.error("Error al registrar usuario:", err);
     res.status(500).json({ error: err.message });
   }
@@ -173,7 +179,7 @@ exports.obtenerPerfil = async (req, res) => {
     const perfil = await Usuario.obtenerPerfil(id);
 
     if (!perfil) {
-      logger.info('Error al obtener perfil: usuario no encontrado');
+      logger.info("Error al obtener perfil: usuario no encontrado");
       return res.status(404).json({
         mensaje: t.userNotFound,
       });
@@ -181,7 +187,39 @@ exports.obtenerPerfil = async (req, res) => {
 
     res.json(perfil);
   } catch (err) {
-    logger.error('Error al obtener perfil', { err: err.message });
+    logger.error("Error al obtener perfil", { err: err.message });
     res.status(500).json({ err: err.message });
   }
 };
+
+// ────────────────────────────────────────────────
+//               SUBIR FOTO DE PERFIL
+// ────────────────────────────────────────────────
+exports.obtenerFotoPerfil = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await require("../config/db").query(
+      `SELECT imagen 
+       FROM usuario_imagen 
+       WHERE Id_usuario = ? 
+       ORDER BY creado_en DESC 
+       LIMIT 1`,
+      [id],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).send("Sin imagen");
+    }
+
+    res.setHeader("Content-Type", "image/jpeg");
+    res.send(rows[0].imagen);
+  } catch (error) {
+    console.error("Error al obtener foto de perfil:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ────────────────────────────────────────────────
+//        OBTENER FOTO DE PERFIL (DESDE BLOB)
+// ────────────────────────────────────────────────

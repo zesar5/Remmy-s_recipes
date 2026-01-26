@@ -1,0 +1,9 @@
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-25T21:52:09.115Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-25T21:55:29.492Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-01-26T00:20:51.342Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-01-26T00:20:55.296Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T00:23:08.384Z"}
+{"err":"Duplicate entry 'quetepaso09@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-01-26T00:29:03.404Z"}
+{"err":"Duplicate entry 'quetepaso09@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-01-26T00:30:01.817Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T00:31:03.650Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T00:31:28.030Z"}

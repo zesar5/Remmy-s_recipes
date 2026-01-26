@@ -1,11 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleware = require("../middlewares/authMiddleware");
-
 const usuarioController = require("../controllers/usuarioController");
 
+// LOGIN
 router.post("/login", usuarioController.loginUsuario);
+
+// REGISTRO
 router.post("/registro", usuarioController.registrarUsuario);
-router.get("/perfil/:id",authMiddleware, usuarioController.obtenerPerfil);
+
+// PERFIL (SIN auth de momento)
+router.get("/perfil/:id", usuarioController.obtenerPerfil);
+
+// FOTO DE PERFIL
+router.get("/foto/:id", usuarioController.obtenerFotoPerfil);
 
 module.exports = router;

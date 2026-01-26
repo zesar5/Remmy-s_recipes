@@ -77,6 +77,23 @@ class Usuario {
     // Convertimos la fila cruda de la BD en nuestra entidad
     return new UsuarioEntity(rows[0]);
   }
+  static async actualizarRutaFotoPerfil(idUsuario, imagenBuffer) {
+    const db = require("../config/db");
+    try {
+      await db.query("DELETE FROM usuario_imagen WHERE Id_usuario=?", [
+        idUsuario,
+      ]);
+
+      const sql =
+        "INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?)";
+
+      const [result] = await db.query(sql, [idUsuario, imagenBuffer]);
+      return result;
+    } catch (error) {
+      console.error("Error en el modelo de actualizar foto:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = { Usuario, UsuarioEntity };

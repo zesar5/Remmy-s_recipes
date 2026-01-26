@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:remy_recipes/screens/login_screen.dart';
 import 'package:logger/logger.dart';
 import '../services/auth_service.dart';
@@ -7,6 +11,7 @@ import '../data/models/receta.dart';
 import '../data/models/usuario.dart';
 import 'DetalleRecetaPage.dart';
 import 'dart:convert';
+import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
 import '../data/constants/app_strings.dart';
 
@@ -24,9 +29,9 @@ class PerfilScreen extends StatefulWidget {
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
-
   final Logger logger = Logger();
-  
+  final ImagePicker _picker = ImagePicker();
+
   late Usuario user;
   List<Receta> recetasGuardadas = []; // Recetas propias del usuario
   List<String> favoritos = []; // Lista simulada/pendiente de implementación
@@ -51,6 +56,44 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     // Intentamos cargar las recetas del usuario
     _cargarRecetasGuardadas();
+  }
+
+  Future<void> _cambiarFoto() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      File file = File(image.path);
+      // Llama a la función de subida con el token del servicio de autenticación
+      await _uploadProfilePic(file, widget.authService.accessToken!);
+    } else {
+      print("erroooooor");
+    }
+  }
+
+  // Función de ayuda para la subida HTTP MultipartRequest
+  Future<void> _uploadProfilePic(File imagenSeleccionada, String token) async {
+    // Asegúrate de que baseUrl en config.dart es la IP correcta (ej. 10.0.2.2:8000)
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/uploadProfilePic'),
+    );
+    // CRUCIAL: Añadir el token para autenticar en el backend
+    request.headers['Authorization'] = 'Bearer $token';
+
+    // "profilePic" debe coincidir exactamente con el nombre en tu backend JS (upload.single("profilePic"))
+    request.files.add(
+      await http.MultipartFile.fromPath('profilePic', imagenSeleccionada.path),
+    );
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("foto actualizada en backend!!1");
+      // Reconstruye el widget para recargar Image.network con la nueva imagen
+      setState(() {});
+    } else {
+      print("error al subir foto: ${response.statusCode}");
+    }
   }
 
   /// Carga las recetas propias del usuario (públicas + privadas)
@@ -86,7 +129,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFDEB887), // Color característico de la app
+        backgroundColor: const Color(
+          0xFFDEB887,
+        ), // Color característico de la app
         elevation: 0, // Sin sombra para que se integre con la cabecera
         actions: [
           PopupMenuButton<String>(
@@ -160,13 +205,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
+              child: user.id != null
                   ? ClipOval(
-                      child: Image.memory(
-                        base64Decode(user.fotoPerfil!), // ← Decodifica base64
+                      child: Image.network(
+                        '$baseUrl/usuarios/foto/${user.id}',
+
                         width: 120,
                         height: 120,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text(
+                            "👤",
+                            style: TextStyle(fontSize: 55),
+                          );
+                        },
                       ),
                     )
                   : const Text("👤", style: TextStyle(fontSize: 55)),
@@ -446,12 +498,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
   //               ACCIONES PENDIENTES
   // ==============================================
 
-  void _cambiarFoto() {
+  /*void _cambiarFoto() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text(AppStrings.abrirSelectorImagen)),
     );
     // Aquí debería abrir image_picker + subir al backend
-  }
+  }*/
 
   void _editarPerfil() {
     ScaffoldMessenger.of(
