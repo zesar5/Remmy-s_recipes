@@ -3,15 +3,28 @@ import 'package:remy_recipes/screens/home_screen.dart';
 import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
-
+import 'package:logger/logger.dart';
 
 final AuthService authService = AuthService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  logger.i('Iniciando app - Verificando auto-login');
   final bool isLoggedIn = await authService.tryAutoLogin();
+  logger.d('Auto-login completado: isLoggedIn = $isLoggedIn');
   runApp( RemmyApp(isLoggedIn: isLoggedIn ));
 }
+
+final logger = Logger(
+  printer: PrettyPrinter(
+    methodCount: 2,
+    errorMethodCount: 8,
+    lineLength: 120,
+    colors: true,
+    printEmojis: true,
+    printTime: true,
+  ),
+);
 
 class RemmyApp extends StatelessWidget {
   final bool isLoggedIn;
@@ -20,6 +33,7 @@ class RemmyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    logger.i('Construyendo RemmysApp - Ruta inicial:  ${isLoggedIn ? "/home" : "/login"}');
     return MaterialApp(
       title: "Remmy's Recipes",
       debugShowCheckedModeBanner: false, //Quitar la etiqueta DEBUG

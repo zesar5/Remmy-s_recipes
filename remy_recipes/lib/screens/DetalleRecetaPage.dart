@@ -1,3 +1,4 @@
+import 'package:remy_recipes/main.dart';
 import 'package:remy_recipes/screens/recipes_form_page.dart';
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,7 @@ import 'dart:convert';
 import '../services/recetas_service.dart';
 import '../data/models/receta.dart';
 import '../data/constants/app_strings.dart';
-
+import 'package:logger/logger.dart';
 // =======================================================
 //          PANTALLA DE DETALLE DE RECETA
 // =======================================================
@@ -26,6 +27,7 @@ class DetalleRecetaPage extends StatelessWidget {
 
   /// Muestra diálogo de confirmación antes de eliminar la receta
   void _confirmarEliminar(BuildContext context) {
+    logger.i('Mostrando diálogo de confirmación para eliminar receta: ${receta.titulo}');
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -40,14 +42,23 @@ class DetalleRecetaPage extends StatelessWidget {
           // Botón Eliminar (rojo)
           TextButton(
             onPressed: () async {
-              // Llamada al servicio para eliminar (debe estar en recetas_service)
-              await eliminarReceta(int.parse(receta.id!));
+              logger.i('Confirmando eliminación de receta ID: ${receta.id}');
+              try {
+                // Llamada al servicio para eliminar (debe estar en recetas_service)
+                await eliminarReceta(int.parse(receta.id!));
+                logger.i('Receta eliminada exitosamente');  // Log de éxito
 
-              // Cerramos el diálogo
-              Navigator.pop(context);
+                // Cerramos el diálogo
+                Navigator.pop(context);
 
-              // Volvemos atrás y enviamos señal de "se eliminó" para que refresque la lista
-              Navigator.pop(context, true);
+                // Volvemos atrás y enviamos señal de "se eliminó" para que refresque la lista
+                Navigator.pop(context, true);
+              } catch (e) {
+                logger.e('Error al eliminar receta: $e');  // Log de error
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Error al eliminar receta')),
+                );
+              }
             },
             child: const Text(
               AppStrings.eliminar,
@@ -65,6 +76,7 @@ class DetalleRecetaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    logger.i('Construyendo pantalla de detalle para receta: ${receta.titulo}');  // Log de construcción
     return Scaffold(
       // AppBar con título de la receta + acciones (editar y eliminar)
       appBar: AppBar(
@@ -75,6 +87,7 @@ class DetalleRecetaPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
+              logger.i('Navegando a edición de receta: ${receta.titulo}');
               // Navegamos al formulario de edición pasando la receta actual
               final actualizado = await Navigator.push(
                 context,
@@ -89,6 +102,7 @@ class DetalleRecetaPage extends StatelessWidget {
 
               // Si el formulario devuelve true → hubo cambios → refrescamos
               if (actualizado == true) {
+                logger.i('Receta editada - Refrescando pantalla');  // Log de resultado
                 Navigator.pop(context, true);
               }
             },
@@ -110,16 +124,21 @@ class DetalleRecetaPage extends StatelessWidget {
             if (receta.imagenBase64 != null) ...[
               Builder(
                 builder: (context) {
-                  // Limpiamos el prefijo "data:image/...;base64,"
-                  final cleanBase64 = receta.imagenBase64!.replaceFirst(
-                    RegExp(r'data:image/[^;]+;base64,'),
-                    '',
-                  );
+                  try {
+                    // Limpiamos el prefijo "data:image/...;base64,"
+                    final cleanBase64 = receta.imagenBase64!.replaceFirst(
+                      RegExp(r'data:image/[^;]+;base64,'),
+                      '',
+                    );
 
-                  return Image.memory(
-                    base64Decode(cleanBase64),
-                    fit: BoxFit.cover,
-                  );
+                    return Image.memory(
+                      base64Decode(cleanBase64),
+                      fit: BoxFit.cover,
+                    );
+                  } catch (e) {
+                    logger.e('Error decodificando imagen de receta: $e');  // Log de error
+                    return const Center(child: Icon(Icons.image_not_supported));
+                  }
                 },
               ),
               const SizedBox(height: 16),

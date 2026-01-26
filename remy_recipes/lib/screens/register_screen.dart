@@ -1,3 +1,5 @@
+import 'package:remy_recipes/main.dart';
+
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
@@ -5,6 +7,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import '../data/constants/app_strings.dart';
+import 'package:logger/logger.dart';
 
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
@@ -86,9 +89,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ==============================================
 
   Future<void> seleccionarImagen() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => imagenPerfil = File(picked.path));
+    logger.i('Iniciando selección de imagen de perfil');  // Log de acción
+    try {
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null) {
+        setState(() => imagenPerfil = File(picked.path));
+        logger.i('Imagen de perfil seleccionada: ${picked.path}');  // Log de éxito
+      } else {
+        logger.w('Selección de imagen de perfil cancelada');  // Advertencia
+      }
+    } catch (e) {
+      logger.e('Error al seleccionar imagen de perfil: $e');  // Log de error
     }
   }
 
@@ -97,6 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ==============================================
 
   void registrar() async {
+    logger.i('Iniciando proceso de registro');  // Log de inicio
     // 1. Marcar visualmente campos vacíos
     setState(() {
       errorName = name.text.isEmpty;
@@ -126,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorConfirmar ||
         errorPais ||
         errorAnio) {
+          logger.w('Validación fallida: Campos requeridos incompletos');  // Advertencia
       mostrarMensaje("Por favor, completa todos los campos requeridos.");
       return;
     }
@@ -136,6 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorContrasenya = true;
         errorConfirmar = true;
       });
+      logger.w('Validación fallida: Contraseñas no coinciden');
       mostrarMensaje("Las contraseñas no coinciden.");
       return;
     }
@@ -145,6 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorContrasenya = true;
         errorConfirmar = true;
       });
+      logger.w('Validación fallida: Contraseña no cumple requisitos de fortaleza');  // Advertencia
       mostrarMensaje(
         "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
       );
@@ -156,10 +171,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (imagenPerfil != null) {
       final bytes = await imagenPerfil!.readAsBytes();
       base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+      logger.d('Imagen de perfil preparada en base64');  // Debug
     }
 
     // 5. Llamada real al servicio de autenticación
     try {
+      logger.i('Enviando datos de registro al servidor');
       final ok = await widget.authService.register(
         nombreUsuario: name.text,
         email: correo.text,
@@ -172,6 +189,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       // Éxito → mensaje y redirigir a login
+      logger.i('Registro exitoso - Navegando a login');  // Log de éxito
       mostrarMensaje(
         "Usuario registrado exitosamente.",
         onClose: () {
@@ -185,6 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       // Error del backend (ej: usuario ya existe, email duplicado)
+      logger.e('Error en registro: $e');  // Log de error
       mostrarMensaje(e.toString().replaceAll("Exception:", ""));
     }
   }
@@ -194,6 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ==============================================
 
   void mostrarMensaje(String mensaje, {VoidCallback? onClose}) {
+    logger.d('Mostrando mensaje: $mensaje');  // Debug
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -218,6 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.i('Construyendo pantalla de registro');
     return Scaffold(
       backgroundColor: const Color(0xFFDEB887),
       body: Center(
@@ -438,6 +459,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+    logger.i('Destruyendo pantalla de registro');  // Log de limpieza
     name.dispose();
     correo.dispose();
     contrasenya.dispose();

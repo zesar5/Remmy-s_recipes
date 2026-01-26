@@ -1,7 +1,10 @@
+import 'package:remy_recipes/main.dart';
+
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import '../data/constants/app_strings.dart';
+import 'package:logger/logger.dart';
 
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION 
@@ -28,6 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     final correo = _correoController.text.trim();
     final contrasena = _contrasenaController.text.trim();
+    logger.i('Iniciando login para email: $correo');  // Log de inicio
+
 
     // Reiniciar errores visuales
     setState(() {
@@ -37,16 +42,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Validaciones locales (como en WPF)
     if (correo.isEmpty) {
+      logger.w('Validación fallida: Correo vacío');
       setState(() => _errorCorreo = true);
       _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
       return;
     }
     if (!_esCorreoValido(correo)) {
+       logger.w('Validación fallida: Correo inválido');  // Advertencia
       setState(() => _errorCorreo = true);
       _showErrorDialog(AppStrings.correoInvalido, AppStrings.correoInvalidoMsg);
       return;
     }
     if (contrasena.isEmpty) {
+      logger.w('Validación fallida: Contraseña vacía');
       setState(() => _errorContrasena = true);
       _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
       return;
@@ -63,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (success) {
-        print('Login exitoso. Token en AuthService: ${widget.authService.accessToken}');
+        logger.i('Login exitoso. Token en AuthService: ${widget.authService.accessToken}');//puede que el widget.authService.accesToken no vaya ahí(revisar)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => HomeScreen(
@@ -72,10 +80,12 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } else {
+        logger.e('Login fallido: Credenciales incorrectas');
         _showErrorDialog(AppStrings.errorInicioSesion, AppStrings.credencialesIncorrectas);
       }
     } catch (e) {
       if (!mounted) return;
+       logger.e('Error en login: $e');
       _showErrorDialog(AppStrings.errorConexion, e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) {
@@ -91,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showErrorDialog(String title, String message) {
+    logger.d('Mostrando diálogo de error: $title');  // Debug
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -109,6 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // ==== BUILD UI ====
   @override
   Widget build(BuildContext context) {
+    logger.i('Construyendo pantalla de login');
     return Scaffold(
       backgroundColor: const Color(0xFFDEB887), // BurlyWood
       body: SingleChildScrollView(
@@ -226,6 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.black,
               textColor: Colors.white,
               onPressed: () {
+                logger.i('Navegando a pantalla de registro');  // Log de navegación
                 Navigator.of(context).pushNamed('/register');
               },
             ),
@@ -233,6 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 25),
             TextButton(
               onPressed: () {
+                logger.i('Omitiendo login - Navegando a Home');  // Log de navegación
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (_) => HomeScreen(

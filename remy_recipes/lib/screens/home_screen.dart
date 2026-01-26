@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:remy_recipes/main.dart';
+
 import '../services/recetas_service.dart';
 import 'package:flutter/material.dart';
 import 'package:remy_recipes/data/models/receta.dart';
@@ -10,6 +12,7 @@ import '../services/auth_service.dart';
 import 'DetalleRecetaPage.dart';
 import '../services/config.dart';
 import '../data/constants/app_strings.dart';
+import 'package:logger/logger.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -53,10 +56,12 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    logger.i('HomeScreen inicializada - Cargando recetas');
     fetchRecipes(); // Carga las recetas al iniciar la pantalla
   }
 
   void _openSearchSheet(BuildContext context){
+    logger.i('Abriendo hoja de búsqueda');
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -129,6 +134,7 @@ class _MainPageState extends State<MainPage> {
                       ),
 
                       onPressed: (){
+                         logger.i('Aplicando filtros de búsqueda');
                         //Aquí se lanzaría la búsqueda real
                         _aplicarFiltro();
                         Navigator.pop(context);
@@ -145,6 +151,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
   void _aplicarFiltro() async {
+    logger.i('Iniciando aplicación de filtros');
     setState(() => loading = true);
 
     final recetasFiltradas = await recetaFiltrada(
@@ -166,6 +173,7 @@ class _MainPageState extends State<MainPage> {
       _duracion = null;
       _alergenos = null;
     });
+     logger.i('Filtros aplicados - Recetas encontradas: ${recetasFiltradas.length}');
   }
 
    Widget _combo(String tipo, List<String> opciones) {
@@ -215,12 +223,12 @@ class _MainPageState extends State<MainPage> {
   /// Obtiene las recetas para la home (versión ligera: solo id, título e imagen)
   /// Actualmente usa http directo → sería mejor usar RecetasService
   Future<void> fetchRecipes() async {
+    logger.i('Iniciando carga de recetas para home');
     try {
       final response = await http.get(
         Uri.parse(ApiEndpoints.homeRecetas),
       );
-
-      print(response.body); // ← Útil para depuración
+      logger.d('Respuesta de fetchRecipes - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
@@ -234,12 +242,13 @@ class _MainPageState extends State<MainPage> {
           loading = false;
         });
 
-        print('RECIPES LENGTH: ${recipes.length}');
+        logger.i('RECETAS CARGADAS EXITOSAMENTE: ${recipes.length}');
       } else {
+         logger.e('Error al cargar recetas: Status ${response.statusCode}');
         setState(() => loading = false);
       }
     } catch (e) {
-      print("Error cargando recetas: $e");
+      logger.e("Error cargando recetas: $e");
       setState(() => loading = false);
     }
   }
@@ -254,7 +263,8 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange.shade800,
         onPressed: () {
-          print('TOKEN antes de navegar: ${widget.authService.accessToken}');
+          logger.i('Navegando a formulario de nueva receta');  // Log de navegación
+          logger.d('Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}');  // Debug
 
           // Navega a formulario de creación de receta
           Navigator.push(
@@ -380,11 +390,14 @@ class _MainPageState extends State<MainPage> {
               Icons.person,
               onTap: () {
                 if (widget.authService.currentUser == null) {
+                  logger.w('Intento de acceder a perfil sin usuario logueado');  // Advertencia
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text(AppStrings.debesIniciarSesion)),
                   );
                   return;
                 }
+
+                 logger.i('Navegando a pantalla de perfil');
 
                 Navigator.push(
                   context,
@@ -441,19 +454,19 @@ class RecipeButton extends StatelessWidget {
               : base64String;
             imageBytes = base64Decode(base64Image);
           } catch (e) {
-            print('ERROR DECODING IMAGE: $e');
+            logger.e('Error decodificando imagen de receta ${recipe.id}: $e');
           }
         }
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () async {
-        print("🖱️ Click en receta con id: ${recipe.id}");
+        logger.i('🖱️ Click en receta con id: ${recipe.titulo} (ID: ${recipe.id})');
 
         try {
           // Carga la receta completa (detalle) desde el backend
           final recetaCompleta = await obtenerRecetaPublicaPorId(recipe.id!);
-
+          logger.i('Receta completa cargada - Navegando a detalle');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -464,7 +477,7 @@ class RecipeButton extends StatelessWidget {
             ),
           );
         } catch (e) {
-          print("🔥 ERROR al cargar receta pública: $e");
+          logger.e("🔥 ERROR al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(AppStrings.errorCargarReceta)),
           );

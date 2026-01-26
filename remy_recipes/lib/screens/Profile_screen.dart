@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
 import '../data/constants/app_strings.dart';
+import 'package:logger/logger.dart';
 
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO
@@ -42,6 +43,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   @override
   void initState() {
     super.initState();
+     logger.i('Inicializando pantalla de perfil');  // Log de inicio
 
     // Protección: si no hay usuario logueado → redirige a login
     if (widget.authService.currentUser == null) {
@@ -62,11 +64,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
   //     FUNCIÓN QUE SE EJECUTA AL TOCAR LA FOTO
   // ────────────────────────────────────────────────
   Future<void> _cambiarFoto() async {
+    logger.i('Iniciando cambio de foto de perfil');  // Log de acción
     //abre galeria del dispositivo y permite al usuario elegir una
     // image_picker devuelve un XFile (o null si el usuario cancela)
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     //si el usuario ha seleccionado una imagen
     if (image != null) {
+      logger.i('Imagen seleccionada para subir');  // Log de éxito
       // Convertimos XFile a File para poder enviarlo por HTTP
       File file = File(image.path);
       // Llama a la función de subida con el token del servicio de autenticación
@@ -76,7 +80,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
       await _uploadProfilePic(file, widget.authService.accessToken!);
     } else {
       //el usuario cancelo la seleccion de imagen
-      print("cancelastes la selección");
+      logger.w("cancelastes la selección");// Advertencia
     }
   }
 
@@ -84,6 +88,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   //     FUNCIÓN QUE SUBE LA FOTO AL BACKEND
   // ────────────────────────────────────────────────
   Future<void> _uploadProfilePic(File imagenSeleccionada, String token) async {
+    logger.i('Iniciando subida de foto de perfil al backend');  // Log de inicio
     //obtenemos el ID del usuario actualmente autenticado
     //el id viene del login...
     final userId = widget.authService.currentUser!.id;
@@ -108,19 +113,19 @@ class _PerfilScreenState extends State<PerfilScreen> {
     var response = await request.send();
     //si el backend dice ok
     if (response.statusCode == 200) {
-      print("foto actualizada en backend!!1");
+       logger.i('Foto de perfil actualizada exitosamente en backend');  // Log de éxito
       // Forzamos el rebuild del widget para que
       // Image.network vuelva a cargar la imagen
       setState(() {});
     } else {
-      print("error al subir foto: ${response.statusCode}");
+      logger.e('Error al subir foto de perfil: Código ${response.statusCode}');  // Log de error
     }
   }
 
   /// Carga las recetas propias del usuario (públicas + privadas)
   Future<void> _cargarRecetasGuardadas() async {
-    print('desde Profile 🧠 USUARIO ACTUAL ID: ${user.id}');
-    print('🧠 TOKEN PERFIL: ${widget.authService.accessToken}');
+    logger.i('desde Profile 🧠 USUARIO ACTUAL ID: ${user.id}');  // Log de inicio
+    logger.d('🧠 TOKEN PERFIL: ${widget.authService.accessToken != null ? "Sí" : "No"}');  // Debug
 
     if (widget.authService.accessToken == null) return;
 
@@ -131,13 +136,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
         user.id.toString(),
       );
 
-      print('📦 RECETAS RECIBIDAS: ${recetas.length}');
+      logger.i('📦 RECETAS RECIBIDAS: ${recetas.length}');
 
       setState(() {
         recetasGuardadas = recetas;
       });
     } catch (e) {
-      print("Error cargando recetas del usuario: $e");
+      logger.e("Error cargando recetas del usuario: $e");
     }
   }
 
@@ -147,6 +152,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.i('Construyendo pantalla de perfil');  // Log de construcción
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -158,8 +164,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'editar') {
+                logger.i('Seleccionando editar perfil');
                 _editarPerfil();
               } else if (value == 'cerrar') {
+                 logger.i('Seleccionando cerrar sesión');
                 _cerrarSesion();
               }
             },
@@ -220,7 +228,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
           // ────────────────────────────────────────────────
           GestureDetector(
             //cuando toca foto se abre galeria
-            onTap: _cambiarFoto,
+            onTap: () {
+              logger.i('Click en foto de perfil - Iniciando cambio');  // Log de acción
+              _cambiarFoto();
+            },
             child: Container(
               //tamaño del contenedor
               width: 120,
@@ -241,6 +252,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   height: 120,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
+                     logger.w('Error cargando imagen de perfil - Mostrando placeholder');  // Advertencia
                     return const Text("👤", style: TextStyle(fontSize: 55));
                   },
                 ),
@@ -309,7 +321,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       onEnter: (_) => setState(() => hovered = view),
       onExit: (_) => setState(() => hovered = ""),
       child: GestureDetector(
-        onTap: () => setState(() => currentView = view),
+         onTap: () {
+          logger.i('Cambiando vista a: $view');  // Log de navegación
+          setState(() => currentView = view);
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: 85,
@@ -397,20 +412,19 @@ class _PerfilScreenState extends State<PerfilScreen> {
               imageBytes = base64Decode(base64Image);
             }
           } catch (e) {
-            print('ERROR DECODING IMAGE: $e');
+            logger.e('Error decodificando imagen de receta ${receta.id}: $e');  // Log de error
           }
         }
 
-        return GestureDetector(
+         return GestureDetector(
           onTap: () async {
+            logger.i('Click en receta guardada: ${receta.titulo} (ID: ${receta.id})');  // Log de acción
             try {
-              print("🖱️ Tap detectado en receta ${receta.id}");
-              print("🔄 token de DetalleRecetaPage: ${widget.authService}");
               final recetaCompleta = await obtenerRecetaPorId(
                 widget.authService.accessToken!,
                 receta.id!,
               );
-              print("📦 Receta completa recibida: $recetaCompleta");
+              logger.i('Receta completa cargada para detalle');  // Log de éxito
 
               final refrescar = await Navigator.push(
                 context,
@@ -425,8 +439,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
               // Si se eliminó o modificó la receta → recargar lista
               if (refrescar == true) _cargarRecetasGuardadas();
             } catch (e, s) {
-              print("🔥 ERROR en onTap: $e");
-              print(s);
+              logger.e("🔥 ERROR en onTap: $e");
+              logger.d(s);//Debug adicional
             }
           },
           child: Card(
@@ -485,7 +499,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: onAdd,
+           onPressed: () {
+            logger.i('Agregando elemento a lista: $titulo');  // Log de acción
+            onAdd();
+          },
           child: const Text(AppStrings.anadirElemento),
         ),
         const SizedBox(height: 10),
@@ -498,7 +515,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   title: Text(lista[index]),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
-                    onPressed: () => setState(() => lista.removeAt(index)),
+                    onPressed: () {
+                      logger.i('Eliminando elemento de lista: $titulo');  // Log de acción
+                      setState(() => lista.removeAt(index));
+                    },
                   ),
                 ),
               );
@@ -512,6 +532,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   void _addToList(List<String> lista) {
     setState(() {
       if (user.descripcion != null && user.descripcion!.trim().isNotEmpty) {
+        logger.i('Agregando descripción a lista');  // Log de acción
         lista.add(user.descripcion!);
       }
     });
@@ -529,6 +550,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }*/
 
   void _editarPerfil() {
+     logger.i('Acción pendiente: Editar perfil - Mostrando SnackBar');  // Log de acción (indica que es pendiente)
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text(AppStrings.abrirEditarPerfil)));
@@ -536,6 +558,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   void _cerrarSesion() {
+     logger.i('Cerrando sesión - Llamando a logout y navegando a login');  // Log de acción
     // Llama al logout del AuthService
     widget.authService.logout();
     // Navega a la pantalla de login

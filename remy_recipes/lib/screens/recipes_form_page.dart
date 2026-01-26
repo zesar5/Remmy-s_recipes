@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:remy_recipes/main.dart';
 import 'dart:io';
 import 'dart:convert';
 import '../data/models/receta.dart';
 import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../data/constants/app_strings.dart';
+import 'package:logger/logger.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
@@ -27,6 +29,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   void initState() {
     super.initState();
 
+    logger.i('Inicializando formulario de receta - Modo: ${widget.recetaEditar == null ? "Crear" : "Editar"}');  // Log de inicio
+
     if (widget.recetaEditar != null) {
       final r = widget.recetaEditar!;
 
@@ -44,6 +48,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       steps = (r.pasos ?? []).map((p) {
         return Paso(descripcion: p.descripcion);
       }).toList();
+
+      logger.i('Receta cargada para edición: ${r.titulo}');  // Log de carga
     }
   }
 
@@ -291,11 +297,19 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   // ==============================================
 
   Future<void> pickImage() async {
+    logger.i('Iniciando selección de imagen');  // Log de acción
+    try{
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         imagePath = pickedFile.path;
       });
+      logger.i('Imagen seleccionada: ${pickedFile.path}');  // Log de éxito
+      } else {
+        logger.w('Selección de imagen cancelada');  // Advertencia
+      }
+    } catch (e) {
+      logger.e('Error al seleccionar imagen: $e');  // Log de error
     }
   }
 
@@ -307,12 +321,14 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     setState(() {
       ingredients.add(Ingrediente(nombre: '', cantidad: ''));
     });
+    logger.i('Ingrediente agregado - Total: ${ingredients.length}');  // Log de acción
   }
 
   void removeIngredient(int index) {
     setState(() {
       ingredients.removeAt(index);
     });
+    logger.i('Ingrediente eliminado en índice $index - Total: ${ingredients.length}');  // Log de acción
   }
 
   // ==============================================
@@ -323,12 +339,14 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     setState(() {
       steps.add(Paso(descripcion: ''));
     });
+    logger.i('Paso agregado - Total: ${steps.length}');
   }
 
   void removeStep(int index) {
     setState(() {
       steps.removeAt(index);
     });
+    logger.i('Paso eliminado en índice $index - Total: ${steps.length}');
   }
 
   void reorderSteps(int oldIndex, int newIndex) {
@@ -339,6 +357,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       final Paso item = steps.removeAt(oldIndex);
       steps.insert(newIndex, item);
     });
+     logger.i('Pasos reordenados: $oldIndex → $newIndex');
   }
 
   // ==============================================
@@ -346,6 +365,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   // ==============================================
 
   void _showAllergenSelector(BuildContext context) {
+    logger.i('Mostrando selector de alérgenos');
     showDialog(
       context: context,
       builder: (_) {
@@ -387,6 +407,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     setState(() {
                       selectedAllergens = tempSelection;
                     });
+                    logger.i('Alérgenos seleccionados: ${selectedAllergens.join(", ")}');  // Log de resultado
                     Navigator.pop(context);
                   },
                   child: const Text(AppStrings.aceptar),
@@ -403,24 +424,45 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   //               VALIDACIÓN DEL FORMULARIO
   // ==============================================
 
-  bool isFormValid() {
-    if (title.trim().isEmpty) return false;
-    if (imagePath == null) return false;
-    if (duration == null) return false;
-    if (country == null) return false;
-    if (selectedAllergens.isEmpty) return false;
-    if (season == null) return false;
+   bool isFormValid() {
+    logger.d('Validando formulario');  // Debug de validación
+    if (title.trim().isEmpty) {
+      logger.w('Validación fallida: Título vacío');  // Advertencia
+      return false;
+    }
+    if (imagePath == null) {
+      logger.w('Validación fallida: Imagen no seleccionada');  // Advertencia
+      return false;
+    }
+    if (duration == null) {
+      logger.w('Validación fallida: Duración no seleccionada');  // Advertencia
+      return false;
+    }
+    if (country == null) {
+      logger.w('Validación fallida: País no seleccionado');  // Advertencia
+      return false;
+    }
+    if (selectedAllergens.isEmpty) {
+      logger.w('Validación fallida: Alérgenos no seleccionados');  // Advertencia
+      return false;
+    }
+    if (season == null) {
+      logger.w('Validación fallida: Estación no seleccionada');  // Advertencia
+      return false;
+    }
 
     if (ingredients.isEmpty ||
         ingredients.any(
           (i) => i.nombre.trim().isEmpty || i.cantidad.trim().isEmpty,
         )) {
+           logger.w('Validación fallida: Ingredientes incompletos');
       return false;
     }
     if (steps.isEmpty || steps.any((s) => s.descripcion.trim().isEmpty)) {
+      logger.w('Validación fallida: Pasos incompletos');
       return false;
     }
-
+    logger.i('Formulario válido');  // Log de éxito
     return true;
   }
 
@@ -461,6 +503,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   }
 
   Future<void> _guardarReceta() async {
+     logger.i('Iniciando guardado de receta');
     if (!isFormValid()) {
       _mostrarError('Debe rellenar todos los campos obligatorios');
       return;
@@ -484,14 +527,16 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             ) // ← Convierte archivo a base64
           : widget.recetaEditar?.imagenBase64,
     );
-
-    print('TOKEN: ${widget.token}');
+     logger.d('Datos de receta preparados: Título=${receta.titulo}, Ingredientes=${receta.ingredientes?.length}, Pasos=${receta.pasos?.length}');  // Debug (sin datos sensibles)
+    //logger que no muestra datos sensibles ya que no llama al json y así no satura consola, lo dejo comentado por si acaso es necesario en un futuro.
+    /*print('TOKEN: ${widget.token}');
     print('Datos enviados: ${receta.toJson()}');
-
+    */
     bool success;
 
     if (widget.recetaEditar == null) {
       // MODO CREAR
+      logger.i('Modo crear: Enviando receta al servidor');
       final String? recetaId = await crearRecetaEnServidor(
         receta,
         widget.token,
@@ -499,6 +544,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       success = recetaId != null;
     } else {
       // MODO EDITAR
+      logger.i('Modo editar: Actualizando receta en servidor');
       success = await editarReceta(receta, widget.token);
     }
 
@@ -508,11 +554,13 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         true,
       ); // ← Devuelve true para que la lista se refresque
     } else {
+      logger.e('Error al guardar receta en servidor'); 
       _mostrarError('Error al guardar la receta en el servidor');
     }
   }
 
   void _mostrarError(String mensaje) {
+     logger.e('Mostrando error: $mensaje');  // Log de error
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -534,6 +582,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
   @override
   Widget build(BuildContext context) {
+     logger.i('Construyendo interfaz del formulario');  // Log de construcción
     return Scaffold(
       backgroundColor: const Color(0xFFDEB887),
       appBar: AppBar(
