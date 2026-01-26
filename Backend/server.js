@@ -9,6 +9,9 @@ const path = require("path");
 const logger = require("./logger.js");
 require("dotenv").config();
 
+const usuarioRoutes = require("./routes/usuarioRoutes");
+
+app.use(usuarioRoutes);
 /*// Opciones SSL
 const sslOptions = {
   key: fs.readFileSync(path.join(__dirname, 'key.pem')),

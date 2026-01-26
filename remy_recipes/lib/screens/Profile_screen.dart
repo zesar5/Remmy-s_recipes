@@ -58,38 +58,59 @@ class _PerfilScreenState extends State<PerfilScreen> {
     _cargarRecetasGuardadas();
   }
 
+  // ────────────────────────────────────────────────
+  //     FUNCIÓN QUE SE EJECUTA AL TOCAR LA FOTO
+  // ────────────────────────────────────────────────
   Future<void> _cambiarFoto() async {
+    //abre galeria del dispositivo y permite al usuario elegir una
+    // image_picker devuelve un XFile (o null si el usuario cancela)
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
+    //si el usuario ha seleccionado una imagen
     if (image != null) {
+      // Convertimos XFile a File para poder enviarlo por HTTP
       File file = File(image.path);
       // Llama a la función de subida con el token del servicio de autenticación
+      // Le pasamos:
+      //  - el archivo seleccionado
+      //  - el token JWT del usuario logueado
       await _uploadProfilePic(file, widget.authService.accessToken!);
     } else {
-      print("erroooooor");
+      //el usuario cancelo la seleccion de imagen
+      print("cancelastes la selección");
     }
   }
 
-  // Función de ayuda para la subida HTTP MultipartRequest
+  // ────────────────────────────────────────────────
+  //     FUNCIÓN QUE SUBE LA FOTO AL BACKEND
+  // ────────────────────────────────────────────────
   Future<void> _uploadProfilePic(File imagenSeleccionada, String token) async {
-    // Asegúrate de que baseUrl en config.dart es la IP correcta (ej. 10.0.2.2:8000)
+    //obtenemos el ID del usuario actualmente autenticado
+    //el id viene del login...
+    final userId = widget.authService.currentUser!.id;
+    // Creamos una petición HTTP de tipo multipart (necesaria para enviar archivos)
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('$baseUrl/uploadProfilePic'),
+      //URL del backend para subir la foto
+      //el ID va en la ruta,y la seguridad la da el token
+      Uri.parse('$baseUrl/usuarios/foto/$userId'),
     );
-    // CRUCIAL: Añadir el token para autenticar en el backend
+
+    // Añadimos el token JWT al header Authorization
+    // El backend lo validará con authMiddleware
     request.headers['Authorization'] = 'Bearer $token';
 
-    // "profilePic" debe coincidir exactamente con el nombre en tu backend JS (upload.single("profilePic"))
+    //AÑADIMOS EL ARCHIVO A LA PETICION
+    //que debe llamarse igual que en el backend
     request.files.add(
       await http.MultipartFile.fromPath('profilePic', imagenSeleccionada.path),
     );
-
+    //enviamos la peticion al backend
     var response = await request.send();
-
+    //si el backend dice ok
     if (response.statusCode == 200) {
       print("foto actualizada en backend!!1");
-      // Reconstruye el widget para recargar Image.network con la nueva imagen
+      // Forzamos el rebuild del widget para que
+      // Image.network vuelva a cargar la imagen
       setState(() {});
     } else {
       print("error al subir foto: ${response.statusCode}");
@@ -194,10 +215,14 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Foto de perfil (click para cambiar - aún sin implementar)
+          // ────────────────────────────────────────────────
+          //     FOTO DE PERFIL (TOCAR PARA CAMBIAR)
+          // ────────────────────────────────────────────────
           GestureDetector(
+            //cuando toca foto se abre galeria
             onTap: _cambiarFoto,
             child: Container(
+              //tamaño del contenedor
               width: 120,
               height: 120,
               decoration: const BoxDecoration(
@@ -205,23 +230,21 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
-              child: user.id != null
-                  ? ClipOval(
-                      child: Image.network(
-                        '$baseUrl/usuarios/foto/${user.id}',
+              //esto recorta la imagen en forma de circulo
+              child: ClipOval(
+                // URL del backend para obtener la foto de perfil
+                //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
+                child: Image.network(
+                  '$baseUrl/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
 
-                        width: 120,
-                        height: 120,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Text(
-                            "👤",
-                            style: TextStyle(fontSize: 55),
-                          );
-                        },
-                      ),
-                    )
-                  : const Text("👤", style: TextStyle(fontSize: 55)),
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text("👤", style: TextStyle(fontSize: 55));
+                  },
+                ),
+              ),
             ),
           ),
 

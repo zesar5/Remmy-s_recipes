@@ -195,31 +195,47 @@ exports.obtenerPerfil = async (req, res) => {
 // ────────────────────────────────────────────────
 //               SUBIR FOTO DE PERFIL
 // ────────────────────────────────────────────────
+// Esta función:
+// 1️. Recibe un ID de usuario por la URL
+// 2️. Busca su imagen de perfil en la base de datos
+// 3️. Devuelve la imagen como archivo (NO como JSON)
+// 4️. Permite que Flutter la muestre con Image.network()
+
+
+
 exports.obtenerFotoPerfil = async (req, res) => {
+  
+  //extraemos el id del usuario desde la URL
   const { id } = req.params;
 
   try {
+    //ejecutamos una consulta a la base de daros 
+    //buscamos la ultim foto subida por ese usuario
     const [rows] = await require("../config/db").query(
       `SELECT imagen 
        FROM usuario_imagen 
        WHERE Id_usuario = ? 
        ORDER BY creado_en DESC 
        LIMIT 1`,
-      [id],
+      [id],//valor que sustituye el ?
     );
-
+      // si el user no tiene imagen guardada mandamos un 404 para que flutter mandeicono por defecto
     if (rows.length === 0) {
       return res.status(404).send("Sin imagen");
     }
 
+    //indicamos que la respuesta es una imagen JPEG
+    //sin este header flutter no sabria como interpretar el contenido
     res.setHeader("Content-Type", "image/jpeg");
+
+    //enviamos el contenido BLOB de la imagen
+    //Express se encarga de enviarlo correctamente al cliente
     res.send(rows[0].imagen);
+    //cualquier error que ocurra lo indicamos en consola
   } catch (error) {
     console.error("Error al obtener foto de perfil:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// ────────────────────────────────────────────────
-//        OBTENER FOTO DE PERFIL (DESDE BLOB)
-// ────────────────────────────────────────────────
+
