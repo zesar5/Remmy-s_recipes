@@ -48,19 +48,21 @@ exports.loginUsuario = async (req, res) => {
     }
 
     const usuario = rows[0];
-    /*const passwordCorrecta = await bcrypt.compare(
+    const passwordCorrecta = await bcrypt.compare(
       contrasena,
-      usuario.contrasena,
+      usuario.contrasena
     );
+
     if (!passwordCorrecta) {
+      logger.info("Intento de login fallido: contraseña incorrecta", { email });
       return res.status(401).json({ mensaje: t.invalidCredentials });
-    if (!passwordCorrecta) {*/
-    if (contrasena !== usuario.contrasena) {
+    }
+    /*if (contrasena !== usuario.contrasena) {
       logger.info("Intento de login fallido: contraseña incorrecta", {
-        username,
+        email,
       });
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
-    }
+    }*/
 
     // Generamos token JWT con el id del usuario
     const token = jwt.sign(
@@ -72,8 +74,11 @@ exports.loginUsuario = async (req, res) => {
     console.log("JWT generado:", token);
 
     if (logger.isDebugEnabled()) {
-      logger.debug("Login exitoso", { username });
+      logger.debug("Login exitoso", { email });
     }
+
+    console.log("usuario.nombre: ", usuario.nombre);
+    console.log("usuario.userName: ", usuario.email);
 
     // Respuesta exitosa con datos útiles para el frontend
     res.json({

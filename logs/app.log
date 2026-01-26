@@ -57,3 +57,13 @@
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T09:22:16.573Z"}
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T09:46:11.264Z"}
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T10:03:06.293Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T17:39:52.456Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T17:39:58.579Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T17:55:08.665Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T18:12:33.868Z"}
+{"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T18:12:49.220Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T18:20:32.464Z"}
+{"email":"UUUUU@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-01-26T18:20:45.996Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-01-26T18:21:19.601Z"}
+{"email":"nuuuu@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-01-26T18:21:41.079Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-01-26T18:26:15.933Z"}
