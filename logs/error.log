@@ -13,3 +13,6 @@
 {"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T17:39:58.579Z"}
 {"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T17:55:08.665Z"}
 {"error":"username is not defined","level":"error","message":"Error de registro","timestamp":"2026-01-26T18:12:49.220Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-01-29T10:52:07.610Z"}
+{"err":"t is not defined","level":"error","message":"Error al obtener recetas publicas por id","timestamp":"2026-01-29T10:52:07.616Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-01-29T10:53:42.696Z"}

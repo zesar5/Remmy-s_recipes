@@ -31,6 +31,7 @@ exports.obtenerRecetasPublicas = async (req, res) => {
  */
 exports.obtenerRecetaPublicaPorId = async (req, res) => {
   try {
+    const t = getMessages(req);
     console.log("🔎 obtenerRecetaPublicaPorId ID:", req.params.id);
 
     const receta = await RecetaModel.obtenerPorId(req.params.id);
