@@ -26,23 +26,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    logger.i('Inicializando pantalla de edición de perfil');  // Log de inicio
+    logger.i('Inicializando pantalla de edición de perfil'); // Log de inicio
     final user = widget.authService.currentUser!;
     nameController = TextEditingController(text: user.userName);
     descripcionController = TextEditingController(text: user.descripcion ?? '');
   }
 
   Future<void> seleccionarImagen() async {
-    logger.i('Seleccionando nueva imagen de perfil');  // Log de acción
+    logger.i('Seleccionando nueva imagen de perfil'); // Log de acción
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() => imagenPerfil = File(picked.path));
-      logger.i('Imagen seleccionada');  // Log de éxito
+      logger.i('Imagen seleccionada'); // Log de éxito
     }
   }
 
   Future<void> guardarCambios() async {
-    logger.i('Guardando cambios de perfil');  // Log de inicio
+    logger.i('Guardando cambios de perfil'); // Log de inicio
     String? base64Image;
     if (imagenPerfil != null) {
       final bytes = await imagenPerfil!.readAsBytes();
@@ -56,33 +56,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         descripcion: descripcionController.text,
         fotoPerfil: base64Image,
       );
-      logger.i('Perfil actualizado exitosamente');  // Log de éxito
-      Navigator.pop(context);  // Regresar a PerfilScreen
+      logger.i('Perfil actualizado exitosamente'); // Log de éxito
+      Navigator.pop(context); // Regresar a PerfilScreen
     } catch (e) {
-      logger.e('Error actualizando perfil: $e');  // Log de error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      logger.e('Error actualizando perfil: $e'); // Log de error
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    logger.i('Construyendo interfaz de edición de perfil');  // Log de construcción
+    logger.i(
+      'Construyendo interfaz de edición de perfil',
+    ); // Log de construcción
     return Scaffold(
+      backgroundColor: const Color(0xFFE6C18C),
       appBar: AppBar(
-        title: const Text('Editar Perfil'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: guardarCambios,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
+          'Editar Perfil',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
           ),
+        ),
+        actions: [
+          IconButton(icon: const Icon(Icons.save), onPressed: guardarCambios),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 20),
             // Foto de perfil
             GestureDetector(
               onTap: seleccionarImagen,
@@ -91,9 +102,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 backgroundImage: imagenPerfil != null
                     ? FileImage(imagenPerfil!)
                     : (widget.authService.currentUser!.fotoPerfil != null
-                        ? MemoryImage(base64Decode(widget.authService.currentUser!.fotoPerfil!))
-                        : null),
-                child: imagenPerfil == null && widget.authService.currentUser!.fotoPerfil == null
+                          ? MemoryImage(
+                              base64Decode(
+                                widget.authService.currentUser!.fotoPerfil!,
+                              ),
+                            )
+                          : null),
+                child:
+                    imagenPerfil == null &&
+                        widget.authService.currentUser!.fotoPerfil == null
                     ? const Icon(Icons.camera_alt, size: 40)
                     : null,
               ),
@@ -121,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    logger.i('Destruyendo pantalla de edición de perfil');  // Log de limpieza
+    logger.i('Destruyendo pantalla de edición de perfil'); // Log de limpieza
     nameController.dispose();
     descripcionController.dispose();
     super.dispose();

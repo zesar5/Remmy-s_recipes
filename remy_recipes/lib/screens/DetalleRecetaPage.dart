@@ -11,7 +11,7 @@ import 'package:logger/logger.dart';
 //          PANTALLA DE DETALLE DE RECETA
 // =======================================================
 
-class DetalleRecetaPage extends StatelessWidget {
+class DetalleRecetaPage extends StatefulWidget {
   final Receta receta; // Receta completa recibida desde home o perfil
   final AuthService authService; // Para obtener token y verificar permisos
 
@@ -21,13 +21,44 @@ class DetalleRecetaPage extends StatelessWidget {
     required this.authService,
   }) : super(key: key);
 
+  @override
+  State<DetalleRecetaPage> createState() => _DetalleRecetaPageState();
+}
+
+class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
+  bool _liked = false;
+
+  // ==============================================
+  //              TOGGLE LIKE
+  // ==============================================
+
+  void _toggleLike() {
+    if (widget.authService.currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Debes iniciar sesión para dar like')),
+      );
+      return;
+    }
+    setState(() {
+      _liked = !_liked;
+    });
+    logger.i(
+      _liked
+          ? 'Like añadido a receta ${widget.receta.id}'
+          : 'Like quitado de receta ${widget.receta.id}',
+    );
+    //AQUI IRA LO DE BACKEND
+  }
+
   // ==============================================
   //          DIÁLOGO DE CONFIRMACIÓN ELIMINAR
   // ==============================================
 
   /// Muestra diálogo de confirmación antes de eliminar la receta
   void _confirmarEliminar(BuildContext context) {
-    logger.i('Mostrando diálogo de confirmación para eliminar receta: ${receta.titulo}');
+    logger.i(
+      'Mostrando diálogo de confirmación para eliminar receta: ${widget.receta.titulo}',
+    );
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -42,11 +73,13 @@ class DetalleRecetaPage extends StatelessWidget {
           // Botón Eliminar (rojo)
           TextButton(
             onPressed: () async {
-              logger.i('Confirmando eliminación de receta ID: ${receta.id}');
+              logger.i(
+                'Confirmando eliminación de receta ID: ${widget.receta.id}',
+              );
               try {
                 // Llamada al servicio para eliminar (debe estar en recetas_service)
-                await eliminarReceta(int.parse(receta.id!));
-                logger.i('Receta eliminada exitosamente');  // Log de éxito
+                await eliminarReceta(int.parse(widget.receta.id!));
+                logger.i('Receta eliminada exitosamente'); // Log de éxito
 
                 // Cerramos el diálogo
                 Navigator.pop(context);
@@ -54,7 +87,7 @@ class DetalleRecetaPage extends StatelessWidget {
                 // Volvemos atrás y enviamos señal de "se eliminó" para que refresque la lista
                 Navigator.pop(context, true);
               } catch (e) {
-                logger.e('Error al eliminar receta: $e');  // Log de error
+                logger.e('Error al eliminar receta: $e'); // Log de error
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Error al eliminar receta')),
                 );
@@ -76,33 +109,39 @@ class DetalleRecetaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    logger.i('Construyendo pantalla de detalle para receta: ${receta.titulo}');  // Log de construcción
+    logger.i(
+      'Construyendo pantalla de detalle para receta: ${widget.receta.titulo}',
+    ); // Log de construcción
     return Scaffold(
       // AppBar con título de la receta + acciones (editar y eliminar)
       appBar: AppBar(
-        title: Text(receta.titulo),
+        title: Text(widget.receta.titulo),
         actions: [
           // Botón EDITAR (solo visible si el usuario es propietario)
           // Nota: actualmente NO verifica propiedad → cualquiera ve los botones
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
-              logger.i('Navegando a edición de receta: ${receta.titulo}');
+              logger.i(
+                'Navegando a edición de receta: ${widget.receta.titulo}',
+              );
               // Navegamos al formulario de edición pasando la receta actual
               final actualizado = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => RecipeFormPage(
                     token: authService.accessToken!,
-                    recetaEditar:
-                        receta, // ← Enviamos la receta para prellenar campos
+                    recetaEditar: widget
+                        .receta, // ← Enviamos la receta para prellenar campos
                   ),
                 ),
               );
 
               // Si el formulario devuelve true → hubo cambios → refrescamos
               if (actualizado == true) {
-                logger.i('Receta editada - Refrescando pantalla');  // Log de resultado
+                logger.i(
+                  'Receta editada - Refrescando pantalla',
+                ); // Log de resultado
                 Navigator.pop(context, true);
               }
             },
@@ -121,22 +160,22 @@ class DetalleRecetaPage extends StatelessWidget {
         child: ListView(
           children: [
             // Imagen principal (si existe)
-            if (receta.imagenBase64 != null) ...[
+            if (widget.receta.imagenBase64 != null) ...[
               Builder(
                 builder: (context) {
                   try {
                     // Limpiamos el prefijo "data:image/...;base64,"
-                    final cleanBase64 = receta.imagenBase64!.replaceFirst(
-                      RegExp(r'data:image/[^;]+;base64,'),
-                      '',
-                    );
+                    final cleanBase64 = widget.receta.imagenBase64!
+                        .replaceFirst(RegExp(r'data:image/[^;]+;base64,'), '');
 
                     return Image.memory(
                       base64Decode(cleanBase64),
                       fit: BoxFit.cover,
                     );
                   } catch (e) {
-                    logger.e('Error decodificando imagen de receta: $e');  // Log de error
+                    logger.e(
+                      'Error decodificando imagen de receta: $e',
+                    ); // Log de error
                     return const Center(child: Icon(Icons.image_not_supported));
                   }
                 },
@@ -150,7 +189,7 @@ class DetalleRecetaPage extends StatelessWidget {
               AppStrings.ingredientes,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            ...receta.ingredientes!.map(
+            ...widget.receta.ingredientes!.map(
               (i) => Text("• ${i.cantidad} ${i.nombre}"),
             ),
 
@@ -161,7 +200,7 @@ class DetalleRecetaPage extends StatelessWidget {
               AppStrings.pasos,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            ...receta.pasos!.map((p) => Text("- ${p.descripcion}")),
+            ...widget.receta.pasos!.map((p) => Text("- ${p.descripcion}")),
           ],
         ),
       ),
