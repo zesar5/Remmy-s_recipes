@@ -78,6 +78,7 @@ class DetalleRecetaPage extends StatelessWidget {
   Widget build(BuildContext context) {
     logger.i('Construyendo pantalla de detalle para receta: ${receta.titulo}');  // Log de construcción
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       // AppBar con título de la receta + acciones (editar y eliminar)
       appBar: AppBar(
         title: Text(receta.titulo),
