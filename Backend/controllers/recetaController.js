@@ -272,4 +272,4 @@ exports.obtenerRecetasFiltradas = async (req, res) => {
       error: err.message
     });
   }
-}
+};

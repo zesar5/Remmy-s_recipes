@@ -558,12 +558,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
     MaterialPageRoute(
       builder: (_) => EditProfileScreen(authService: widget.authService),
     ),
-  ).then((_) {
-    // Después de editar, refrescar el perfil
+  ).then((result) {
+    if(result == true){
+      // Después de editar, refrescar el perfil
     logger.i('Regresando de edición - Refrescando perfil');  // Log de acción
     setState(() {
       user = widget.authService.currentUser!;  // Refrescar datos del usuario
     });
+    }
+    
   });
 }
 

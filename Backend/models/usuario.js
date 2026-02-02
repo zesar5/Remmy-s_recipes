@@ -77,6 +77,26 @@ class Usuario {
     // Convertimos la fila cruda de la BD en nuestra entidad
     return new UsuarioEntity(rows[0]);
   }
+  
+  static async actualizarPerfil(id, data){
+    const{nombre, descripcion, fotoPerfil} = data;
+
+    await db.query(
+      'UPDATE usuario SET nombre = ?, descripcion = ? WHERE ID_usuario = ?',
+      [nombre, descripcion, id]
+    );
+
+    if(fotoPerfil){
+      const cleanBase64 = fotoPerfil.replace(/^data:image\/\w+;base64,/, "")
+      const buffer = Buffer.from(cleanBase64, "base64");
+      await db.query(
+        'INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)',
+        [id, buffer]
+      );
+    }
+    //Devuelve el perfil actualizado
+    return await Usuario.obtenerPerfil(id);
+  }
   static async actualizarRutaFotoPerfil(idUsuario, imagenBuffer) {
     const db = require("../config/db");
     try {
