@@ -52,12 +52,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       // Asumir que AuthService tiene un método updateProfile (agregarlo si no existe)
       await widget.authService.updateProfile(
-        nombreUsuario: nameController.text,
-        descripcion: descripcionController.text,
+        nombreUsuario: nameController.text.trim(),
+        descripcion: descripcionController.text.trim(),
         fotoPerfil: base64Image,
       );
       logger.i('Perfil actualizado exitosamente'); // Log de éxito
-      Navigator.pop(context); // Regresar a PerfilScreen
+      Navigator.pop(context, true); // Regresar a PerfilScreen
     } catch (e) {
       logger.e('Error actualizando perfil: $e'); // Log de error
       ScaffoldMessenger.of(

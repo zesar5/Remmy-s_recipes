@@ -78,3 +78,13 @@
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:46.515Z"}
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:52.046Z"}
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:36:03.438Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-02T14:13:41.958Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T14:16:58.272Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T14:17:20.424Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T14:22:27.598Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-02T15:26:30.946Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-02T15:26:36.805Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-02T15:37:38.552Z"}
+{"id":"4","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-02T15:41:45.729Z"}
+{"err":"Unknown column 'Id_uduario' in 'INSERT INTO'","level":"error","message":"Error al actualizar perfil","timestamp":"2026-02-02T15:46:19.567Z"}
+{"err":"Unknown column 'Id_uduario' in 'INSERT INTO'","level":"error","message":"Error al actualizar perfil","timestamp":"2026-02-02T15:46:26.524Z"}

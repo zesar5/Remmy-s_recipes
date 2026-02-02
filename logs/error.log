@@ -16,3 +16,7 @@
 {"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-01-29T10:52:07.610Z"}
 {"err":"t is not defined","level":"error","message":"Error al obtener recetas publicas por id","timestamp":"2026-01-29T10:52:07.616Z"}
 {"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-01-29T10:53:42.696Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-02T15:26:30.946Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-02T15:26:36.805Z"}
+{"err":"Unknown column 'Id_uduario' in 'INSERT INTO'","level":"error","message":"Error al actualizar perfil","timestamp":"2026-02-02T15:46:19.567Z"}
+{"err":"Unknown column 'Id_uduario' in 'INSERT INTO'","level":"error","message":"Error al actualizar perfil","timestamp":"2026-02-02T15:46:26.524Z"}

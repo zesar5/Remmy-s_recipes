@@ -243,4 +243,44 @@ exports.obtenerFotoPerfil = async (req, res) => {
   }
 };
 
+// ────────────────────────────────────────────────
+//               ACTUALIZAR PERFIL USUARIO
+// ────────────────────────────────────────────────
+
+/**
+ * Endpoint: PUT /perfil/:id
+ *
+ * Actualiza el perfil completo del usuario (nombre, descripción, foto)
+ *
+ * Requiere autenticación (middleware auth)
+ * Solo el usuario autenticado puede actualizar su propio perfil
+ */
+exports.actualizarPerfilUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, fotoPerfil } = req.body;  // Campos enviados por Flutter
+  const t = getMessages(req);
+
+  try {
+    // Verifica que el usuario autenticado sea el mismo que se actualiza
+    if (req.userId !== parseInt(id)) {
+      logger.info("Intento de actualización no autorizado", { id, userId: req.userId });
+      return res.status(403).json({ mensaje: t.notAuthorized });
+    }
+
+    // Actualiza usando el modelo
+    const updatedUser = await Usuario.actualizarPerfil(id, { nombre, descripcion, fotoPerfil });
+
+    if (!updatedUser) {
+      logger.info("Usuario no encontrado para actualizar", { id });
+      return res.status(404).json({ mensaje: t.userNotFound });
+    }
+
+    logger.info("Perfil actualizado exitosamente", { id });
+    res.json(updatedUser);  // Devuelve el usuario actualizado
+  } catch (err) {
+    logger.error("Error al actualizar perfil", { err: err.message });
+    res.status(500).json({ error: err.message });
+  }
+};
+
 

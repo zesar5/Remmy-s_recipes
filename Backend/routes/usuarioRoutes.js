@@ -64,5 +64,5 @@ router.post(
     }
   },
 );
-
+router.put("/perfil/:id", auth, usuarioController.actualizarPerfilUsuario);
 module.exports = router;

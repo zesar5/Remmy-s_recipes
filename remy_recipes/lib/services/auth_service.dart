@@ -205,37 +205,51 @@ class AuthService {
   //               Prueba editar perfil
   // ==============================================
   Future<void> updateProfile({
-    required String nombreUsuario,
-    String? descripcion,
-    String? fotoPerfil,
-  }) async {
-
-  logger.i('Iniciando actualización de perfil');  // Log de inicio
-  logger.d('Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}');  // Debug enmascarado
-
-    final url = Uri.parse('$baseUrl/user/profile');  // Usa baseUrl de config.dart, no ApiEndpoints
-    final response = await http.put(  // O POST, dependiendo de tu backend
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      },
-      body: jsonEncode({
-        'userName': nombreUsuario,
-        'descripcion': descripcion,
-        'fotoPerfil': fotoPerfil,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      _currentUser = Usuario.fromJson(data['user'] ?? data); 
-       logger.i('Perfil actualizado exitosamente');  // Log de éxito
-    } else {
-      logger.e('Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}');  // Log de error
-      throw Exception('Error updating profile: ${response.body}');
-    }
+  required String nombreUsuario,
+  String? descripcion,
+  String? fotoPerfil,
+}) async {
+  if (_accessToken == null || _currentUser == null) {
+    logger.w('Intento de updateProfile sin token o usuario actual');
+    throw Exception('Usuario no autenticado');
   }
+
+  logger.i('Iniciando actualización de perfil para userId: ${_currentUser!.id}');
+  logger.d('Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}');
+
+  // URL con userId (similar a fetchProfile)
+  final url = Uri.parse('${ApiEndpoints.perfil}/${_currentUser!.id}');  // Asumiendo que ApiEndpoints.perfil es la base, ej. 'https://api.com/users/profile'
+
+  final response = await http.put(  // O PATCH si tu backend lo usa
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $_accessToken',
+    },
+    body: jsonEncode({
+      'nombre': nombreUsuario,  // Asegúrate de que coincida con lo que espera tu backend (ej. 'userName' o 'nombreUsuario')
+      'descripcion': descripcion,
+      'fotoPerfil': fotoPerfil,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    // Actualizar _currentUser con los datos devueltos (asumiendo que el backend devuelve el usuario actualizado)
+    _currentUser = Usuario.fromJson(data['user'] ?? data);  // Ajusta según la estructura de respuesta de tu API
+    logger.i('Perfil actualizado exitosamente para userId: ${_currentUser!.id}');
+  } else {
+    logger.e('Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}');
+    throw Exception('Error al actualizar perfil: ${response.body}');
+  }
+}
+
+  
+
+  
+
+
+
   // ==============================================
   //                     LOGOUT
   // ==============================================
