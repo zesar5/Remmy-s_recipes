@@ -1,13 +1,15 @@
 import 'package:remy_recipes/main.dart';
+import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
+import 'terms_screen.dart';
 
 // ==========================================================================
-// 4. PANTALLA DE INICIO DE SESION 
+// 4. PANTALLA DE INICIO DE SESION
 // ==========================================================================
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
@@ -26,13 +28,12 @@ class _LoginScreenState extends State<LoginScreen> {
   // NUEVOS FLAGS PARA BORDES ROJOS
   bool _errorCorreo = false;
   bool _errorContrasena = false;
-  
+
   // ==== LOGIN HANDLER ====
   Future<void> _handleLogin() async {
     final correo = _correoController.text.trim();
     final contrasena = _contrasenaController.text.trim();
-    logger.i('Iniciando login para email: $correo');  // Log de inicio
-
+    logger.i('Iniciando login para email: $correo'); // Log de inicio
 
     // Reiniciar errores visuales
     setState(() {
@@ -48,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     if (!_esCorreoValido(correo)) {
-       logger.w('Validación fallida: Correo inválido');  // Advertencia
+      logger.w('Validación fallida: Correo inválido'); // Advertencia
       setState(() => _errorCorreo = true);
       _showErrorDialog(AppStrings.correoInvalido, AppStrings.correoInvalidoMsg);
       return;
@@ -71,22 +72,28 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (success) {
-        logger.i('Login exitoso. Token en AuthService: ${widget.authService.accessToken}');//puede que el widget.authService.accesToken no vaya ahí(revisar)
+        logger.i(
+          'Login exitoso. Token en AuthService: ${widget.authService.accessToken}',
+        ); //puede que el widget.authService.accesToken no vaya ahí(revisar)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => HomeScreen(
-              authService: widget.authService,
-            ),
+            builder: (_) => HomeScreen(authService: widget.authService),
           ),
         );
       } else {
         logger.e('Login fallido: Credenciales incorrectas');
-        _showErrorDialog(AppStrings.errorInicioSesion, AppStrings.credencialesIncorrectas);
+        _showErrorDialog(
+          AppStrings.errorInicioSesion,
+          AppStrings.credencialesIncorrectas,
+        );
       }
     } catch (e) {
       if (!mounted) return;
-       logger.e('Error en login: $e');
-      _showErrorDialog(AppStrings.errorConexion, e.toString().replaceFirst('Exception: ', ''));
+      logger.e('Error en login: $e');
+      _showErrorDialog(
+        AppStrings.errorConexion,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -101,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showErrorDialog(String title, String message) {
-    logger.d('Mostrando diálogo de error: $title');  // Debug
+    logger.d('Mostrando diálogo de error: $title'); // Debug
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -138,15 +145,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             const SizedBox(height: 15),
-           Transform.scale(
-           scale: 1.7, // Ajusta el tamaño sin cambiar el espacio que ocupa
-           child: Image.asset(
-            'assets/logosinfondoBien.png',
-            width: MediaQuery.of(context).size.width * 0.6,
-            height: MediaQuery.of(context).size.height * 0.2,
-            fit: BoxFit.contain,
+            Transform.scale(
+              scale: 1.7, // Ajusta el tamaño sin cambiar el espacio que ocupa
+              child: Image.asset(
+                'assets/logosinfondoBien.png',
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height * 0.2,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
             const SizedBox(height: 40),
 
             // CORREO
@@ -163,14 +170,19 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: _errorCorreo ? Border.all(color: Colors.red, width: 2) : null,
+                border: _errorCorreo
+                    ? Border.all(color: Colors.red, width: 2)
+                    : null,
               ),
               child: TextField(
                 controller: _correoController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
@@ -189,17 +201,24 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                border: _errorContrasena ? Border.all(color: Colors.red, width: 2) : null,
+                border: _errorContrasena
+                    ? Border.all(color: Colors.red, width: 2)
+                    : null,
               ),
               child: TextField(
                 controller: _contrasenaController,
                 obscureText: _ocultarContrasena,
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _ocultarContrasena ? Icons.visibility_off : Icons.visibility,
+                      _ocultarContrasena
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: Colors.grey,
                     ),
                     onPressed: () {
@@ -238,7 +257,9 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.black,
               textColor: Colors.white,
               onPressed: () {
-                logger.i('Navegando a pantalla de registro');  // Log de navegación
+                logger.i(
+                  'Navegando a pantalla de registro',
+                ); // Log de navegación
                 Navigator.of(context).pushNamed('/register');
               },
             ),
@@ -246,29 +267,66 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 25),
             TextButton(
               onPressed: () {
-                logger.i('Omitiendo login - Navegando a Home');  // Log de navegación
+                logger.i(
+                  'Omitiendo login - Navegando a Home',
+                ); // Log de navegación
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (_) => HomeScreen(
-                      authService: widget.authService, // puedes pasar el mismo AuthService
+                      authService: widget
+                          .authService, // puedes pasar el mismo AuthService
                     ),
                   ),
                 );
               },
-              child: const Text(AppStrings.omitir, style: TextStyle(color: Colors.blue)),
+              child: const Text(
+                AppStrings.omitir,
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
 
             const SizedBox(height: 30),
-            const Text(
-              AppStrings.aceptarTerminos,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.blue),
+            Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                const Text(
+                  'Al continuar aceptas los ',
+                  style: TextStyle(color: Colors.black),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                    );
+                  },
+                  child: const Text(
+                    'Terminos de Servicio',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                const Text('y la', style: TextStyle(color: Colors.black)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TermsScreen()),
+                    );
+                  },
+                  child: const Text(
+                    'Politica de privacidad',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const Text(
-              AppStrings.politicaPrivacidad,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.black),
-            ),
+
             const SizedBox(height: 20),
           ],
         ),

@@ -74,3 +74,7 @@
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-01-29T10:53:41.193Z"}
 {"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-01-29T10:53:42.696Z"}
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-01-29T10:55:28.548Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-01T09:59:18.384Z"}
+{"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:46.515Z"}
+{"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:52.046Z"}
+{"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:36:03.438Z"}

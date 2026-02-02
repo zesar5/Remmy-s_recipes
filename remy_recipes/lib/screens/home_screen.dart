@@ -60,18 +60,18 @@ class _MainPageState extends State<MainPage> {
     fetchRecipes(); // Carga las recetas al iniciar la pantalla
   }
 
-  void _openSearchSheet(BuildContext context){
+  void _openSearchSheet(BuildContext context) {
     logger.i('Abriendo hoja de búsqueda');
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_){
+      builder: (_) {
         return DraggableScrollableSheet(
           initialChildSize: 0.25,
           minChildSize: 0.15,
           maxChildSize: 0.85,
-          builder: (context, scrollController){
+          builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
                 color: Color(0xFFF2F2F2),
@@ -97,7 +97,7 @@ class _MainPageState extends State<MainPage> {
                     ),
                     //barra de búsqueda
                     TextField(
-                      onChanged: (value){
+                      onChanged: (value) {
                         _textoBusqueda = value;
                       },
                       decoration: InputDecoration(
@@ -119,7 +119,11 @@ class _MainPageState extends State<MainPage> {
                         _combo("origen", ["España", "Italia", "México"]),
                         _combo("estaciones", ["Verano", "Otoño", "Invierno"]),
                         _combo("duración", ["30 min", "60 min", "90 min"]),
-                        _combo("alergenos", ["Gluten", "Lácteos", "Frutos secos"]),
+                        _combo("alergenos", [
+                          "Gluten",
+                          "Lácteos",
+                          "Frutos secos",
+                        ]),
                       ],
                     ),
 
@@ -133,8 +137,8 @@ class _MainPageState extends State<MainPage> {
                         ),
                       ),
 
-                      onPressed: (){
-                         logger.i('Aplicando filtros de búsqueda');
+                      onPressed: () {
+                        logger.i('Aplicando filtros de búsqueda');
                         //Aquí se lanzaría la búsqueda real
                         _aplicarFiltro();
                         Navigator.pop(context);
@@ -142,14 +146,15 @@ class _MainPageState extends State<MainPage> {
                       child: const Text("Aplicar filtros"),
                     ),
                   ],
-                )
-              )
+                ),
+              ),
             );
           },
         );
       },
     );
   }
+
   void _aplicarFiltro() async {
     logger.i('Iniciando aplicación de filtros');
     setState(() => loading = true);
@@ -173,10 +178,12 @@ class _MainPageState extends State<MainPage> {
       _duracion = null;
       _alergenos = null;
     });
-     logger.i('Filtros aplicados - Recetas encontradas: ${recetasFiltradas.length}');
+    logger.i(
+      'Filtros aplicados - Recetas encontradas: ${recetasFiltradas.length}',
+    );
   }
 
-   Widget _combo(String tipo, List<String> opciones) {
+  Widget _combo(String tipo, List<String> opciones) {
     return SizedBox(
       width: 160,
       child: DropdownButtonFormField<String>(
@@ -190,12 +197,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
         items: opciones
-            .map(
-              (e) => DropdownMenuItem(
-                value: e,
-                child: Text(e),
-              ),
-            )
+            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
             .toList(),
         onChanged: (value) {
           setState(() {
@@ -207,8 +209,7 @@ class _MainPageState extends State<MainPage> {
                 _estacion = value;
                 break;
               case 'duración':
-                _duracion =
-                    int.tryParse(value!.replaceAll(' min', ''));
+                _duracion = int.tryParse(value!.replaceAll(' min', ''));
                 break;
               case 'alergenos':
                 _alergenos = value;
@@ -225,14 +226,14 @@ class _MainPageState extends State<MainPage> {
   Future<void> fetchRecipes() async {
     logger.i('Iniciando carga de recetas para home');
     try {
-      final response = await http.get(
-        Uri.parse(ApiEndpoints.homeRecetas),
-      );
+      final response = await http.get(Uri.parse(ApiEndpoints.homeRecetas));
       logger.d('Respuesta de fetchRecipes - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final List data = json.decode(response.body);
-        recipes = data.map((e) => Receta.fromHomeJson(e as Map<String, dynamic>)).toList();
+        recipes = data
+            .map((e) => Receta.fromHomeJson(e as Map<String, dynamic>))
+            .toList();
 
         setState(() {
           // Aquí hay un error en el código original:
@@ -244,7 +245,7 @@ class _MainPageState extends State<MainPage> {
 
         logger.i('RECETAS CARGADAS EXITOSAMENTE: ${recipes.length}');
       } else {
-         logger.e('Error al cargar recetas: Status ${response.statusCode}');
+        logger.e('Error al cargar recetas: Status ${response.statusCode}');
         setState(() => loading = false);
       }
     } catch (e) {
@@ -263,8 +264,12 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange.shade800,
         onPressed: () {
-          logger.i('Navegando a formulario de nueva receta');  // Log de navegación
-          logger.d('Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}');  // Debug
+          logger.i(
+            'Navegando a formulario de nueva receta',
+          ); // Log de navegación
+          logger.d(
+            'Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}',
+          ); // Debug
 
           // Navega a formulario de creación de receta
           Navigator.push(
@@ -379,25 +384,32 @@ class _MainPageState extends State<MainPage> {
         _topIcon(Icons.menu),
         Row(
           children: [
-            _topIcon(Icons.search,
-            onTap: (){
-              _openSearchSheet(context);
-            }),
+            _topIcon(
+              Icons.search,
+              onTap: () {
+                _openSearchSheet(context);
+              },
+            ),
             const SizedBox(width: 5),
 
             // Icono de perfil → navega solo si está logueado
-            _topIcon(
-              Icons.person,
+            _topProfileAvatar(
+              authService: widget.authService,
+
               onTap: () {
                 if (widget.authService.currentUser == null) {
-                  logger.w('Intento de acceder a perfil sin usuario logueado');  // Advertencia
+                  logger.w(
+                    'Intento de acceder a perfil sin usuario logueado',
+                  ); // Advertencia
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(AppStrings.debesIniciarSesion)),
+                    const SnackBar(
+                      content: Text(AppStrings.debesIniciarSesion),
+                    ),
                   );
                   return;
                 }
 
-                 logger.i('Navegando a pantalla de perfil');
+                logger.i('Navegando a pantalla de perfil');
 
                 Navigator.push(
                   context,
@@ -411,6 +423,46 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _topProfileAvatar({
+    required AuthService authService,
+    required VoidCallback onTap,
+  }) {
+    final user = authService.currentUser;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+
+        child: ClipOval(
+          child: user != null
+              ? Image.network(
+                  '$baseUrl/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Text('👤', style: TextStyle(fontSize: 18)),
+                    );
+                  },
+                )
+              : const Center(child: Text('👤', style: TextStyle(fontSize: 18))),
+        ),
+      ),
     );
   }
 
@@ -446,22 +498,24 @@ class RecipeButton extends StatelessWidget {
     // Decodificamos la imagen base64 para mostrarla
     Uint8List? imageBytes;
 
-        final String? base64String = recipe.imagenBase64;
-        if (base64String != null && base64String.isNotEmpty) {
-          try {
-            final base64Image = base64String.contains(',') 
-              ? base64String.split(',').last 
-              : base64String;
-            imageBytes = base64Decode(base64Image);
-          } catch (e) {
-            logger.e('Error decodificando imagen de receta ${recipe.id}: $e');
-          }
-        }
+    final String? base64String = recipe.imagenBase64;
+    if (base64String != null && base64String.isNotEmpty) {
+      try {
+        final base64Image = base64String.contains(',')
+            ? base64String.split(',').last
+            : base64String;
+        imageBytes = base64Decode(base64Image);
+      } catch (e) {
+        logger.e('Error decodificando imagen de receta ${recipe.id}: $e');
+      }
+    }
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () async {
-        logger.i('🖱️ Click en receta con id: ${recipe.titulo} (ID: ${recipe.id})');
+        logger.i(
+          '🖱️ Click en receta con id: ${recipe.titulo} (ID: ${recipe.id})',
+        );
 
         try {
           // Carga la receta completa (detalle) desde el backend
