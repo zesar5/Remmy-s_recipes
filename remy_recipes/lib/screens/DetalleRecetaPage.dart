@@ -113,10 +113,11 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
       'Construyendo pantalla de detalle para receta: ${widget.receta.titulo}',
     ); // Log de construcción
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFDEB887),
       // AppBar con título de la receta + acciones (editar y eliminar)
       appBar: AppBar(
         title: Text(widget.receta.titulo),
+        elevation: 2,
         actions: [
           // Botón EDITAR (solo visible si el usuario es propietario)
           // Nota: actualmente NO verifica propiedad → cualquiera ve los botones
@@ -156,54 +157,100 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
         ],
       ),
 
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            // Imagen principal (si existe)
-            if (widget.receta.imagenBase64 != null) ...[
-              Builder(
-                builder: (context) {
-                  try {
-                    // Limpiamos el prefijo "data:image/...;base64,"
-                    final cleanBase64 = widget.receta.imagenBase64!
-                        .replaceFirst(RegExp(r'data:image/[^;]+;base64,'), '');
-
-                    return Image.memory(
-                      base64Decode(cleanBase64),
-                      fit: BoxFit.cover,
-                    );
-                  } catch (e) {
-                    logger.e(
-                      'Error decodificando imagen de receta: $e',
-                    ); // Log de error
-                    return const Center(child: Icon(Icons.image_not_supported));
-                  }
-                },
+        children: [
+          // 🖼 IMAGEN
+          if (widget.receta.imagenBase64 != null)
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black87),
+                borderRadius: BorderRadius.circular(16),
               ),
-              const SizedBox(height: 16),
-            ],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.memory(
+                  base64Decode(
+                    widget.receta.imagenBase64!.replaceFirst(
+                      RegExp(r'data:image/[^;]+;base64,'),
+                      '',
+                    ),
+                  ),
+                  height: 220,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 16),
 
             // Sección INGREDIENTES
-            const SizedBox(height: 16),
-            const Text(
-              AppStrings.ingredientes,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ...widget.receta.ingredientes!.map(
-              (i) => Text("• ${i.cantidad} ${i.nombre}"),
+            Card(
+              shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      AppStrings.ingredientes,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepOrange,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...widget.receta.ingredientes!.map(
+                      (i) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text("• ${i.cantidad} ${i.nombre}"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
 
             const SizedBox(height: 16),
 
             // Sección PASOS
-            const Text(
-              AppStrings.pasos,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            ...widget.receta.pasos!.map((p) => Text("- ${p.descripcion}")),
-          ],
-        ),
+            elevation: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    AppStrings.pasos,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...widget.receta.pasos!.asMap().entries.map(
+                        (entry) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Text(
+                            "${entry.key + 1}. ${entry.value.descripcion}",
+                          ),
+                        ),
+                      ),
+                  ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

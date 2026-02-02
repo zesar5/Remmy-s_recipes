@@ -78,3 +78,11 @@
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:46.515Z"}
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:35:52.046Z"}
 {"email":"admin123@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-01T13:36:03.438Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-02T15:19:38.067Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:20:32.159Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:20:37.972Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:20:44.362Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:21:00.090Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:22:18.521Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:22:22.485Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-02T15:22:28.041Z"}
