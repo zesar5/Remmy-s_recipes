@@ -16,6 +16,7 @@ class RecetaEntity {
     this.ingredientes = obj.ingredientes || [];
     this.pasos = obj.pasos || [];
     this.imagen = obj.imagen || null; // base64 o null
+    this.creadorNombre = obj.creadorNombre;
   }
 }
 
@@ -100,7 +101,7 @@ const RecetaModel = {
   obtenerPorId: async (id) => {
     console.log("🔎 Consultando receta en DB, Id:", id);
 
-    const [rows] = await db.query("SELECT * FROM Receta WHERE Id_receta = ?", [
+    const [rows] = await db.query('SELECT r.*, u.nombre AS creadorNombre FROM receta r JOIN usuario u ON u.Id_usuario = r.Id_usuario WHERE r.Id_receta = ?', [
       id,
     ]);
     if (rows.length === 0) {

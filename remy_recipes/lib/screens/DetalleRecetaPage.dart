@@ -117,6 +117,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
       // AppBar con título de la receta + acciones (editar y eliminar)
       appBar: AppBar(
         title: Text(widget.receta.titulo),
+        backgroundColor: AppStrings.colorFondo,
+        foregroundColor: Colors.white,
         elevation: 2,
         actions: [
           // Botón EDITAR (solo visible si el usuario es propietario)
@@ -247,6 +249,20 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                         ),
                       ),
                   ],
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 12, bottom: 16),
+            child: Text(
+              'Creado por: ${widget.receta.creadorNombre ?? "Desconocido"}',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                color: Color(0xFF3C2415), // marrón oscuro elegante
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),

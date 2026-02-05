@@ -49,6 +49,7 @@ exports.obtenerRecetaPublicaPorId = async (req, res) => {
     }
 
     console.log("✅ Receta pública encontrada:", receta.titulo);
+    console.log("Datos de la receta ", receta);
     res.json(receta);
   } catch (err) {
     logger.error('Error al obtener recetas publicas por id', {err: err.message});

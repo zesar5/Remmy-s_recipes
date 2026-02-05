@@ -28,6 +28,7 @@ class Receta {
   final String? estacion;
   final int? idUsuario;
   final String? imagenBase64;
+  final String? creadorNombre;
 
   Receta({
     this.id,
@@ -40,6 +41,7 @@ class Receta {
     this.estacion,
     this.idUsuario,
     this.imagenBase64,
+    this.creadorNombre,
   });
 
   // Constructor factory para crear un objeto Receta desde un JSON (GET)
@@ -63,6 +65,7 @@ class Receta {
       estacion: json['estacion']?.toString(),
       idUsuario: json['usuarioId'] as int?,
       imagenBase64: json['imagen']?.toString(),
+      creadorNombre: json['creadorNombre']?.toString(),
     );
   }
 

@@ -8,6 +8,7 @@ import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
+import '../data/constants/app_strings.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
@@ -591,7 +592,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               ? AppStrings.anadirNuevaReceta
               : AppStrings.editarReceta,
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: AppStrings.colorFondo,
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -733,7 +735,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               onPressed: addIngredient,
               child: const Text('Agregar Ingrediente'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: AppStrings.colorFondo,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -819,7 +821,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 ElevatedButton(
                   onPressed: addStep,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: AppStrings.colorFondo,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -910,7 +912,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 onPressed: _guardarReceta,
                 child: const Text(AppStrings.guardarReceta),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: AppStrings.colorFondo,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 class AppStrings {
   //APP
   static const appName = "Remy's Recipes";
@@ -86,4 +88,7 @@ class AppStrings {
   static const agregarFotoPerfil = "Añadir foto de perfil";
   static const informacion = "Información";
   static const error = "Error";
+
+  //Color de cabecera y botones
+  static const colorFondo =  Color(0xFF5C3317);
 }
