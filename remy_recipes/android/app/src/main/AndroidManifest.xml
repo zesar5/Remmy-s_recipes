@@ -1,7 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    
+     <!-- Permiso para leer imágenes (Android 13+) -->
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
+<!-- Para Android 12 o inferior -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:usesCleartextTraffic="true"
         android:label="remy_recipes"

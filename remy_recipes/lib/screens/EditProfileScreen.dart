@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:remy_recipes/main.dart';
 import '../services/auth_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
 import 'Profile_screen.dart';
@@ -32,12 +34,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     descripcionController = TextEditingController(text: user.descripcion ?? '');
   }
 
+  Future<bool> _checkPhotoPermisission() async {
+    final status = await Permission.photos.request();
+
+    if (status.isGranted) {
+      logger.i('permiso de fotos concedido');
+      return true;
+    }
+    if (status.isDenied) {
+      logger.w('permiso de fotos denegado');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Necesitamos permiso para acceder a tus fotos'),
+        ),
+      );
+      return false;
+    }
+    if (status.isPermanentlyDenied) {
+      logger.e("permiso denegado permanentemente");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'permiso de fotos bloqueado, activalo en ajustes.',
+          ),
+          action: SnackBarAction(label: 'Ajustes', onPressed: openAppSettings),
+        ),
+      );
+      return false;
+    }
+
+    return false;
+  }
+
   Future<void> seleccionarImagen() async {
     logger.i('Seleccionando nueva imagen de perfil'); // Log de acción
+
+    final hashPermission = await _checkPhotoPermisission();
+    if (!hashPermission) return;
+
     final picked = await picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
       setState(() => imagenPerfil = File(picked.path));
       logger.i('Imagen seleccionada'); // Log de éxito
+    } else {
+      logger.w('usuario cancelo la seleccion de imagen');
     }
   }
 
