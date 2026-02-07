@@ -253,6 +253,75 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
             ),
           ),
 
+          const SizedBox(height: 16),
+
+          //Seccion Información Adicional
+
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Información adicional',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Duración
+                  Text(
+                    'Duración: ${widget.receta.duracion != null ? '${widget.receta.duracion} minutos' : 'No especificada'}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  // País
+                  Text(
+                    'País: ${widget.receta.pais ?? 'No especificado'}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  // Alérgenos (mostrados como lista con viñetas)
+                  if (widget.receta.alergenos != null && widget.receta.alergenos!.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Alérgenos:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 4),
+                        ...widget.receta.alergenos!.split(',').map(
+                          (alergeno) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Text("• ${alergeno.trim()}", style: const TextStyle(fontSize: 16)),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    const Text(
+                      'Alérgenos: Ninguno especificado',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  const SizedBox(height: 8),
+                  // Estación
+                  Text(
+                    'Estación: ${widget.receta.estacion ?? 'No especificada'}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 12, bottom: 16),
             child: Text(
