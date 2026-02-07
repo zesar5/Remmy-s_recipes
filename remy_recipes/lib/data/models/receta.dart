@@ -75,7 +75,8 @@ class Receta {
     return Receta(
       id: json['id'] != null ? json['id'].toString() : (json['Id_receta']?.toString()),
       titulo: json['titulo']?.toString() ?? 'Sin título',
-      imagenBase64: json['imagenBase64']as String?,
+      imagenBase64: json['imagenBase64']?.toString()
+        ?? json['imagen']?.toString(),
     );
   }
 
