@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 
 class AppStrings {
   //APP
-  static const appName = "Remy's Recipes";
+  static const appName = "Remmy's Recipes";
 
   //HOME 
   static const recetas = "Recetas";

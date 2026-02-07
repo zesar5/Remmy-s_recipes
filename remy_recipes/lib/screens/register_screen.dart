@@ -6,8 +6,7 @@ import 'login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
+import '../l10n/app_localizations.dart';
 
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
@@ -246,8 +245,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const Text(
-                AppStrings.appName,
+              Text(
+                AppLocalizations.of(context)!.appName,
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
 
@@ -282,7 +281,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    AppStrings.agregarFotoPerfil,
+                    AppLocalizations.of(context)!.agregarFotoPerfil,
                     style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
                 ],
@@ -291,7 +290,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 25),
 
               // Campos de texto y dropdowns
-              campoTexto(AppStrings.usuario, controller: name, error: errorName),
+              campoTexto(AppLocalizations.of(context)!.usuario, controller: name, error: errorName),
 
               const SizedBox(height: 10),
 
@@ -306,7 +305,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                AppStrings.correo,
+                AppLocalizations.of(context)!.correo,
                 controller: correo,
                 error: errorCorreo,
                 errorTextMessage: errorCorreoMensaje,
@@ -315,7 +314,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                AppStrings.contrasenaRegistro,
+                AppLocalizations.of(context)!.contrasenaRegistro,
                 controller: contrasenya,
                 esPassword: true,
                 error: errorContrasenya,
@@ -324,7 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                AppStrings.confirmarContrasena,
+                AppLocalizations.of(context)!.confirmarContrasena,
                 controller: confirmarContrasenya,
                 esPassword: true,
                 error: errorConfirmar,
@@ -333,7 +332,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10),
 
               campoTexto(
-                AppStrings.descripcionOpcional,
+                AppLocalizations.of(context)!.descripcionOpcional,
                 controller: descripcion,
                 maxLineas: 5,
               ),
@@ -348,7 +347,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   minimumSize: const Size(250, 40),
                 ),
                 onPressed: registrar,
-                child: const Text(AppStrings.registrarse),
+                child: Text(AppLocalizations.of(context)!.registrarse),
               ),
             ],
           ),
@@ -431,7 +430,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(AppStrings.anioNacimiento),
+        Text(AppLocalizations.of(context)!.anioNacimiento),
         const SizedBox(height: 5),
         DropdownButtonFormField<int>(
           value: anioSeleccionado,

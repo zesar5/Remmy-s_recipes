@@ -6,7 +6,7 @@ import 'dart:convert';
 import '../services/recetas_service.dart';
 import '../data/models/receta.dart';
 import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
+import '../l10n/app_localizations.dart';
 // =======================================================
 //          PANTALLA DE DETALLE DE RECETA
 // =======================================================
@@ -62,13 +62,13 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text(AppStrings.eliminarReceta),
-        content: const Text(AppStrings.confirmarEliminarReceta),
+        title: Text(AppLocalizations.of(context)!.eliminarReceta),
+        content: Text(AppLocalizations.of(context)!.confirmarEliminarReceta),
         actions: [
           // Botón Cancelar
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.cancelar),
+            child: Text(AppLocalizations.of(context)!.cancelar),
           ),
           // Botón Eliminar (rojo)
           TextButton(
@@ -93,8 +93,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                 );
               }
             },
-            child: const Text(
-              AppStrings.eliminar,
+            child: Text(
+              AppLocalizations.of(context)!.eliminar,
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -198,8 +198,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      AppStrings.ingredientes,
+                    Text(
+                      AppLocalizations.of(context)!.ingredientes,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -231,8 +231,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    AppStrings.pasos,
+                  Text(
+                    AppLocalizations.of(context)!.pasos,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
