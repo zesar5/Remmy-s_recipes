@@ -227,9 +227,12 @@ const RecetaModel = {
 
   recetasFiltradas: async (filtros = {}) => {
     let query = `
-      SELECT DISTINCT r.*
+      SELECT DISTINCT
+        r.*,
+        ri.imagen
       FROM receta r
       LEFT JOIN Ingrediente i ON i.Id_receta = r.Id_receta
+      LEFT JOIN receta_imagen ri ON ri.Id_receta = r.Id_receta
     `;
     let where = [];
     let params = [];
@@ -255,7 +258,7 @@ const RecetaModel = {
     }
 
     // ⏱️ Duración máxima
-    if (filtros.duracionMax) {
+    if (filtros.duracion) {
       where.push("r.tiempo_preparacion <= ?");
       params.push(filtros.duracion);
     }
@@ -275,11 +278,13 @@ const RecetaModel = {
     }
 
     // 👁️ Visibilidad
-    if (filtros.soloPublicas) {
-      where.push("r.publica = 1");
-    } else if (filtros.userId) {
+    if (filtros.userId) {
+      // Públicas + privadas del propio usuario
       where.push("(r.publica = 1 OR r.Id_usuario = ?)");
       params.push(filtros.userId);
+    } else {
+      // Usuario no autenticado → solo públicas
+      where.push("r.publica = 1");
     }
 
     // 🧩 Unimos condiciones
@@ -297,7 +302,14 @@ const RecetaModel = {
     params.push(limit, offset);
 
     const [rows] = await db.query(query, params);
-    return rows.map(r => new RecetaEntity(r));
+    return rows.map(r => {
+      return new RecetaEntity({
+        ...r,
+        imagen: r.imagen
+          ? `data:image/webp;base64,${r.imagen.toString('base64')}`
+          : null,
+      });
+    });
   }
 };
 

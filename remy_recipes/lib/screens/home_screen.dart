@@ -13,6 +13,7 @@ import 'DetalleRecetaPage.dart';
 import '../services/config.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
+import '../l10n/app_localizations.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -116,14 +117,10 @@ class _MainPageState extends State<MainPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _combo("origen", ["España", "Italia", "México"]),
-                        _combo("estaciones", ["Verano", "Otoño", "Invierno"]),
-                        _combo("duración", ["30 min", "60 min", "90 min"]),
-                        _combo("alergenos", [
-                          "Gluten",
-                          "Lácteos",
-                          "Frutos secos",
-                        ]),
+                        _combo("origen", AppStrings.countries),
+                        _combo("estaciones", AppStrings.seasons),
+                        _combo("duración", ["5 min", "10 min", "20 min", "30 min", "60 min", "90 min"]),
+                        _combo("alergenos", AppStrings.allergens),
                       ],
                     ),
 
@@ -299,8 +296,8 @@ class _MainPageState extends State<MainPage> {
               // Sección del logo y título de la app
               Column(
                 children: [
-                  const Text(
-                    AppStrings.appName,
+                  Text(
+                    AppLocalizations.of(context)!.appName,
                     style: TextStyle(
                       fontSize: 28,
                       fontFamily: 'Alegreya',
@@ -336,8 +333,8 @@ class _MainPageState extends State<MainPage> {
               const SizedBox(height: 10),
 
               // Título de la sección de recetas
-              const Text(
-                AppStrings.recetas,
+              Text(
+                AppLocalizations.of(context)!.recetas,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
 
@@ -348,7 +345,7 @@ class _MainPageState extends State<MainPage> {
                 child: loading
                     ? const Center(child: CircularProgressIndicator())
                     : recipes.isEmpty
-                    ? const Center(child: Text(AppStrings.noHayRecetas))
+                    ? Center(child: Text(AppLocalizations.of(context)!.noHayRecetas))
                     : GridView.builder(
                         padding: const EdgeInsets.only(bottom: 10),
                         gridDelegate:
@@ -402,8 +399,8 @@ class _MainPageState extends State<MainPage> {
                     'Intento de acceder a perfil sin usuario logueado',
                   ); // Advertencia
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(AppStrings.debesIniciarSesion),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
                     ),
                   );
                   return;
@@ -533,7 +530,7 @@ class RecipeButton extends StatelessWidget {
         } catch (e) {
           logger.e("🔥 ERROR al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text(AppStrings.errorCargarReceta)),
+            SnackBar(content: Text(AppLocalizations.of(context)!.errorCargarReceta)),
           );
         }
       },

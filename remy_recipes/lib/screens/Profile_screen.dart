@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:remy_recipes/screens/login_screen.dart';
 import 'package:logger/logger.dart';
 import '../services/auth_service.dart';
@@ -13,9 +12,8 @@ import 'DetalleRecetaPage.dart';
 import 'dart:convert';
 import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
-import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
 import 'EditProfileScreen.dart';
+import '../l10n/app_localizations.dart';
 
 
 // =======================================================
@@ -272,7 +270,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
           const SizedBox(height: 12),
 
-          const Text(AppStrings.descripcion, style: TextStyle(fontSize: 15)),
+          Text(AppLocalizations.of(context)!.descripcion, style: TextStyle(fontSize: 15)),
 
           const SizedBox(height: 4),
 
@@ -286,7 +284,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
-              user.descripcion ?? AppStrings.sinDescripcion,
+              user.descripcion ?? AppLocalizations.of(context)!.sinDescripcion,
               style: const TextStyle(fontSize: 13),
             ),
           ),
@@ -306,10 +304,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _menuButton("❤", AppStrings.favoritos),
+          _menuButton("❤", AppLocalizations.of(context)!.favoritos),
           _menuButton("🔖", "guardados"),
           _menuButton("🏠", "home"),
-          _menuButton("👥", AppStrings.personas),
+          _menuButton("👥", AppLocalizations.of(context)!.personas),
         ],
       ),
     );
@@ -386,9 +384,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
   /// Muestra las recetas propias del usuario en un grid
   Widget _buildRecetasGuardadas() {
     if (recetasGuardadas.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          AppStrings.noRecetasGuardadas,
+          AppLocalizations.of(context)!.noRecetasGuardadas,
           style: TextStyle(fontSize: 16),
         ),
       );
@@ -478,9 +476,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   Widget _buildHome() {
-    return const Center(
+    return Center(
       child: Text(
-        AppStrings.vistaPrincipalPerfil,
+        AppLocalizations.of(context)!.vistaPrincipalPerfil,
         style: TextStyle(fontSize: 16),
       ),
     );
@@ -505,7 +503,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
             logger.i('Agregando elemento a lista: $titulo');  // Log de acción
             onAdd();
           },
-          child: const Text(AppStrings.anadirElemento),
+          child: Text(AppLocalizations.of(context)!.anadirElemento),
         ),
         const SizedBox(height: 10),
         Expanded(

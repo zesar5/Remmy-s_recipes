@@ -7,8 +7,7 @@ import '../data/models/receta.dart';
 import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
-import '../data/constants/app_strings.dart';
+import '../l10n/app_localizations.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
@@ -71,35 +70,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     (index) => ((index + 1) * 5).toString(),
   ); // 5-300
 
-  final List<String> countries = [
-    "Afganistán", "Albania", "Alemania", "Andorra", "Angola","Antigua y Barbuda", "Arabia Saudita", "Argelia", "Argentina", "Armenia", "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica",
-    "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi", "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad",
-    "Chile", "China", "Chipre", "Ciudad del Vaticano", "Colombia", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos",
-    "Eritrea","Eslovaquia", "Eslovenia", "España", "Estados Unidos", "Estonia", "Esuatini", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana", "Granada", "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guinea Ecuatorial", "Guyana",
-    "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait",
-    "Laos", "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Madagascar", "Malasia", "Malaui", "Maldivas", "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Moldavia",
-    "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega", "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Panamá", "Papúa Nueva Guinea", "Paraguay", "Perú",
-    "Polonia", "Portugal", "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda", "Rumanía", "Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino",
-    "San Vicente y las Granadinas", "Santa Lucía", "Santo Tomé y Príncipe", "Senegal", "Serbia", "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica", "Sudán", "Sudán del Sur", "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán",
-    "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía", "Tuvalu", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Yibuti", "Zambia",
-    "Zimbabue",
-  ];
+  final List<String> countries = AppStrings.countries;
 
-  final List<String> allergens = [
-    'Ninguna','Gluten', 'Lácteos / Lactosa',
-    'Huevo', 'Frutos secos', 'Cacahuete',
-    'Soja', 'Pescado', 'Mariscos',
-    'Sésamo', 'Mostaza', 'Apio',
-    'Sulfitos', 'Altramuces',
-  ];
+  final List<String> allergens = AppStrings.allergens;
 
-  final List<String> seasons = [
-    'Todas',
-    'Primavera',
-    'Verano',
-    'Otoño',
-    'Invierno',
-  ];
+  final List<String> seasons = AppStrings.seasons;
+
   final picker = ImagePicker();
 
   // ==============================================
@@ -184,7 +160,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text(AppStrings.seleccionarAlergenos),
+              title: Text(AppLocalizations.of(context)!.seleccionarAlergenos),
               content: SizedBox(
                 width: double.maxFinite,
                 child: ListView(
@@ -210,7 +186,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(AppStrings.cancelar),
+                  child: Text(AppLocalizations.of(context)!.cancelar),
                 ),
                 TextButton(
                   onPressed: () {
@@ -220,7 +196,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     logger.i('Alérgenos seleccionados: ${selectedAllergens.join(", ")}');  // Log de resultado
                     Navigator.pop(context);
                   },
-                  child: const Text(AppStrings.aceptar),
+                  child: Text(AppLocalizations.of(context)!.aceptar),
                 ),
               ],
             );
@@ -285,8 +261,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Éxito'),
-          content: Text('Receta guardada con éxito'),
+          title: Text(AppLocalizations.of(context)!.exito),
+          content: Text(AppLocalizations.of(context)!.recetaGuardadaExito),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pushNamed('/home'),
@@ -299,12 +275,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Advertencia'),
-          content: Text('Error, no ha rellenado todos los campos'),
+          title: Text(AppLocalizations.of(context)!.advertencia),
+          content: Text(AppLocalizations.of(context)!.errorCamposObligatorios),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         ),
@@ -315,7 +291,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   Future<void> _guardarReceta() async {
      logger.i('Iniciando guardado de receta');
     if (!isFormValid()) {
-      _mostrarError('Debe rellenar todos los campos obligatorios');
+      _mostrarError(AppLocalizations.of(context)!.debeRellenarCampos);
       return;
     }
 
@@ -374,12 +350,12 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text(AppStrings.error),
+        title: Text(AppLocalizations.of(context)!.error),
         content: Text(mensaje),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.ok),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -398,8 +374,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       appBar: AppBar(
         title: Text(
           widget.recetaEditar == null
-              ? AppStrings.anadirNuevaReceta
-              : AppStrings.editarReceta,
+              ? AppLocalizations.of(context)!.anadirNuevaReceta
+              : AppLocalizations.of(context)!.editarReceta,
         ),
         backgroundColor: AppStrings.colorFondo,
         foregroundColor: Colors.white,
@@ -410,8 +386,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              AppStrings.appName,
+            Text(
+              AppLocalizations.of(context)!.appName,
               style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'Alegreya',
@@ -421,10 +397,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             const SizedBox(height: 20),
 
             // SELECCIÓN DE IMAGEN
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppStrings.anadirImagen,
+                AppLocalizations.of(context)!.anadirImagen,
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -462,10 +438,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             const SizedBox(height: 15),
 
             // TÍTULO
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppStrings.titulo,
+                AppLocalizations.of(context)!.titulo,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
@@ -478,10 +454,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             const SizedBox(height: 30),
 
             // INGREDIENTES DINÁMICOS
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Ingredientes:",
+                AppLocalizations.of(context)!.ingredientesDosPuntos,
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
               ),
             ),
@@ -501,8 +477,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                             offset: ing.nombre.length,
                           ),
                         onChanged: (val) => ing.nombre = val,
-                        decoration: const InputDecoration(
-                          hintText: AppStrings.ingredienteHint,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.ingredienteHint,
                         ),
                       ),
                     ),
@@ -516,8 +492,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                             offset: ing.cantidad.length,
                           ),
                         onChanged: (val) => ing.cantidad = val,
-                        decoration: const InputDecoration(
-                          hintText: AppStrings.cantidadHint,
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.cantidadHint,
                         ),
                       ),
                     ),
@@ -542,7 +518,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: addIngredient,
-              child: const Text('Agregar Ingrediente'),
+              child: Text(AppLocalizations.of(context)!.agregarIngredienteBtn),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppStrings.colorFondo,
                 foregroundColor: Colors.white,
@@ -558,10 +534,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Pasos:",
+                    AppLocalizations.of(context)!.pasosDosPuntos,
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
                   ),
                 ),
@@ -597,8 +573,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                                       offset: step.descripcion.length,
                                     ),
                               onChanged: (val) => step.descripcion = val,
-                              decoration: const InputDecoration(
-                                hintText: 'Paso',
+                              decoration: InputDecoration(
+                                hintText: AppLocalizations.of(context)!.pasoHint,
                               ),
                             ),
                           ),
@@ -636,7 +612,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Agregar Paso'),
+                  child: Text(AppLocalizations.of(context)!.agregarPasoBtn),
                 ),
                 const SizedBox(height: 50),
               ],
@@ -648,8 +624,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: duration,
-                    decoration: const InputDecoration(
-                      labelText: 'Duración (min)',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.duracionLabel,
                       // Tema aplicado automáticamente
                     ),
                     items: durations
@@ -662,8 +638,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: country,
-                    decoration: const InputDecoration(
-                      labelText: 'País',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.paisLabel,
                       // Tema aplicado automáticamente
                     ),
                     items: countries
@@ -684,7 +660,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     onTap: () => _showAllergenSelector(context),
                     child: AbsorbPointer(
                       child: TextFormField(
-                        decoration: InputDecoration(labelText: 'Alérgenos'),
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context)!.alergenosLabel),
                         controller: TextEditingController(
                           text: selectedAllergens.isEmpty
                               ? ''
@@ -698,8 +674,8 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     value: season,
-                    decoration: const InputDecoration(
-                      labelText: 'Estación',
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.estacionLabel,
                       // Tema aplicado automáticamente
                     ),
                     items: seasons
@@ -719,7 +695,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: _guardarReceta,
-                child: const Text(AppStrings.guardarReceta),
+                child: Text(AppLocalizations.of(context)!.guardarReceta),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppStrings.colorFondo,
                   foregroundColor: Colors.white,

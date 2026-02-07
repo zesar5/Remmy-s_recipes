@@ -4,6 +4,8 @@ import 'services/auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 final AuthService authService = AuthService();
 
@@ -35,9 +37,31 @@ class RemmyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     logger.i('Construyendo RemmysApp - Ruta inicial:  ${isLoggedIn ? "/home" : "/login"}');
     return MaterialApp(
-      title: "Remmy's Recipes",
-      debugShowCheckedModeBanner: false, //Quitar la etiqueta DEBUG
+      // TÍTULO USANDO LOCALIZACIÓN
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+
+      debugShowCheckedModeBanner: false,
+      
+      // IDIOMA BASE (ESPAÑOL)
+      locale: const Locale('en'),
+
+      // IDIOMAS SOPORTADOS
+      supportedLocales: const [
+        Locale('es'),
+        Locale('en'),
+      ],
+
+      // DELEGATES DE LOCALIZACIÓN
+      localizationsDelegates: const [
+        AppLocalizations.delegate, // 👈 TU APP
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
+      //Quitar la etiqueta DEBUG
       initialRoute: isLoggedIn ? '/home': '/login',
+
       routes: {
         "/login": (_) => LoginScreen(authService: authService),
         "/register": (_) => RegisterScreen(authService: authService),

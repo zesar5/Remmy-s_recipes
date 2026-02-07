@@ -2,11 +2,9 @@ import 'package:remy_recipes/main.dart';
 import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
-import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
 import 'terms_screen.dart';
+import '../l10n/app_localizations.dart';
 
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION
@@ -45,19 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
     if (correo.isEmpty) {
       logger.w('Validación fallida: Correo vacío');
       setState(() => _errorCorreo = true);
-      _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
+      _showErrorDialog(AppLocalizations.of(context)!.campoVacio, AppLocalizations.of(context)!.correoVacioMsg);
       return;
     }
     if (!_esCorreoValido(correo)) {
       logger.w('Validación fallida: Correo inválido'); // Advertencia
       setState(() => _errorCorreo = true);
-      _showErrorDialog(AppStrings.correoInvalido, AppStrings.correoInvalidoMsg);
+      _showErrorDialog(AppLocalizations.of(context)!.correoInvalido, AppLocalizations.of(context)!.correoInvalidoMsg);
       return;
     }
     if (contrasena.isEmpty) {
       logger.w('Validación fallida: Contraseña vacía');
       setState(() => _errorContrasena = true);
-      _showErrorDialog(AppStrings.campoVacio, AppStrings.correoVacioMsg);
+      _showErrorDialog(AppLocalizations.of(context)!.campoVacio, AppLocalizations.of(context)!.correoVacioMsg);
       return;
     }
 
@@ -83,15 +81,15 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         logger.e('Login fallido: Credenciales incorrectas');
         _showErrorDialog(
-          AppStrings.errorInicioSesion,
-          AppStrings.credencialesIncorrectas,
+          AppLocalizations.of(context)!.errorInicioSesion,
+          AppLocalizations.of(context)!.credencialesIncorrectas,
         );
       }
     } catch (e) {
       if (!mounted) return;
       logger.e('Error en login: $e');
       _showErrorDialog(
-        AppStrings.errorConexion,
+        AppLocalizations.of(context)!.errorConexion,
         e.toString().replaceFirst('Exception: ', ''),
       );
     } finally {
@@ -116,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text(message),
         actions: [
           TextButton(
-            child: const Text(AppStrings.ok),
+            child: Text(AppLocalizations.of(context)!.ok),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
         ],
@@ -136,8 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             const SizedBox(height: 50),
 
-            const Text(
-              AppStrings.appName,
+            Text(
+              AppLocalizations.of(context)!.appName,
               style: TextStyle(
                 fontSize: 28,
                 fontFamily: 'Alegreya',
@@ -157,10 +155,10 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 40),
 
             // CORREO
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppStrings.correoElectronico,
+                AppLocalizations.of(context)!.correoElectronico,
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -188,10 +186,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             const SizedBox(height: 20),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                AppStrings.contrasena,
+                AppLocalizations.of(context)!.contrasena,
                 style: TextStyle(fontSize: 16),
               ),
             ),
@@ -233,18 +231,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
             TextButton(
               onPressed: () => _showErrorDialog(
-                AppStrings.recuperarContrasena,
-                AppStrings.recuperarContrasenaMsg,
+                AppLocalizations.of(context)!.recuperarContrasena,
+                AppLocalizations.of(context)!.recuperarContrasenaMsg,
               ),
-              child: const Text(
-                AppStrings.olvidarContrasena,
+              child: Text(
+                AppLocalizations.of(context)!.olvidarContrasena,
                 style: TextStyle(color: Colors.blue),
               ),
             ),
 
             const SizedBox(height: 10),
             _buildActionButton(
-              text: AppStrings.iniciarSesion,
+              text: AppLocalizations.of(context)!.iniciarSesion,
               color: Colors.black,
               textColor: Colors.white,
               onPressed: _isLoading ? null : _handleLogin,
@@ -253,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
             const SizedBox(height: 20),
             _buildActionButton(
-              text: AppStrings.registrarse,
+              text: AppLocalizations.of(context)!.registrarse,
               color: Colors.black,
               textColor: Colors.white,
               onPressed: () {
@@ -279,8 +277,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
               },
-              child: const Text(
-                AppStrings.omitir,
+              child: Text(
+                AppLocalizations.of(context)!.omitir,
                 style: TextStyle(color: Colors.blue),
               ),
             ),

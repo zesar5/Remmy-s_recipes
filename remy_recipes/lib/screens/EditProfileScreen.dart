@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:remy_recipes/main.dart';
 import '../services/auth_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../l10n/app_localizations.dart';
 
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
