@@ -258,7 +258,7 @@ const RecetaModel = {
     }
 
     // ⏱️ Duración máxima
-    if (filtros.duracionMax) {
+    if (filtros.duracion) {
       where.push("r.tiempo_preparacion <= ?");
       params.push(filtros.duracion);
     }
@@ -278,11 +278,13 @@ const RecetaModel = {
     }
 
     // 👁️ Visibilidad
-    if (filtros.soloPublicas) {
-      where.push("r.publica = 1");
-    } else if (filtros.userId) {
+    if (filtros.userId) {
+      // Públicas + privadas del propio usuario
       where.push("(r.publica = 1 OR r.Id_usuario = ?)");
       params.push(filtros.userId);
+    } else {
+      // Usuario no autenticado → solo públicas
+      where.push("r.publica = 1");
     }
 
     // 🧩 Unimos condiciones

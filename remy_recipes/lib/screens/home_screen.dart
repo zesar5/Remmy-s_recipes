@@ -116,14 +116,10 @@ class _MainPageState extends State<MainPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _combo("origen", ["España", "Italia", "México"]),
-                        _combo("estaciones", ["Verano", "Otoño", "Invierno"]),
-                        _combo("duración", ["30 min", "60 min", "90 min"]),
-                        _combo("alergenos", [
-                          "Gluten",
-                          "Lácteos",
-                          "Frutos secos",
-                        ]),
+                        _combo("origen", AppStrings.countries),
+                        _combo("estaciones", AppStrings.seasons),
+                        _combo("duración", ["5 min", "10 min", "20 min", "30 min", "60 min", "90 min"]),
+                        _combo("alergenos", AppStrings.allergens),
                       ],
                     ),
 
