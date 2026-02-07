@@ -177,12 +177,13 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
 /// Elimina una receta por ID
 /// Ruta: DELETE /recetas/:id
 /// Requiere token y ser propietario (backend lo valida)
-Future<bool> eliminarReceta(int id) async {
+Future<bool> eliminarReceta(int id, String token) async {
    logger.i('Iniciando eliminación de receta ID: $id'); 
   final response = await http.delete(
     Uri.parse('${ApiEndpoints.recetas}/$id'), // ← Faltaba /recetas/
     headers: {
-      'Authorization': 'Bearer ', // ← ¡Falta el token aquí!
+      'Authorization': 'Bearer $token'
+      
     },
   );
 

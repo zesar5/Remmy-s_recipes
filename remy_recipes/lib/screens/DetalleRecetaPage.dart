@@ -77,15 +77,17 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                 'Confirmando eliminación de receta ID: ${widget.receta.id}',
               );
               try {
+                final success =await eliminarReceta(int.parse(widget.receta.id!), widget.authService.accessToken!);
                 // Llamada al servicio para eliminar (debe estar en recetas_service)
-                await eliminarReceta(int.parse(widget.receta.id!));
-                logger.i('Receta eliminada exitosamente'); // Log de éxito
-
-                // Cerramos el diálogo
-                Navigator.pop(context);
-
-                // Volvemos atrás y enviamos señal de "se eliminó" para que refresque la lista
-                Navigator.pop(context, true);
+                if (success) {
+                  logger.i('Receta eliminada exitosamente');
+                  Navigator.pop(context); // Cierra diálogo
+                  Navigator.pop(context, true); // Vuelve atrás y refresca
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Error al eliminar receta. Verifica permisos.')),
+                  );
+                }
               } catch (e) {
                 logger.e('Error al eliminar receta: $e'); // Log de error
                 ScaffoldMessenger.of(context).showSnackBar(

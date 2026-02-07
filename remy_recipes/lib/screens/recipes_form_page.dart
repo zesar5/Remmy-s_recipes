@@ -240,7 +240,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       logger.w('Validación fallida: Título vacío');  // Advertencia
       return false;
     }
-    if (imagePath == null) {
+    if (imagePath == null && widget.recetaEditar?.imagenBase64 == null) {
       logger.w('Validación fallida: Imagen no seleccionada');  // Advertencia
       return false;
     }
