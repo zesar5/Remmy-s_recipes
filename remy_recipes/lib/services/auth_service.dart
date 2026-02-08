@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:remy_recipes/main.dart';
 import '../data/models/usuario.dart';
 import 'config.dart';
-import 'package:logger/logger.dart';
 
 // ==========================================================================
 //          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)
@@ -243,12 +242,6 @@ class AuthService {
     throw Exception('Error al actualizar perfil: ${response.body}');
   }
 }
-
-  
-
-  
-
-
 
   // ==============================================
   //                     LOGOUT

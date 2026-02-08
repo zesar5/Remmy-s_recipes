@@ -1,12 +1,17 @@
+import 'package:remy_recipes/data/constants/app_strings.dart';
 import 'package:remy_recipes/main.dart';
-
-import '../services/auth_service.dart';
+import 'package:remy_recipes/utils/validators.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
 import 'login_screen.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
+
+import '../services/auth_service.dart';
 import '../l10n/app_localizations.dart';
+
+
 
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
@@ -48,40 +53,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? errorCorreoMensaje; // Mensaje personalizado para correo
 
-  List<String> paises = [
-    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Arabia Saudita",
-    "Argentina", "Australia", "Austria", "Bélgica", "Bolivia", "Brasil",
-    "Canadá", "Chile", "China", "Colombia", "Corea del Sur", "Costa Rica",
-    "Cuba", "Dinamarca", "Ecuador", "Egipto", "El Salvador", "Eslovaquia",
-    "Eslovenia", "España", "Estados Unidos", "Finlandia", "Francia", "Grecia",
-    "Guatemala", "Haití", "Honduras", "Hungría", "India", "Indonesia", "Irak",
-    "Irán", "Irlanda", "Islandia", "Italia", "Japón", "Jordania", "Kenia",
-    "Letonia", "Líbano", "Libia", "Lituania", "Luxemburgo", "México", "Mónaco",
-    "Mongolia", "Nepal", "Nicaragua", "Nigeria", "Noruega", "Países Bajos",
-    "Panamá", "Paraguay", "Perú", "Polonia", "Portugal", "Reino Unido",
-    "República Dominicana", "Rumania", "Rusia", "Senegal", "Serbia", "Suecia",
-    "Suiza", "Tailandia", "Turquía", "Ucrania", "Uruguay", "Venezuela",
-    "Vietnam"
-  ];
+  List<String> paises = AppStrings.countries;
 
   List<int> anios = [ for (int i = DateTime.now().year; i >= 1900; i--) i ];
-
-  // ==============================================
-  //               VALIDACIONES
-  // ==============================================
-
-  bool validarCorreo(String correo) {
-    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    return regex.hasMatch(correo);
-  }
-
-  bool validarContrasenyaFuerte(String c) {
-    return c.length >= 8 &&
-        c.contains(RegExp(r'[A-Z]')) &&
-        c.contains(RegExp(r'[a-z]')) &&
-        c.contains(RegExp(r'[0-9]')) &&
-        c.contains(RegExp(r'[^A-Za-z0-9]'));
-  }
 
   // ==============================================
   //           SELECCIÓN DE FOTO DE PERFIL
