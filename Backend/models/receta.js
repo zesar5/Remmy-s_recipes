@@ -200,9 +200,67 @@ const RecetaModel = {
    * Actualización simple (solo campos principales de la tabla Receta)
    * Nota: no actualiza ingredientes ni pasos en esta implementación
    */
-  actualizar: async (id, data) => {
-    await db.query("UPDATE Receta SET ? WHERE Id_receta = ?", [data, id]);
-  },
+  actualizar: async (id, data, userId) => {
+  // Actualizar campos principales de la tabla Receta
+  await db.query(
+    "UPDATE Receta SET titulo = ?, tiempo_preparacion = ?, origen = ?, alergenos = ?, estacion = ?, publica = ? WHERE Id_receta = ?",
+    [
+      data.titulo,
+      data.duracion,
+      data.pais,
+      data.alergenos,
+      data.estacion,
+      data.publica || 0,  // Si no se pasa 'publica', default a 0 (privada)
+      id,
+    ]
+  );
+
+  // Imagen (si existe, actualizar el buffer existente)
+  if (data.imagen) {
+    const base64Data = data.imagen.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    // Actualizar la imagen existente (asumiendo que ya hay una fila en receta_imagen)
+    await db.query(
+      "UPDATE receta_imagen SET imagen = ? WHERE Id_receta = ?",
+      [buffer, id]
+    );
+    // Nota: Si no hay imagen previa, podrías insertar una nueva. Para eso, usa:
+    // await db.query(
+    //   "INSERT INTO receta_imagen (imagen, Id_receta) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)",
+    //   [buffer, id]
+    // );
+  }
+
+  // Pasos: Eliminar existentes y reinsertar nuevos (similar a crear)
+  if (data.pasos?.length) {
+    // Eliminar pasos existentes
+    await db.query("DELETE FROM Paso WHERE Id_receta = ?", [id]);
+    // Insertar nuevos pasos
+    const pasosPromises = data.pasos.map(p =>
+      db.query("INSERT INTO Paso (descripcion, Id_receta) VALUES (?, ?)", [
+        p.descripcion,
+        id,
+      ])
+    );
+    await Promise.all(pasosPromises);
+  }
+
+  // Ingredientes: Eliminar existentes y reinsertar nuevos (similar a crear)
+  if (data.ingredientes?.length) {
+    // Eliminar ingredientes existentes
+    await db.query("DELETE FROM Ingrediente WHERE Id_receta = ?", [id]);
+    // Insertar nuevos ingredientes
+    const ingredientesPromises = data.ingredientes.map(i =>
+      db.query(
+        "INSERT INTO Ingrediente (nombre, cantidad, Id_receta) VALUES (?, ?, ?)",
+        [i.nombre, i.cantidad, id]
+      )
+    );
+    await Promise.all(ingredientesPromises);
+  }
+
+  return id;  // Retornar el ID de la receta editada
+},
 
   /**
    * Eliminación física de la receta
