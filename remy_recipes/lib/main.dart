@@ -43,7 +43,7 @@ class RemmyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       
       // IDIOMA BASE (ESPAÑOL)
-      locale: const Locale('en'),
+      locale: const Locale('es'),
 
       // IDIOMAS SOPORTADOS
       supportedLocales: const [

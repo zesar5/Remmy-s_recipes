@@ -270,7 +270,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Información adicional',
+                    'Información',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
