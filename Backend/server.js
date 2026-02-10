@@ -43,3 +43,4 @@ app.listen(PORT, "0.0.0.0", () => {
     `Servidor seguro corriendo en https://localhost:${PORT}`,
   );
 });
+module.exports = app;

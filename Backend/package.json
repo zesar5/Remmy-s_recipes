@@ -9,5 +9,11 @@
     "mysql2": "^3.15.3",
     "uuid": "^13.0.0",
     "winston": "^3.19.0"
+    
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
+
+
