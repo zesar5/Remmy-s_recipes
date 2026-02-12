@@ -61,6 +61,116 @@ class _MainPageState extends State<MainPage> {
     fetchRecipes(); // Carga las recetas al iniciar la pantalla
   }
 
+  // =======================
+  // MENÚ PRINCIPAL (☰)
+  // =======================
+  void _openMenuSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              // Botón Comunidad
+              ListTile(
+                leading: const Icon(Icons.people),
+                title: const Text("Comunidad"),
+                onTap: () {
+                  Navigator.pop(context);
+                  logger.i("Ir a Comunidad");
+                  // TODO: Navegar a pantalla comunidad
+                },
+              ),
+
+              const Divider(),
+
+              // Botón Idioma
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: const Text("Idioma"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showLanguageDialog(context);
+                  logger.i("Cambiar idioma");
+                  // TODO: Abrir selector de idioma
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // =======================
+// DIÁLOGO CAMBIO DE IDIOMA
+// =======================
+  void _showLanguageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFDEB887),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "¿A qué idioma quieres traducir la app?",
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+
+              // Botón Español
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppStrings.colorFondo,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  
+                  RemmyApp.setLocale(context, const Locale('es'));
+
+                  logger.i("Idioma cambiado a Español");
+                },
+                child: const Text("Español"),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Botón Inglés
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppStrings.colorFondo,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+
+                  RemmyApp.setLocale(context, const Locale('en'));
+
+                  logger.i("Idioma cambiado a Inglés");
+                },
+                child: const Text("Inglés"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _openSearchSheet(BuildContext context) {
     logger.i('Abriendo hoja de búsqueda');
     showModalBottomSheet(
@@ -378,7 +488,12 @@ class _MainPageState extends State<MainPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _topIcon(Icons.menu),
+        _topIcon(
+          Icons.menu,
+          onTap: () {
+            _openMenuSheet(context);
+          },
+        ),
         Row(
           children: [
             _topIcon(

@@ -28,44 +28,60 @@ final logger = Logger(
   ),
 );
 
-class RemmyApp extends StatelessWidget {
+class RemmyApp extends StatefulWidget {
   final bool isLoggedIn;
-   RemmyApp({super.key, required this.isLoggedIn});
 
+  const RemmyApp({super.key, required this.isLoggedIn});
+
+  // 👇 MÉTODO GLOBAL PARA CAMBIAR IDIOMA
+  static void setLocale(BuildContext context, Locale newLocale) {
+    final _RemmyAppState? state =
+        context.findAncestorStateOfType<_RemmyAppState>();
+    state?.changeLocale(newLocale);
+  }
+
+  @override
+  State<RemmyApp> createState() => _RemmyAppState();
+}
+
+class _RemmyAppState extends State<RemmyApp> {
+  Locale _locale = const Locale('es'); // idioma por defecto
+
+  void changeLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    logger.i('Construyendo RemmysApp - Ruta inicial:  ${isLoggedIn ? "/home" : "/login"}');
-    return MaterialApp(
-      // TÍTULO USANDO LOCALIZACIÓN
-      onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+    logger.i(
+        'Construyendo RemmyApp - Ruta inicial: ${widget.isLoggedIn ? "/home" : "/login"}');
 
+    return MaterialApp(
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
       debugShowCheckedModeBanner: false,
       
-      // IDIOMA BASE (ESPAÑOL)
-      locale: const Locale('es'),
+      locale: _locale,
 
-      // IDIOMAS SOPORTADOS
       supportedLocales: const [
         Locale('es'),
         Locale('en'),
       ],
 
-      // DELEGATES DE LOCALIZACIÓN
       localizationsDelegates: const [
-        AppLocalizations.delegate, // 👈 TU APP
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      //Quitar la etiqueta DEBUG
-      initialRoute: isLoggedIn ? '/home': '/login',
+      initialRoute: widget.isLoggedIn ? '/home' : '/login',
 
       routes: {
         "/login": (_) => LoginScreen(authService: authService),
         "/register": (_) => RegisterScreen(authService: authService),
-        "/home": (_) =>HomeScreen(authService: authService),
+        "/home": (_) => HomeScreen(authService: authService),
       },
     );
   }
