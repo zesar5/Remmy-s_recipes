@@ -60,67 +60,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
     _cargarRecetasGuardadas();
   }
 
-  // ────────────────────────────────────────────────
-  //     FUNCIÓN QUE SE EJECUTA AL TOCAR LA FOTO
-  // ────────────────────────────────────────────────
-  Future<void> _cambiarFoto() async {
-    logger.i('Iniciando cambio de foto de perfil');  // Log de acción
-    //abre galeria del dispositivo y permite al usuario elegir una
-    // image_picker devuelve un XFile (o null si el usuario cancela)
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    //si el usuario ha seleccionado una imagen
-    if (image != null) {
-      logger.i('Imagen seleccionada para subir');  // Log de éxito
-      // Convertimos XFile a File para poder enviarlo por HTTP
-      File file = File(image.path);
-      // Llama a la función de subida con el token del servicio de autenticación
-      // Le pasamos:
-      //  - el archivo seleccionado
-      //  - el token JWT del usuario logueado
-      await _uploadProfilePic(file, widget.authService.accessToken!);
-    } else {
-      //el usuario cancelo la seleccion de imagen
-      logger.w("cancelastes la selección");// Advertencia
-    }
-  }
+  
+  
 
-  // ────────────────────────────────────────────────
-  //     FUNCIÓN QUE SUBE LA FOTO AL BACKEND
-  // ────────────────────────────────────────────────
-  Future<void> _uploadProfilePic(File imagenSeleccionada, String token) async {
-    logger.i('Iniciando subida de foto de perfil al backend');  // Log de inicio
-    //obtenemos el ID del usuario actualmente autenticado
-    //el id viene del login...
-    final userId = widget.authService.currentUser!.id;
-    // Creamos una petición HTTP de tipo multipart (necesaria para enviar archivos)
-    var request = http.MultipartRequest(
-      'POST',
-      //URL del backend para subir la foto
-      //el ID va en la ruta,y la seguridad la da el token
-      Uri.parse('$baseUrl/usuarios/foto/$userId'),
-    );
-
-    // Añadimos el token JWT al header Authorization
-    // El backend lo validará con authMiddleware
-    request.headers['Authorization'] = 'Bearer $token';
-
-    //AÑADIMOS EL ARCHIVO A LA PETICION
-    //que debe llamarse igual que en el backend
-    request.files.add(
-      await http.MultipartFile.fromPath('profilePic', imagenSeleccionada.path),
-    );
-    //enviamos la peticion al backend
-    var response = await request.send();
-    //si el backend dice ok
-    if (response.statusCode == 200) {
-       logger.i('Foto de perfil actualizada exitosamente en backend');  // Log de éxito
-      // Forzamos el rebuild del widget para que
-      // Image.network vuelva a cargar la imagen
-      setState(() {});
-    } else {
-      logger.e('Error al subir foto de perfil: Código ${response.statusCode}');  // Log de error
-    }
-  }
 
   /// Carga las recetas propias del usuario (públicas + privadas)
   Future<void> _cargarRecetasGuardadas() async {
@@ -223,16 +165,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // ────────────────────────────────────────────────
-          //     FOTO DE PERFIL (TOCAR PARA CAMBIAR)
-          // ────────────────────────────────────────────────
-          GestureDetector(
-            //cuando toca foto se abre galeria
-            onTap: () {
-              logger.i('Click en foto de perfil - Iniciando cambio');  // Log de acción
-              _cambiarFoto();
-            },
-            child: Container(
+         
+          
+            Container(
               //tamaño del contenedor
               width: 120,
               height: 120,
@@ -258,7 +193,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
               ),
             ),
-          ),
+  
 
           const SizedBox(height: 10),
 
@@ -288,7 +223,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
               style: const TextStyle(fontSize: 13),
             ),
           ),
-        ],
+          
+        ]
       ),
     );
   }
