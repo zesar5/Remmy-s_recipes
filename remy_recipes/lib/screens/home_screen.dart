@@ -108,7 +108,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  // =======================
+// =======================
 // DIÁLOGO CAMBIO DE IDIOMA
 // =======================
   void _showLanguageDialog(BuildContext context) {
@@ -234,10 +234,27 @@ class _MainPageState extends State<MainPage> {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 6),
+
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange.shade800,
+                        backgroundColor: AppStrings.colorFondo,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10,),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _cargarRecetasPredeterminadas,
+                      child: const Text("Cargar recetas predeterminadas"),
+                    ),
+
+                    const SizedBox(height: 24),
+                    
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppStrings.colorFondo,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -369,7 +386,8 @@ class _MainPageState extends State<MainPage> {
 
       // Botón flotante para crear nueva receta
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.orange.shade800,
+        backgroundColor: AppStrings.colorFondo,
+        foregroundColor: Colors.white,
         onPressed: () {
           logger.i(
             'Navegando a formulario de nueva receta',
@@ -536,6 +554,16 @@ class _MainPageState extends State<MainPage> {
         ),
       ],
     );
+  }
+
+  void _cargarRecetasPredeterminadas() async {
+  logger.i('Restaurando recetas predeterminadas');
+
+  setState(() {
+    loading = true;
+  });
+
+  await fetchRecipes();
   }
 
   Widget _topProfileAvatar({
