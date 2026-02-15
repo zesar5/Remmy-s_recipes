@@ -235,18 +235,26 @@ class _MainPageState extends State<MainPage> {
                     ),
 
                     const SizedBox(height: 6),
-
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppStrings.colorFondo,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10,),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 20,   // 👈 más espacio arriba
+                        bottom: 5, // 👈 menos espacio abajo
                       ),
-                      onPressed: _cargarRecetasPredeterminadas,
-                      child: const Text("Cargar recetas predeterminadas"),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppStrings.colorFondo,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14,),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          _cargarRecetasPredeterminadas();
+                          Navigator.pop(context);
+                          },
+                        child: const Text("Cargar recetas predeterminadas"),
+                      ),
                     ),
 
                     const SizedBox(height: 24),

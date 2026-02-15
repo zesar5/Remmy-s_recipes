@@ -45,7 +45,7 @@ class RemmyApp extends StatefulWidget {
 }
 
 class _RemmyAppState extends State<RemmyApp> {
-  Locale _locale = const Locale('es'); // idioma por defecto
+  Locale? _locale; // idioma por defecto
 
   void changeLocale(Locale locale) {
     setState(() {
@@ -68,6 +68,23 @@ class _RemmyAppState extends State<RemmyApp> {
         Locale('es'),
         Locale('en'),
       ],
+
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+      // Si el usuario ya cambió idioma manualmente
+      if (_locale != null) {
+        return _locale;
+      }
+
+      // Si el idioma del dispositivo está soportado
+      for (var locale in supportedLocales) {
+        if (locale.languageCode == deviceLocale?.languageCode) {
+          return locale;
+        }
+      }
+
+      // Si no coincide ninguno → español por defecto
+      return const Locale('es');
+      },
 
       localizationsDelegates: const [
         AppLocalizations.delegate,
