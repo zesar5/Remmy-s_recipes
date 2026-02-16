@@ -6,11 +6,15 @@ import 'screens/register_screen.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'core/config/env_config.dart';
 
 final AuthService authService = AuthService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Environment.initialize();
+  
   logger.i('Iniciando app - Verificando auto-login');
   final bool isLoggedIn = await authService.tryAutoLogin();
   logger.d('Auto-login completado: isLoggedIn = $isLoggedIn');

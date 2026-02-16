@@ -1,4 +1,4 @@
-/*import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum EnvironmentType { development, production }
@@ -23,4 +23,4 @@ class Environment {
     final fileName = isDevelopment ? '.env.development' : '.env.production';
     await dotenv.load(fileName: fileName);
   }
-}*/
+}
