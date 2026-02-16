@@ -600,7 +600,7 @@ class _MainPageState extends State<MainPage> {
         child: ClipOval(
           child: user != null
               ? Image.network(
-                  '$baseUrl/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                  '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Center(

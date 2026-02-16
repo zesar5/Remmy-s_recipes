@@ -181,7 +181,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 // URL del backend para obtener la foto de perfil
                 //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
                 child: Image.network(
-                  '$baseUrl/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                  '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
 
                   width: 120,
                   height: 120,
