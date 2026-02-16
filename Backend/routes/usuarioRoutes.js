@@ -17,6 +17,15 @@ router.get("/perfil/:id", usuarioController.obtenerPerfil);
 // OBTENER FOTO
 router.get("/foto/:id", usuarioController.obtenerFotoPerfil);
 
+//Olvidé la contraseña
+router.post("/forgot-password", usuarioController.forgotPassword);
+
+//Código de verificación
+router.post("/verify-reset-code", usuarioController.verifyResetCode);
+
+//Reset password
+router.post("/reset-password", usuarioController.resetPassword);
+
 // SUBIR FOTO DE PERFIL
 router.post(
   "/foto/:id",

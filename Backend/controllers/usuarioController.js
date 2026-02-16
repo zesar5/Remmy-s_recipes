@@ -282,5 +282,124 @@ exports.actualizarPerfilUsuario = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// FORGOT PASSWORD - Enviar código
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // Busca usuario por email
+    const [rows] = await db.query('SELECT id, email FROM usuarios WHERE email = ?', [email]);
+    if (rows.length === 0) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    // Genera código de 6 dígitos
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // Expira en 10 min
+
+    // Guarda código en DB (agrega columnas 'reset_code' y 'reset_expires' a la tabla 'usuarios' si no existen)
+    await db.query('UPDATE usuarios SET reset_code = ?, reset_expires = ? WHERE email = ?', [resetCode, expires, email]);
+
+    // Envía email (configura nodemailer en tu .env o archivo de config)
+    const transporter = require('nodemailer').createTransporter({
+      service: 'gmail', // O tu proveedor
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    });
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Código de recuperación de contraseña',
+      text: `Tu código de verificación es: ${resetCode}. Expira en 10 minutos.`,
+    });
+
+    logger.info(`Código enviado a ${email}`);
+    res.status(200).json({ mensaje: 'Código enviado' });
+  } catch (error) {
+    logger.error('Error en forgotPassword:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+};
+
+// FORGOT PASSWORD - Enviar código
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    // Busca usuario por email (usa tabla 'usuario' y columna 'Id_usuario')
+    const [rows] = await require("../config/db").query('SELECT Id_usuario, email FROM usuario WHERE email = ?', [email]);
+    if (rows.length === 0) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    // Genera código de 6 dígitos
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // Expira en 10 min
+
+    // Guarda código en DB (agrega columnas 'reset_code' y 'reset_expires' a la tabla 'usuario' si no existen)
+    await require("../config/db").query('UPDATE usuario SET reset_code = ?, reset_expires = ? WHERE email = ?', [resetCode, expires, email]);
+
+    // Envía email (configura nodemailer en tu .env o archivo de config)
+    const nodemailer = require('nodemailer');
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail', // O tu proveedor
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    });
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Código de recuperación de contraseña',
+      text: `Tu código de verificación es: ${resetCode}. Expira en 10 minutos.`,
+    });
+
+    logger.info(`Código enviado a ${email}`);
+    res.status(200).json({ mensaje: 'Código enviado' });
+  } catch (error) {
+    logger.error('Error en forgotPassword:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+};
+
+// VERIFY RESET CODE - Verificar código
+exports.verifyResetCode = async (req, res) => {
+  const { code } = req.body;
+  try {
+    const [rows] = await require("../config/db").query('SELECT Id_usuario FROM usuario WHERE reset_code = ? AND reset_expires > NOW()', [code]);
+    if (rows.length === 0) {
+      return res.status(400).json({ mensaje: 'Código inválido o expirado' });
+    }
+
+    // Genera token temporal (usa jsonwebtoken)
+    const jwt = require('jsonwebtoken');
+    const resetToken = jwt.sign({ userId: rows[0].Id_usuario }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+    logger.info(`Código verificado para usuario ${rows[0].Id_usuario}`);
+    res.status(200).json({ resetToken });
+  } catch (error) {
+    logger.error('Error en verifyResetCode:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+};
+
+// RESET PASSWORD - Cambiar contraseña
+exports.resetPassword = async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+  try {
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+    const bcrypt = require('bcrypt');
+
+    // Hash nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualiza DB y limpia código (usa tabla 'usuario' y columna 'Id_usuario')
+    await require("../config/db").query('UPDATE usuario SET contrasena = ?, reset_code = NULL, reset_expires = NULL WHERE Id_usuario = ?', [hashedPassword, decoded.userId]);
+
+    logger.info(`Contraseña reseteada para usuario ${decoded.userId}`);
+    res.status(200).json({ mensaje: 'Contraseña cambiada exitosamente' });
+  } catch (error) {
+    logger.error('Error en resetPassword:', error);
+    res.status(400).json({ mensaje: 'Token inválido o expirado' });
+  }
+};
+
+module.exports = exports;
 
 

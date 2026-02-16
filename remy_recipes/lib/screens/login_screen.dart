@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'terms_screen.dart';
 import '../l10n/app_localizations.dart';
+import 'forgot_password_email_screen.dart';
 
 // ==========================================================================
 // 4. PANTALLA DE INICIO DE SESION
@@ -230,15 +231,18 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             TextButton(
-              onPressed: () => _showErrorDialog(
-                AppLocalizations.of(context)!.recuperarContrasena,
-                AppLocalizations.of(context)!.recuperarContrasenaMsg,
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.olvidarContrasena,
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
+  onPressed: () {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ForgotPasswordEmailScreen(authService: widget.authService),
+      ),
+    );
+  },
+  child: Text(
+    AppLocalizations.of(context)!.olvidarContrasena,
+    style: TextStyle(color: Colors.blue),
+  ),
+),
 
             const SizedBox(height: 10),
             _buildActionButton(

@@ -243,6 +243,75 @@ class AuthService {
   }
 }
 
+// ==============================================
+//          OLVIDÉ MI CONTRASEÑA
+// ==============================================
+
+/// Envía un código de reset al email proporcionado
+Future<bool> sendResetCode(String email) async {
+  final url = Uri.parse(ApiEndpoints.forgotPassword); // Agrega a config.dart: 'https://tu-api.com/auth/forgot-password'
+
+  logger.i('Enviando código de reset a: $email');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({'email': email}),
+  );
+
+  if (response.statusCode == 200) {
+    logger.i('Código de reset enviado exitosamente');
+    return true;
+  } else {
+    final errorData = json.decode(response.body);
+    logger.e('Error enviando código: ${errorData['mensaje'] ?? 'Error desconocido'}');
+    throw Exception(errorData['mensaje'] ?? 'No se pudo enviar el código.');
+  }
+}
+
+/// Verifica el código de reset y devuelve un token temporal
+Future<String> verifyResetCode(String code) async {
+  final url = Uri.parse(ApiEndpoints.verifyResetCode); // Agrega a config.dart: 'https://tu-api.com/auth/verify-reset-code'
+
+  logger.i('Verificando código de reset');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({'code': code}),
+  );
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final token = data['resetToken']; // Asume que el backend devuelve un token temporal
+    logger.i('Código verificado, token recibido');
+    return token;
+  } else {
+    final errorData = json.decode(response.body);
+    logger.e('Error verificando código: ${errorData['mensaje'] ?? 'Código inválido'}');
+    throw Exception(errorData['mensaje'] ?? 'Código inválido.');
+  }
+}
+
+/// Resetea la contraseña usando el token temporal
+Future<bool> resetPassword(String resetToken, String newPassword) async {
+  final url = Uri.parse(ApiEndpoints.resetPassword); // Agrega a config.dart: 'https://tu-api.com/auth/reset-password'
+
+  logger.i('Reseteando contraseña');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({'resetToken': resetToken, 'newPassword': newPassword}),
+  );
+
+  if (response.statusCode == 200) {
+    logger.i('Contraseña reseteada exitosamente');
+    return true;
+  } else {
+    final errorData = json.decode(response.body);
+    logger.e('Error reseteando contraseña: ${errorData['mensaje'] ?? 'Error desconocido'}');
+    throw Exception(errorData['mensaje'] ?? 'No se pudo cambiar la contraseña.');
+  }
+}
+
   // ==============================================
   //                     LOGOUT
   // ==============================================
