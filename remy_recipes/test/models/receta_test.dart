@@ -3,13 +3,8 @@ import 'package:remy_recipes/data/models/receta.dart';
 
 void main() {
   group('Modelo Receta', () {
-
     test('fromJson crea una receta correctamente', () {
-      final json = {
-        'Id_receta': 1,
-        'titulo': 'Pizza',
-        'duracion': 30,
-      };
+      final json = {'Id_receta': 1, 'titulo': 'Pizza', 'duracion': 30};
 
       final receta = Receta.fromJson(json);
 
@@ -19,11 +14,7 @@ void main() {
     });
 
     test('fromHomeJson crea una receta ligera correctamente', () {
-      final json = {
-        'Id_receta': 15,
-        'titulo': 'Hamburguesa',
-        'imagen': null,
-      };
+      final json = {'Id_receta': 15, 'titulo': 'Hamburguesa', 'imagen': null};
 
       final receta = Receta.fromHomeJson(json);
 
@@ -33,11 +24,7 @@ void main() {
     });
 
     test('fromJson maneja campos opcionales null', () {
-      final json = {
-        'Id_receta': 3,
-        'titulo': 'Sopa',
-        'duracion': null,
-      };
+      final json = {'Id_receta': 3, 'titulo': 'Sopa', 'duracion': null};
 
       final receta = Receta.fromJson(json);
 
@@ -46,11 +33,7 @@ void main() {
     });
 
     test('toJson devuelve un mapa válido', () {
-      final receta = Receta(
-        id: '1',
-        titulo: 'Pasta',
-        duracion: 20,
-      );
+      final receta = Receta(id: '1', titulo: 'Pasta', duracion: 20);
 
       final json = receta.toJson();
 

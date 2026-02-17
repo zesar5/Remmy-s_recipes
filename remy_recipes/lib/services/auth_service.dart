@@ -28,21 +28,21 @@ class AuthService {
     final token = await _storage.read(key: 'jwt_token');
     final userIdStr = await _storage.read(key: 'user_id');
 
-    if (token == null || userIdStr == null){
-       logger.w('Auto-login fallido: Token o userId no encontrados en storage');
+    if (token == null || userIdStr == null) {
+      logger.w('Auto-login fallido: Token o userId no encontrados en storage');
       return false;
-    } 
+    }
 
     _accessToken = token;
     logger.d('Token cargado desde storage: [ENMASCARADO]');
     try {
       // Intentamos cargar el perfil para verificar si el token sigue vigente
       final success = await fetchProfile(int.parse(userIdStr));
-      logger.i('Auto-login exitoso');  // Log de éxito
+      logger.i('Auto-login exitoso'); // Log de éxito
       return success;
     } catch (e) {
       // Si falla (token expirado), limpiamos todo
-       logger.e('Auto-login fallido: Error al cargar perfil - $e');
+      logger.e('Auto-login fallido: Error al cargar perfil - $e');
       await logout();
       return false;
     }
@@ -67,7 +67,9 @@ class AuthService {
       }),
     );
 
-    logger.d('Respuesta de login - Status: ${response.statusCode}, Body: ${response.body}');
+    logger.d(
+      'Respuesta de login - Status: ${response.statusCode}, Body: ${response.body}',
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -75,20 +77,24 @@ class AuthService {
       _accessToken = data['token']; // Guardamos el JWT
       final userId = int.parse(data['id'].toString());
 
-      logger.i('Login exitoso - Guardando token y userId');  // Log de éxito
-      logger.d('Token recibido: [ENMASCARADO], UserId: $userId');  // Debug enmascarado
+      logger.i('Login exitoso - Guardando token y userId'); // Log de éxito
+      logger.d(
+        'Token recibido: [ENMASCARADO], UserId: $userId',
+      ); // Debug enmascarado
 
       // NUEVO: Persistimos los datos para la próxima vez que abra la app
       await _storage.write(key: 'jwt_token', value: _accessToken);
       await _storage.write(key: 'user_id', value: userId.toString());
       // Cargamos el perfil completo usando el nuevo token
       final profileSuccess = await fetchProfile(userId);
-      logger.i('Perfil cargado después de login: $profileSuccess');  // Log adicional
+      logger.i(
+        'Perfil cargado después de login: $profileSuccess',
+      ); // Log adicional
       return profileSuccess;
     } else {
       // Manejo de errores del backend (401, 500, etc.)
       final errorData = json.decode(response.body);
-       logger.e('Login fallido: ${errorData['mensaje'] ?? 'Error desconocido'}');
+      logger.e('Login fallido: ${errorData['mensaje'] ?? 'Error desconocido'}');
       throw Exception(
         errorData['mensaje'] ?? 'Credenciales incorrectas o error de servidor.',
       );
@@ -112,7 +118,7 @@ class AuthService {
   }) async {
     final url = Uri.parse(ApiEndpoints.register);
 
-     logger.i('Iniciando registro para email: $email');
+    logger.i('Iniciando registro para email: $email');
 
     // Creamos instancia temporal del modelo Usuario solo para usar toJsonRegistro()
     final newUser = Usuario(
@@ -138,20 +144,19 @@ class AuthService {
     if (response.statusCode == 200) {
       logger.i('Registro exitoso - Iniciando login automático');
       // Registro exitoso → login automático (muy buena práctica UX)
-      return await login(
-        email: email,
-        password: contrasena,
-      );
+      return await login(email: email, password: contrasena);
     } else {
       // Manejo detallado de errores
       try {
         final errorData = json.decode(response.body);
         final errorMessage =
             errorData['mensaje'] ?? 'Error desconocido al registrar.';
-            logger.e('Registro fallido: $errorMessage');
+        logger.e('Registro fallido: $errorMessage');
         throw Exception(errorMessage);
       } catch (e) {
-        logger.e('Error de servidor en registro: Status ${response.statusCode}');
+        logger.e(
+          'Error de servidor en registro: Status ${response.statusCode}',
+        );
         throw Exception(
           'Error de servidor (${response.statusCode}): No se pudo completar el registro.',
         );
@@ -167,14 +172,14 @@ class AuthService {
   /// Actualiza _currentUser con los datos del backend
   Future<bool> fetchProfile(int userId) async {
     if (_accessToken == null) {
-       logger.w('Intento de fetchProfile sin token');
+      logger.w('Intento de fetchProfile sin token');
       return false;
     }
 
     final url = Uri.parse('${ApiEndpoints.perfil}/$userId');
 
-    logger.i('Iniciando fetchProfile para userId: $userId');  // Log de inicio
-    logger.d('Token presente: [ENMASCARADO]');  // Debug enmascarado
+    logger.i('Iniciando fetchProfile para userId: $userId'); // Log de inicio
+    logger.d('Token presente: [ENMASCARADO]'); // Debug enmascarado
 
     final response = await http.get(
       url,
@@ -192,7 +197,9 @@ class AuthService {
       return true;
     } else {
       // Si falla → limpiamos sesión (token inválido o expirado)
-      logger.e('FetchProfile fallido: Status ${response.statusCode}, Body: ${response.body}');
+      logger.e(
+        'FetchProfile fallido: Status ${response.statusCode}, Body: ${response.body}',
+      );
       _accessToken = null;
       _currentUser = null;
       throw Exception(
@@ -200,124 +207,154 @@ class AuthService {
       );
     }
   }
+
   // ==============================================
   //               Prueba editar perfil
   // ==============================================
   Future<void> updateProfile({
-  required String nombreUsuario,
-  String? descripcion,
-  String? fotoPerfil,
-}) async {
-  if (_accessToken == null || _currentUser == null) {
-    logger.w('Intento de updateProfile sin token o usuario actual');
-    throw Exception('Usuario no autenticado');
+    required String nombreUsuario,
+    String? descripcion,
+    String? fotoPerfil,
+  }) async {
+    if (_accessToken == null || _currentUser == null) {
+      logger.w('Intento de updateProfile sin token o usuario actual');
+      throw Exception('Usuario no autenticado');
+    }
+
+    logger.i(
+      'Iniciando actualización de perfil para userId: ${_currentUser!.id}',
+    );
+    logger.d(
+      'Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}',
+    );
+
+    // URL con userId (similar a fetchProfile)
+    final url = Uri.parse(
+      '${ApiEndpoints.perfil}/${_currentUser!.id}',
+    ); // Asumiendo que ApiEndpoints.perfil es la base, ej. 'https://api.com/users/profile'
+
+    final response = await http.put(
+      // O PATCH si tu backend lo usa
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_accessToken',
+      },
+      body: jsonEncode({
+        'nombre':
+            nombreUsuario, // Asegúrate de que coincida con lo que espera tu backend (ej. 'userName' o 'nombreUsuario')
+        'descripcion': descripcion,
+        'fotoPerfil': fotoPerfil,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      // Actualizar _currentUser con los datos devueltos (asumiendo que el backend devuelve el usuario actualizado)
+      _currentUser = Usuario.fromJson(
+        data['user'] ?? data,
+      ); // Ajusta según la estructura de respuesta de tu API
+      logger.i(
+        'Perfil actualizado exitosamente para userId: ${_currentUser!.id}',
+      );
+    } else {
+      logger.e(
+        'Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}',
+      );
+      throw Exception('Error al actualizar perfil: ${response.body}');
+    }
   }
 
-  logger.i('Iniciando actualización de perfil para userId: ${_currentUser!.id}');
-  logger.d('Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}');
+  // ==============================================
+  //          OLVIDÉ MI CONTRASEÑA
+  // ==============================================
 
-  // URL con userId (similar a fetchProfile)
-  final url = Uri.parse('${ApiEndpoints.perfil}/${_currentUser!.id}');  // Asumiendo que ApiEndpoints.perfil es la base, ej. 'https://api.com/users/profile'
+  /// Envía un código de reset al email proporcionado
+  Future<bool> sendResetCode(String email) async {
+    final url = Uri.parse(
+      ApiEndpoints.forgotPassword,
+    ); // Agrega a config.dart: 'https://tu-api.com/auth/forgot-password'
 
-  final response = await http.put(  // O PATCH si tu backend lo usa
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $_accessToken',
-    },
-    body: jsonEncode({
-      'nombre': nombreUsuario,  // Asegúrate de que coincida con lo que espera tu backend (ej. 'userName' o 'nombreUsuario')
-      'descripcion': descripcion,
-      'fotoPerfil': fotoPerfil,
-    }),
-  );
+    logger.i('Enviando código de reset a: $email');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    // Actualizar _currentUser con los datos devueltos (asumiendo que el backend devuelve el usuario actualizado)
-    _currentUser = Usuario.fromJson(data['user'] ?? data);  // Ajusta según la estructura de respuesta de tu API
-    logger.i('Perfil actualizado exitosamente para userId: ${_currentUser!.id}');
-  } else {
-    logger.e('Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}');
-    throw Exception('Error al actualizar perfil: ${response.body}');
+    if (response.statusCode == 200) {
+      logger.i('Código de reset enviado exitosamente');
+      return true;
+    } else {
+      final errorData = json.decode(response.body);
+      logger.e(
+        'Error enviando código: ${errorData['mensaje'] ?? 'Error desconocido'}',
+      );
+      throw Exception(errorData['mensaje'] ?? 'No se pudo enviar el código.');
+    }
   }
-}
 
-// ==============================================
-//          OLVIDÉ MI CONTRASEÑA
-// ==============================================
+  /// Verifica el código de reset y devuelve un token temporal
+  Future<String> verifyResetCode(String code) async {
+    final url = Uri.parse(
+      ApiEndpoints.verifyResetCode,
+    ); // Agrega a config.dart: 'https://tu-api.com/auth/verify-reset-code'
 
-/// Envía un código de reset al email proporcionado
-Future<bool> sendResetCode(String email) async {
-  final url = Uri.parse(ApiEndpoints.forgotPassword); // Agrega a config.dart: 'https://tu-api.com/auth/forgot-password'
+    logger.i('Verificando código de reset');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'code': code}),
+    );
 
-  logger.i('Enviando código de reset a: $email');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({'email': email}),
-  );
-
-  if (response.statusCode == 200) {
-    logger.i('Código de reset enviado exitosamente');
-    return true;
-  } else {
-    final errorData = json.decode(response.body);
-    logger.e('Error enviando código: ${errorData['mensaje'] ?? 'Error desconocido'}');
-    throw Exception(errorData['mensaje'] ?? 'No se pudo enviar el código.');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final token =
+          data['resetToken']; // Asume que el backend devuelve un token temporal
+      logger.i('Código verificado, token recibido');
+      return token;
+    } else {
+      final errorData = json.decode(response.body);
+      logger.e(
+        'Error verificando código: ${errorData['mensaje'] ?? 'Código inválido'}',
+      );
+      throw Exception(errorData['mensaje'] ?? 'Código inválido.');
+    }
   }
-}
 
-/// Verifica el código de reset y devuelve un token temporal
-Future<String> verifyResetCode(String code) async {
-  final url = Uri.parse(ApiEndpoints.verifyResetCode); // Agrega a config.dart: 'https://tu-api.com/auth/verify-reset-code'
+  /// Resetea la contraseña usando el token temporal
+  Future<bool> resetPassword(String resetToken, String newPassword) async {
+    final url = Uri.parse(
+      ApiEndpoints.resetPassword,
+    ); // Agrega a config.dart: 'https://tu-api.com/auth/reset-password'
 
-  logger.i('Verificando código de reset');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({'code': code}),
-  );
+    logger.i('Reseteando contraseña');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'resetToken': resetToken, 'newPassword': newPassword}),
+    );
 
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    final token = data['resetToken']; // Asume que el backend devuelve un token temporal
-    logger.i('Código verificado, token recibido');
-    return token;
-  } else {
-    final errorData = json.decode(response.body);
-    logger.e('Error verificando código: ${errorData['mensaje'] ?? 'Código inválido'}');
-    throw Exception(errorData['mensaje'] ?? 'Código inválido.');
+    if (response.statusCode == 200) {
+      logger.i('Contraseña reseteada exitosamente');
+      return true;
+    } else {
+      final errorData = json.decode(response.body);
+      logger.e(
+        'Error reseteando contraseña: ${errorData['mensaje'] ?? 'Error desconocido'}',
+      );
+      throw Exception(
+        errorData['mensaje'] ?? 'No se pudo cambiar la contraseña.',
+      );
+    }
   }
-}
-
-/// Resetea la contraseña usando el token temporal
-Future<bool> resetPassword(String resetToken, String newPassword) async {
-  final url = Uri.parse(ApiEndpoints.resetPassword); // Agrega a config.dart: 'https://tu-api.com/auth/reset-password'
-
-  logger.i('Reseteando contraseña');
-  final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: json.encode({'resetToken': resetToken, 'newPassword': newPassword}),
-  );
-
-  if (response.statusCode == 200) {
-    logger.i('Contraseña reseteada exitosamente');
-    return true;
-  } else {
-    final errorData = json.decode(response.body);
-    logger.e('Error reseteando contraseña: ${errorData['mensaje'] ?? 'Error desconocido'}');
-    throw Exception(errorData['mensaje'] ?? 'No se pudo cambiar la contraseña.');
-  }
-}
 
   // ==============================================
   //                     LOGOUT
   // ==============================================
 
   /// Limpia la sesión actual (token y usuario)
-  Future <void> logout() async {
+  Future<void> logout() async {
     logger.i('Ejecutando logout - Limpiando sesión');
     _accessToken = null;
     _currentUser = null;

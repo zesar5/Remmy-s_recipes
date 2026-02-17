@@ -14,11 +14,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Environment.initialize();
-  
+
   logger.i('Iniciando app - Verificando auto-login');
   final bool isLoggedIn = await authService.tryAutoLogin();
   logger.d('Auto-login completado: isLoggedIn = $isLoggedIn');
-  runApp( RemmyApp(isLoggedIn: isLoggedIn ));
+  runApp(RemmyApp(isLoggedIn: isLoggedIn));
 }
 
 final logger = Logger(
@@ -39,8 +39,8 @@ class RemmyApp extends StatefulWidget {
 
   // 👇 MÉTODO GLOBAL PARA CAMBIAR IDIOMA
   static void setLocale(BuildContext context, Locale newLocale) {
-    final _RemmyAppState? state =
-        context.findAncestorStateOfType<_RemmyAppState>();
+    final _RemmyAppState? state = context
+        .findAncestorStateOfType<_RemmyAppState>();
     state?.changeLocale(newLocale);
   }
 
@@ -60,34 +60,32 @@ class _RemmyAppState extends State<RemmyApp> {
   @override
   Widget build(BuildContext context) {
     logger.i(
-        'Construyendo RemmyApp - Ruta inicial: ${widget.isLoggedIn ? "/home" : "/login"}');
+      'Construyendo RemmyApp - Ruta inicial: ${widget.isLoggedIn ? "/home" : "/login"}',
+    );
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
       debugShowCheckedModeBanner: false,
-      
+
       locale: _locale,
 
-      supportedLocales: const [
-        Locale('es'),
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('es'), Locale('en')],
 
       localeResolutionCallback: (deviceLocale, supportedLocales) {
-      // Si el usuario ya cambió idioma manualmente
-      if (_locale != null) {
-        return _locale;
-      }
-
-      // Si el idioma del dispositivo está soportado
-      for (var locale in supportedLocales) {
-        if (locale.languageCode == deviceLocale?.languageCode) {
-          return locale;
+        // Si el usuario ya cambió idioma manualmente
+        if (_locale != null) {
+          return _locale;
         }
-      }
 
-      // Si no coincide ninguno → español por defecto
-      return const Locale('es');
+        // Si el idioma del dispositivo está soportado
+        for (var locale in supportedLocales) {
+          if (locale.languageCode == deviceLocale?.languageCode) {
+            return locale;
+          }
+        }
+
+        // Si no coincide ninguno → español por defecto
+        return const Locale('es');
       },
 
       localizationsDelegates: const [
@@ -107,4 +105,3 @@ class _RemmyAppState extends State<RemmyApp> {
     );
   }
 }
-

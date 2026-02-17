@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'EditProfileScreen.dart';
 import '../l10n/app_localizations.dart';
 
-
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO
 // =======================================================
@@ -43,7 +42,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   @override
   void initState() {
     super.initState();
-     logger.i('Inicializando pantalla de perfil');  // Log de inicio
+    logger.i('Inicializando pantalla de perfil'); // Log de inicio
 
     // Protección: si no hay usuario logueado → redirige a login
     if (widget.authService.currentUser == null) {
@@ -60,14 +59,12 @@ class _PerfilScreenState extends State<PerfilScreen> {
     _cargarRecetasGuardadas();
   }
 
-  
-  
-
-
   /// Carga las recetas propias del usuario (públicas + privadas)
   Future<void> _cargarRecetasGuardadas() async {
-    logger.i('desde Profile 🧠 USUARIO ACTUAL ID: ${user.id}');  // Log de inicio
-    logger.d('🧠 TOKEN PERFIL: ${widget.authService.accessToken != null ? "Sí" : "No"}');  // Debug
+    logger.i('desde Profile 🧠 USUARIO ACTUAL ID: ${user.id}'); // Log de inicio
+    logger.d(
+      '🧠 TOKEN PERFIL: ${widget.authService.accessToken != null ? "Sí" : "No"}',
+    ); // Debug
 
     if (widget.authService.accessToken == null) return;
 
@@ -94,7 +91,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i('Construyendo pantalla de perfil');  // Log de construcción
+    logger.i('Construyendo pantalla de perfil'); // Log de construcción
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -109,7 +106,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 logger.i('Seleccionando editar perfil');
                 _editarPerfil();
               } else if (value == 'cerrar') {
-                 logger.i('Seleccionando cerrar sesión');
+                logger.i('Seleccionando cerrar sesión');
                 _cerrarSesion();
               }
             },
@@ -165,35 +162,34 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-         
-          
-            Container(
-              //tamaño del contenedor
-              width: 120,
-              height: 120,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              //esto recorta la imagen en forma de circulo
-              child: ClipOval(
-                // URL del backend para obtener la foto de perfil
-                //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
-                child: Image.network(
-                  '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+          Container(
+            //tamaño del contenedor
+            width: 120,
+            height: 120,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            //esto recorta la imagen en forma de circulo
+            child: ClipOval(
+              // URL del backend para obtener la foto de perfil
+              //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
+              child: Image.network(
+                '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
 
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                     logger.w('Error cargando imagen de perfil - Mostrando placeholder');  // Advertencia
-                    return const Text("👤", style: TextStyle(fontSize: 55));
-                  },
-                ),
+                width: 120,
+                height: 120,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  logger.w(
+                    'Error cargando imagen de perfil - Mostrando placeholder',
+                  ); // Advertencia
+                  return const Text("👤", style: TextStyle(fontSize: 55));
+                },
               ),
             ),
-  
+          ),
 
           const SizedBox(height: 10),
 
@@ -205,7 +201,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
           const SizedBox(height: 12),
 
-          Text(AppLocalizations.of(context)!.descripcion, style: TextStyle(fontSize: 15)),
+          Text(
+            AppLocalizations.of(context)!.descripcion,
+            style: TextStyle(fontSize: 15),
+          ),
 
           const SizedBox(height: 4),
 
@@ -223,8 +222,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               style: const TextStyle(fontSize: 13),
             ),
           ),
-          
-        ]
+        ],
       ),
     );
   }
@@ -257,8 +255,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
       onEnter: (_) => setState(() => hovered = view),
       onExit: (_) => setState(() => hovered = ""),
       child: GestureDetector(
-         onTap: () {
-          logger.i('Cambiando vista a: $view');  // Log de navegación
+        onTap: () {
+          logger.i('Cambiando vista a: $view'); // Log de navegación
           setState(() => currentView = view);
         },
         child: AnimatedContainer(
@@ -348,19 +346,23 @@ class _PerfilScreenState extends State<PerfilScreen> {
               imageBytes = base64Decode(base64Image);
             }
           } catch (e) {
-            logger.e('Error decodificando imagen de receta ${receta.id}: $e');  // Log de error
+            logger.e(
+              'Error decodificando imagen de receta ${receta.id}: $e',
+            ); // Log de error
           }
         }
 
-         return GestureDetector(
+        return GestureDetector(
           onTap: () async {
-            logger.i('Click en receta guardada: ${receta.titulo} (ID: ${receta.id})');  // Log de acción
+            logger.i(
+              'Click en receta guardada: ${receta.titulo} (ID: ${receta.id})',
+            ); // Log de acción
             try {
               final recetaCompleta = await obtenerRecetaPorId(
                 widget.authService.accessToken!,
                 receta.id!,
               );
-              logger.i('Receta completa cargada para detalle');  // Log de éxito
+              logger.i('Receta completa cargada para detalle'); // Log de éxito
 
               final refrescar = await Navigator.push(
                 context,
@@ -376,7 +378,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               if (refrescar == true) _cargarRecetasGuardadas();
             } catch (e, s) {
               logger.e("🔥 ERROR en onTap: $e");
-              logger.d(s);//Debug adicional
+              logger.d(s); //Debug adicional
             }
           },
           child: Card(
@@ -435,8 +437,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
         const SizedBox(height: 10),
         ElevatedButton(
-           onPressed: () {
-            logger.i('Agregando elemento a lista: $titulo');  // Log de acción
+          onPressed: () {
+            logger.i('Agregando elemento a lista: $titulo'); // Log de acción
             onAdd();
           },
           child: Text(AppLocalizations.of(context)!.anadirElemento),
@@ -452,7 +454,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
-                      logger.i('Eliminando elemento de lista: $titulo');  // Log de acción
+                      logger.i(
+                        'Eliminando elemento de lista: $titulo',
+                      ); // Log de acción
                       setState(() => lista.removeAt(index));
                     },
                   ),
@@ -468,7 +472,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   void _addToList(List<String> lista) {
     setState(() {
       if (user.descripcion != null && user.descripcion!.trim().isNotEmpty) {
-        logger.i('Agregando descripción a lista');  // Log de acción
+        logger.i('Agregando descripción a lista'); // Log de acción
         lista.add(user.descripcion!);
       }
     });
@@ -486,26 +490,27 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }*/
 
   void _editarPerfil() {
-      logger.i('Navegando a pantalla de edición de perfil');  // Log de navegación
+    logger.i('Navegando a pantalla de edición de perfil'); // Log de navegación
     Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => EditProfileScreen(authService: widget.authService),
-    ),
-  ).then((result) {
-    if(result == true){
-      // Después de editar, refrescar el perfil
-    logger.i('Regresando de edición - Refrescando perfil');  // Log de acción
-    setState(() {
-      user = widget.authService.currentUser!;  // Refrescar datos del usuario
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditProfileScreen(authService: widget.authService),
+      ),
+    ).then((result) {
+      if (result == true) {
+        // Después de editar, refrescar el perfil
+        logger.i('Regresando de edición - Refrescando perfil'); // Log de acción
+        setState(() {
+          user = widget.authService.currentUser!; // Refrescar datos del usuario
+        });
+      }
     });
-    }
-    
-  });
-}
+  }
 
   void _cerrarSesion() {
-     logger.i('Cerrando sesión - Llamando a logout y navegando a login');  // Log de acción
+    logger.i(
+      'Cerrando sesión - Llamando a logout y navegando a login',
+    ); // Log de acción
     // Llama al logout del AuthService
     widget.authService.logout();
     // Navega a la pantalla de login

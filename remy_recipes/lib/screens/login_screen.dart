@@ -44,19 +44,28 @@ class _LoginScreenState extends State<LoginScreen> {
     if (correo.isEmpty) {
       logger.w('Validación fallida: Correo vacío');
       setState(() => _errorCorreo = true);
-      _showErrorDialog(AppLocalizations.of(context)!.campoVacio, AppLocalizations.of(context)!.correoVacioMsg);
+      _showErrorDialog(
+        AppLocalizations.of(context)!.campoVacio,
+        AppLocalizations.of(context)!.correoVacioMsg,
+      );
       return;
     }
     if (!_esCorreoValido(correo)) {
       logger.w('Validación fallida: Correo inválido'); // Advertencia
       setState(() => _errorCorreo = true);
-      _showErrorDialog(AppLocalizations.of(context)!.correoInvalido, AppLocalizations.of(context)!.correoInvalidoMsg);
+      _showErrorDialog(
+        AppLocalizations.of(context)!.correoInvalido,
+        AppLocalizations.of(context)!.correoInvalidoMsg,
+      );
       return;
     }
     if (contrasena.isEmpty) {
       logger.w('Validación fallida: Contraseña vacía');
       setState(() => _errorContrasena = true);
-      _showErrorDialog(AppLocalizations.of(context)!.campoVacio, AppLocalizations.of(context)!.correoVacioMsg);
+      _showErrorDialog(
+        AppLocalizations.of(context)!.campoVacio,
+        AppLocalizations.of(context)!.correoVacioMsg,
+      );
       return;
     }
 
@@ -231,18 +240,20 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
             TextButton(
-  onPressed: () {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ForgotPasswordEmailScreen(authService: widget.authService),
-      ),
-    );
-  },
-  child: Text(
-    AppLocalizations.of(context)!.olvidarContrasena,
-    style: TextStyle(color: Colors.blue),
-  ),
-),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ForgotPasswordEmailScreen(
+                      authService: widget.authService,
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                AppLocalizations.of(context)!.olvidarContrasena,
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
 
             const SizedBox(height: 10),
             _buildActionButton(

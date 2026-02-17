@@ -8,14 +8,22 @@ import '../main.dart';
 class ForgotPasswordCodeScreen extends StatefulWidget {
   final AuthService authService;
   final String email;
-  const ForgotPasswordCodeScreen({super.key, required this.authService, required this.email});
+  const ForgotPasswordCodeScreen({
+    super.key,
+    required this.authService,
+    required this.email,
+  });
 
   @override
-  State<ForgotPasswordCodeScreen> createState() => _ForgotPasswordCodeScreenState();
+  State<ForgotPasswordCodeScreen> createState() =>
+      _ForgotPasswordCodeScreenState();
 }
 
 class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
-  final List<TextEditingController> _codeControllers = List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _codeControllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _codeFocusNodes = List.generate(6, (_) => FocusNode());
   bool _isLoading = false;
   bool _errorCode = false;
@@ -43,11 +51,14 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
       logger.i('Código verificado para ${widget.email}');
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => ForgotPasswordNewPasswordScreen(authService: widget.authService, resetToken: resetToken),
+          builder: (_) => ForgotPasswordNewPasswordScreen(
+            authService: widget.authService,
+            resetToken: resetToken,
+          ),
         ),
       );
     } catch (e) {
-      logger.e('Error verificando código: $e'); 
+      logger.e('Error verificando código: $e');
       mostrarMensaje(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       setState(() => _isLoading = false);
@@ -84,7 +95,9 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
               const SizedBox(height: 20),
-              Text('Hemos enviado un código a ${widget.email}. Introduce los 6 dígitos:'),
+              Text(
+                'Hemos enviado un código a ${widget.email}. Introduce los 6 dígitos:',
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -100,8 +113,14 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                        errorBorder: _errorCode ? OutlineInputBorder(borderSide: BorderSide(color: Colors.red)) : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorBorder: _errorCode
+                            ? OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.red),
+                              )
+                            : null,
                         counterText: '',
                       ),
                       onChanged: (value) {
@@ -127,7 +146,10 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Volver', style: TextStyle(color: Colors.blue)),
+                child: const Text(
+                  'Volver',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
             ],
           ),

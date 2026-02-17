@@ -3,9 +3,7 @@ import 'package:remy_recipes/services/recetas_service.dart';
 import 'package:remy_recipes/data/models/receta.dart';
 
 void main() {
-
   group('RecetasService - tests básicos', () {
-
     test('obtenerTodasLasRecetas devuelve una lista', () async {
       final recetas = await obtenerTodasLasRecetas();
 
@@ -19,10 +17,7 @@ void main() {
     });
 
     test('recetaFiltrada devuelve lista aunque no haya resultados', () async {
-      final recetas = await recetaFiltrada(
-        texto: 'zzzzzzzzzz',
-        duracion: 5,
-      );
+      final recetas = await recetaFiltrada(texto: 'zzzzzzzzzz', duracion: 5);
 
       expect(recetas, isA<List<Receta>>());
     });
@@ -45,17 +40,20 @@ void main() {
       expect(resultado, false);
     });
 
-    test('editarReceta con token válido devuelve true o falla correctamente', () async {
-      final recetaFake = Receta(
-        id: '1',
-        titulo: 'Receta real para test',
-        duracion: 10,
-      );
+    test(
+      'editarReceta con token válido devuelve true o falla correctamente',
+      () async {
+        final recetaFake = Receta(
+          id: '1',
+          titulo: 'Receta real para test',
+          duracion: 10,
+        );
 
-      final resultado = await editarReceta(recetaFake, 'token_valido');
+        final resultado = await editarReceta(recetaFake, 'token_valido');
 
-      // Aquí depende del backend, se puede poner expect(resultado, true)
-      expect(resultado, isA<bool>());
-    });
+        // Aquí depende del backend, se puede poner expect(resultado, true)
+        expect(resultado, isA<bool>());
+      },
+    );
   });
 }

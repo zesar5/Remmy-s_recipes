@@ -7,15 +7,22 @@ import '../main.dart';
 class ForgotPasswordNewPasswordScreen extends StatefulWidget {
   final AuthService authService;
   final String resetToken;
-  const ForgotPasswordNewPasswordScreen({super.key, required this.authService, required this.resetToken});
+  const ForgotPasswordNewPasswordScreen({
+    super.key,
+    required this.authService,
+    required this.resetToken,
+  });
 
   @override
-  State<ForgotPasswordNewPasswordScreen> createState() => _ForgotPasswordNewPasswordScreenState();
+  State<ForgotPasswordNewPasswordScreen> createState() =>
+      _ForgotPasswordNewPasswordScreenState();
 }
 
-class _ForgotPasswordNewPasswordScreenState extends State<ForgotPasswordNewPasswordScreen> {
+class _ForgotPasswordNewPasswordScreenState
+    extends State<ForgotPasswordNewPasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isLoading = false;
   bool _errorPassword = false;
   String? _errorPasswordMessage;
@@ -49,7 +56,9 @@ class _ForgotPasswordNewPasswordScreenState extends State<ForgotPasswordNewPassw
         _errorPassword = true;
         _errorPasswordMessage = "Débil";
       });
-      mostrarMensaje("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.");
+      mostrarMensaje(
+        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+      );
       return;
     }
 
@@ -57,9 +66,14 @@ class _ForgotPasswordNewPasswordScreenState extends State<ForgotPasswordNewPassw
     try {
       await widget.authService.resetPassword(widget.resetToken, newPass);
       logger.i('Contraseña cambiada');
-      mostrarMensaje("Contraseña cambiada exitosamente.", onClose: () {
-        Navigator.of(context).popUntil((route) => route.isFirst); // Vuelve a LoginScreen
-      });
+      mostrarMensaje(
+        "Contraseña cambiada exitosamente.",
+        onClose: () {
+          Navigator.of(
+            context,
+          ).popUntil((route) => route.isFirst); // Vuelve a LoginScreen
+        },
+      );
     } catch (e) {
       logger.e('Error cambiando contraseña: $e');
       mostrarMensaje(e.toString().replaceFirst('Exception: ', ''));
@@ -130,7 +144,10 @@ class _ForgotPasswordNewPasswordScreenState extends State<ForgotPasswordNewPassw
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Volver', style: TextStyle(color: Colors.blue)),
+                child: const Text(
+                  'Volver',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
             ],
           ),

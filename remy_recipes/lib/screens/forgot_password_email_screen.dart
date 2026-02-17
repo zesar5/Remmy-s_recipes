@@ -10,7 +10,8 @@ class ForgotPasswordEmailScreen extends StatefulWidget {
   const ForgotPasswordEmailScreen({super.key, required this.authService});
 
   @override
-  State<ForgotPasswordEmailScreen> createState() => _ForgotPasswordEmailScreenState();
+  State<ForgotPasswordEmailScreen> createState() =>
+      _ForgotPasswordEmailScreenState();
 }
 
 class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
@@ -49,7 +50,10 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
       logger.i('Código enviado a $email');
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => ForgotPasswordCodeScreen(authService: widget.authService, email: email),
+          builder: (_) => ForgotPasswordCodeScreen(
+            authService: widget.authService,
+            email: email,
+          ),
         ),
       );
     } catch (e) {
@@ -110,7 +114,10 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Volver', style: TextStyle(color: Colors.blue)),
+                child: const Text(
+                  'Volver',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
             ],
           ),

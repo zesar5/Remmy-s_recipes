@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 
-
 class RecipeButton extends StatelessWidget {
   final String image;
   final String title;
 
-  const RecipeButton({
-    super.key,
-    required this.image,
-    required this.title,
-  });
-  
+  const RecipeButton({super.key, required this.image, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +13,7 @@ class RecipeButton extends StatelessWidget {
         backgroundColor: Colors.white,
         shadowColor: Colors.transparent,
         padding: const EdgeInsets.all(8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       onPressed: () {},
       child: Column(
@@ -30,10 +22,7 @@ class RecipeButton extends StatelessWidget {
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(image, fit: BoxFit.cover),
             ),
           ),
           const SizedBox(height: 8),

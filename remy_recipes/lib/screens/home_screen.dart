@@ -76,7 +76,6 @@ class _MainPageState extends State<MainPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
               // Botón Comunidad
               ListTile(
                 leading: const Icon(Icons.people),
@@ -108,9 +107,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-// =======================
-// DIÁLOGO CAMBIO DE IDIOMA
-// =======================
+  // =======================
+  // DIÁLOGO CAMBIO DE IDIOMA
+  // =======================
   void _showLanguageDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -138,7 +137,7 @@ class _MainPageState extends State<MainPage> {
                 ),
                 onPressed: () {
                   Navigator.pop(context);
-                  
+
                   RemmyApp.setLocale(context, const Locale('es'));
 
                   logger.i("Idioma cambiado a Español");
@@ -229,7 +228,14 @@ class _MainPageState extends State<MainPage> {
                       children: [
                         _combo("origen", AppStrings.countries),
                         _combo("estaciones", AppStrings.seasons),
-                        _combo("duración", ["5 min", "10 min", "20 min", "30 min", "60 min", "90 min"]),
+                        _combo("duración", [
+                          "5 min",
+                          "10 min",
+                          "20 min",
+                          "30 min",
+                          "60 min",
+                          "90 min",
+                        ]),
                         _combo("alergenos", AppStrings.allergens),
                       ],
                     ),
@@ -237,14 +243,17 @@ class _MainPageState extends State<MainPage> {
                     const SizedBox(height: 6),
                     Padding(
                       padding: const EdgeInsets.only(
-                        top: 20,   // 👈 más espacio arriba
+                        top: 20, // 👈 más espacio arriba
                         bottom: 5, // 👈 menos espacio abajo
                       ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppStrings.colorFondo,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14,),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 14,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -252,13 +261,13 @@ class _MainPageState extends State<MainPage> {
                         onPressed: () {
                           _cargarRecetasPredeterminadas();
                           Navigator.pop(context);
-                          },
+                        },
                         child: const Text("Cargar recetas predeterminadas"),
                       ),
                     ),
 
                     const SizedBox(height: 24),
-                    
+
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppStrings.colorFondo,
@@ -481,7 +490,9 @@ class _MainPageState extends State<MainPage> {
                 child: loading
                     ? const Center(child: CircularProgressIndicator())
                     : recipes.isEmpty
-                    ? Center(child: Text(AppLocalizations.of(context)!.noHayRecetas))
+                    ? Center(
+                        child: Text(AppLocalizations.of(context)!.noHayRecetas),
+                      )
                     : GridView.builder(
                         padding: const EdgeInsets.only(bottom: 10),
                         gridDelegate:
@@ -541,7 +552,9 @@ class _MainPageState extends State<MainPage> {
                   ); // Advertencia
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
+                      content: Text(
+                        AppLocalizations.of(context)!.debesIniciarSesion,
+                      ),
                     ),
                   );
                   return;
@@ -565,13 +578,13 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _cargarRecetasPredeterminadas() async {
-  logger.i('Restaurando recetas predeterminadas');
+    logger.i('Restaurando recetas predeterminadas');
 
-  setState(() {
-    loading = true;
-  });
+    setState(() {
+      loading = true;
+    });
 
-  await fetchRecipes();
+    await fetchRecipes();
   }
 
   Widget _topProfileAvatar({
@@ -681,7 +694,9 @@ class RecipeButton extends StatelessWidget {
         } catch (e) {
           logger.e("🔥 ERROR al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.errorCargarReceta)),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.errorCargarReceta),
+            ),
           );
         }
       },

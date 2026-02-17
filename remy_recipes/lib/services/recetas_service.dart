@@ -14,7 +14,7 @@ import 'package:logger/logger.dart';
 /// Obtiene TODAS las recetas (normalmente públicas, según backend)
 Future<List<Receta>> obtenerTodasLasRecetas() async {
   final url = Uri.parse('${ApiEndpoints.recetas}/recetas');
-  logger.i('iniciando obtención de todas las recetas'); 
+  logger.i('iniciando obtención de todas las recetas');
   try {
     final response = await http.get(url);
 
@@ -40,8 +40,10 @@ Future<List<Receta>> obtenerTodasLasRecetas() async {
 Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
   final url = Uri.parse(ApiEndpoints.recetas);
 
-logger.i('Iniciando creación de receta en servidor');
-logger.d('Token:$token, URL: $url, Body: ${json.encode(nuevaReceta.toJson())}');
+  logger.i('Iniciando creación de receta en servidor');
+  logger.d(
+    'Token:$token, URL: $url, Body: ${json.encode(nuevaReceta.toJson())}',
+  );
 
   try {
     final response = await http.post(
@@ -82,10 +84,14 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
     },
   );
 
-  logger.d('⬅️ Respuesta recibida - Status: ${response.statusCode}, ⬅️Body: ${response.body}');
+  logger.d(
+    '⬅️ Respuesta recibida - Status: ${response.statusCode}, ⬅️Body: ${response.body}',
+  );
 
   if (response.statusCode != 200) {
-    logger.e('Error al obtener recetas de usuario: Status ${response.statusCode}');
+    logger.e(
+      'Error al obtener recetas de usuario: Status ${response.statusCode}',
+    );
     return [];
   }
 
@@ -127,7 +133,9 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
       data,
     ); // ← Usa el constructor completo (ingredientes + pasos)
   } else {
-    logger.e('Error al obtener receta por ID: Status ${response.statusCode}, Body: ${response.body}');
+    logger.e(
+      'Error al obtener receta por ID: Status ${response.statusCode}, Body: ${response.body}',
+    );
     throw Exception('Error al obtener receta por ID: ${response.statusCode}');
   }
 }
@@ -146,7 +154,7 @@ Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
     logger.i('Receta pública obtenida exitosamente');
     return Receta.fromJson(data);
   } else {
-     logger.e('Error al obtener receta pública: Status ${response.statusCode}');
+    logger.e('Error al obtener receta pública: Status ${response.statusCode}');
     throw Exception('Error al obtener receta pública: ${response.statusCode}');
   }
 }
@@ -155,14 +163,14 @@ Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
 /// Ruta: GET /recetas/publicas
 Future<List<Receta>> obtenerRecetasPublicas() async {
   final url = Uri.parse('${ApiEndpoints.recetas}/publicas');
-   logger.i('Iniciando obtención de recetas públicas');
+  logger.i('Iniciando obtención de recetas públicas');
 
   try {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
-       logger.i('Recetas públicas obtenidas: ${data.length}');
+      logger.i('Recetas públicas obtenidas: ${data.length}');
       return data.map((e) => Receta.fromHomeJson(e)).toList();
     } else {
       logger.e('Error al obtener recetas públicas: ${response.statusCode}');
@@ -178,20 +186,19 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
 /// Ruta: DELETE /recetas/:id
 /// Requiere token y ser propietario (backend lo valida)
 Future<bool> eliminarReceta(int id, String token) async {
-   logger.i('Iniciando eliminación de receta ID: $id'); 
+  logger.i('Iniciando eliminación de receta ID: $id');
   final response = await http.delete(
     Uri.parse('${ApiEndpoints.recetas}/$id'), // ← Faltaba /recetas/
-    headers: {
-      'Authorization': 'Bearer $token'
-      
-    },
+    headers: {'Authorization': 'Bearer $token'},
   );
 
- if (response.statusCode == 200 || response.statusCode == 204) {
-    logger.i('Receta eliminada exitosamente');  // Log de éxito
+  if (response.statusCode == 200 || response.statusCode == 204) {
+    logger.i('Receta eliminada exitosamente'); // Log de éxito
     return true;
   } else {
-    logger.e('Error al eliminar receta: Status ${response.statusCode}');  // Log de error
+    logger.e(
+      'Error al eliminar receta: Status ${response.statusCode}',
+    ); // Log de error
     return false;
   }
 }
@@ -200,8 +207,8 @@ Future<bool> eliminarReceta(int id, String token) async {
 /// Ruta: PUT /recetas/:id
 /// Requiere token y ser propietario
 Future<bool> editarReceta(Receta receta, String token) async {
-  logger.i('Iniciando edición de receta ID: ${receta.id}');  // Log de inicio
-  logger.d('Token: $token, Body: ${jsonEncode(receta.toJson())}');  // Debug
+  logger.i('Iniciando edición de receta ID: ${receta.id}'); // Log de inicio
+  logger.d('Token: $token, Body: ${jsonEncode(receta.toJson())}'); // Debug
   final response = await http.put(
     Uri.parse('${ApiEndpoints.recetas}/${receta.id}'),
     headers: {
@@ -211,11 +218,13 @@ Future<bool> editarReceta(Receta receta, String token) async {
     body: jsonEncode(receta.toJson()),
   );
 
-   if (response.statusCode == 200) {
-    logger.i('Receta editada exitosamente');  // Log de éxito
+  if (response.statusCode == 200) {
+    logger.i('Receta editada exitosamente'); // Log de éxito
     return true;
   } else {
-    logger.e('Error al editar receta: Status ${response.statusCode}');  // Log de error
+    logger.e(
+      'Error al editar receta: Status ${response.statusCode}',
+    ); // Log de error
     return false;
   }
 }
@@ -239,8 +248,8 @@ Future<List<Receta>> recetaFiltrada({
     if (alergenos != null) 'alergenos': alergenos,
   };
 
-  logger.i('Iniciando filtro de recetas');  // Log de inicio
-  logger.d('Filtros enviados: $filtros, Token: $token');  // Debug
+  logger.i('Iniciando filtro de recetas'); // Log de inicio
+  logger.d('Filtros enviados: $filtros, Token: $token'); // Debug
 
   try {
     final headers = {'Content-Type': 'application/json'};
@@ -256,10 +265,12 @@ Future<List<Receta>> recetaFiltrada({
 
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
-      logger.i('Filtro aplicado exitosamente: ${data.length} resultados'); 
+      logger.i('Filtro aplicado exitosamente: ${data.length} resultados');
       return data.map((e) => Receta.fromHomeJson(e)).toList();
     } else {
-      logger.e('Error en filtro: Status ${response.statusCode}, Body: ${response.body}');
+      logger.e(
+        'Error en filtro: Status ${response.statusCode}, Body: ${response.body}',
+      );
       return [];
     }
   } catch (e) {

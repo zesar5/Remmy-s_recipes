@@ -23,7 +23,7 @@ void main() {
         userName: 'Ana',
         email: 'ana@gmail.com',
         contrasena: '123456',
-        contrasena2: '123456'
+        contrasena2: '123456',
       );
 
       final json = usuario.toJsonRegistro();

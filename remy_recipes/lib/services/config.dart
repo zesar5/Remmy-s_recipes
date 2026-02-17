@@ -12,8 +12,7 @@ class ApiEndpoints {
   static String get register => '$baseUrl/usuarios/registro';
   static String get recetas => '$baseUrl/recetas';
   static String get perfil => '$baseUrl/usuarios/perfil';
-  static String get homeRecetas =>
-      '$baseUrl/recetas/?rangoInicio=1&rangoFin=4';
+  static String get homeRecetas => '$baseUrl/recetas/?rangoInicio=1&rangoFin=4';
   static String get obtenerRecetaUsuario => '$baseUrl/recetas/usuario';
 
   //Endpoints para olvidé mi contraseña
@@ -21,5 +20,4 @@ class ApiEndpoints {
   static String get forgotPassword => '$baseUrl/usuarios/forgot-password';
   static String get verifyResetCode => '$baseUrl/usuarios/verify-reset-code';
   static String get resetPassword => '$baseUrl/usuarios/reset-password';
-
 }

@@ -11,8 +11,6 @@ import 'dart:convert';
 import '../services/auth_service.dart';
 import '../l10n/app_localizations.dart';
 
-
-
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
 // ==========================================================================
@@ -55,24 +53,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   List<String> paises = AppStrings.countries;
 
-  List<int> anios = [ for (int i = DateTime.now().year; i >= 1900; i--) i ];
+  List<int> anios = [for (int i = DateTime.now().year; i >= 1900; i--) i];
 
   // ==============================================
   //           SELECCIÓN DE FOTO DE PERFIL
   // ==============================================
 
   Future<void> seleccionarImagen() async {
-    logger.i('Iniciando selección de imagen de perfil');  // Log de acción
+    logger.i('Iniciando selección de imagen de perfil'); // Log de acción
     try {
       final picked = await picker.pickImage(source: ImageSource.gallery);
       if (picked != null) {
         setState(() => imagenPerfil = File(picked.path));
-        logger.i('Imagen de perfil seleccionada: ${picked.path}');  // Log de éxito
+        logger.i(
+          'Imagen de perfil seleccionada: ${picked.path}',
+        ); // Log de éxito
       } else {
-        logger.w('Selección de imagen de perfil cancelada');  // Advertencia
+        logger.w('Selección de imagen de perfil cancelada'); // Advertencia
       }
     } catch (e) {
-      logger.e('Error al seleccionar imagen de perfil: $e');  // Log de error
+      logger.e('Error al seleccionar imagen de perfil: $e'); // Log de error
     }
   }
 
@@ -81,7 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ==============================================
 
   void registrar() async {
-    logger.i('Iniciando proceso de registro');  // Log de inicio
+    logger.i('Iniciando proceso de registro'); // Log de inicio
     // 1. Marcar visualmente campos vacíos
     setState(() {
       errorName = name.text.isEmpty;
@@ -111,7 +111,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorConfirmar ||
         errorPais ||
         errorAnio) {
-          logger.w('Validación fallida: Campos requeridos incompletos');  // Advertencia
+      logger.w(
+        'Validación fallida: Campos requeridos incompletos',
+      ); // Advertencia
       mostrarMensaje("Por favor, completa todos los campos requeridos.");
       return;
     }
@@ -132,7 +134,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorContrasenya = true;
         errorConfirmar = true;
       });
-      logger.w('Validación fallida: Contraseña no cumple requisitos de fortaleza');  // Advertencia
+      logger.w(
+        'Validación fallida: Contraseña no cumple requisitos de fortaleza',
+      ); // Advertencia
       mostrarMensaje(
         "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
       );
@@ -144,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (imagenPerfil != null) {
       final bytes = await imagenPerfil!.readAsBytes();
       base64Image = "data:image/png;base64,${base64Encode(bytes)}";
-      logger.d('Imagen de perfil preparada en base64');  // Debug
+      logger.d('Imagen de perfil preparada en base64'); // Debug
     }
 
     // 5. Llamada real al servicio de autenticación
@@ -162,7 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       // Éxito → mensaje y redirigir a login
-      logger.i('Registro exitoso - Navegando a login');  // Log de éxito
+      logger.i('Registro exitoso - Navegando a login'); // Log de éxito
       mostrarMensaje(
         "Usuario registrado exitosamente.",
         onClose: () {
@@ -176,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       // Error del backend (ej: usuario ya existe, email duplicado)
-      logger.e('Error en registro: $e');  // Log de error
+      logger.e('Error en registro: $e'); // Log de error
       mostrarMensaje(e.toString().replaceAll("Exception:", ""));
     }
   }
@@ -186,7 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ==============================================
 
   void mostrarMensaje(String mensaje, {VoidCallback? onClose}) {
-    logger.d('Mostrando mensaje: $mensaje');  // Debug
+    logger.d('Mostrando mensaje: $mensaje'); // Debug
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -264,7 +268,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 25),
 
               // Campos de texto y dropdowns
-              campoTexto(AppLocalizations.of(context)!.usuario, controller: name, error: errorName),
+              campoTexto(
+                AppLocalizations.of(context)!.usuario,
+                controller: name,
+                error: errorName,
+              ),
 
               const SizedBox(height: 10),
 
@@ -432,7 +440,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    logger.i('Destruyendo pantalla de registro');  // Log de limpieza
+    logger.i('Destruyendo pantalla de registro'); // Log de limpieza
     name.dispose();
     correo.dispose();
     contrasenya.dispose();

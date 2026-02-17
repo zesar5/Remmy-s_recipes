@@ -77,7 +77,10 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                 'Confirmando eliminación de receta ID: ${widget.receta.id}',
               );
               try {
-                final success =await eliminarReceta(int.parse(widget.receta.id!), widget.authService.accessToken!);
+                final success = await eliminarReceta(
+                  int.parse(widget.receta.id!),
+                  widget.authService.accessToken!,
+                );
                 // Llamada al servicio para eliminar (debe estar en recetas_service)
                 if (success) {
                   logger.i('Receta eliminada exitosamente');
@@ -85,7 +88,11 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                   Navigator.pop(context, true); // Vuelve atrás y refresca
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Error al eliminar receta. Verifica permisos.')),
+                    const SnackBar(
+                      content: Text(
+                        'Error al eliminar receta. Verifica permisos.',
+                      ),
+                    ),
                   );
                 }
               } catch (e) {
@@ -189,41 +196,41 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
 
           const SizedBox(height: 16),
 
-            // Sección INGREDIENTES
-            Card(
-              shape: RoundedRectangleBorder(
+          // Sección INGREDIENTES
+          Card(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.ingredientes,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange,
-                      ),
+            ),
+            elevation: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.ingredientes,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepOrange,
                     ),
-                    const SizedBox(height: 8),
-                    ...widget.receta.ingredientes!.map(
-                      (i) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text("• ${i.cantidad} ${i.nombre}"),
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...widget.receta.ingredientes!.map(
+                    (i) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text("• ${i.cantidad} ${i.nombre}"),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
 
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-            // Sección PASOS
-            Card(
+          // Sección PASOS
+          Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -243,14 +250,14 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                   ),
                   const SizedBox(height: 8),
                   ...widget.receta.pasos!.asMap().entries.map(
-                        (entry) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Text(
-                            "${entry.key + 1}. ${entry.value.descripcion}",
-                          ),
-                        ),
+                    (entry) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Text(
+                        "${entry.key + 1}. ${entry.value.descripcion}",
                       ),
-                  ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -258,7 +265,6 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
           const SizedBox(height: 16),
 
           //Seccion Información Adicional
-
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -291,21 +297,32 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                   ),
                   const SizedBox(height: 8),
                   // Alérgenos (mostrados como lista con viñetas)
-                  if (widget.receta.alergenos != null && widget.receta.alergenos!.isNotEmpty)
+                  if (widget.receta.alergenos != null &&
+                      widget.receta.alergenos!.isNotEmpty)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           'Alérgenos:',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 4),
-                        ...widget.receta.alergenos!.split(',').map(
-                          (alergeno) => Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text("• ${alergeno.trim()}", style: const TextStyle(fontSize: 16)),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        ...widget.receta.alergenos!
+                            .split(',')
+                            .map(
+                              (alergeno) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                ),
+                                child: Text(
+                                  "• ${alergeno.trim()}",
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ),
                       ],
                     )
                   else
