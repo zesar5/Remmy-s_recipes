@@ -425,23 +425,24 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
+
                 child:
-                    imagePath ==
+                    imagePath !=
                         null //&& widget.recetaEditar?.imagenBase64 == null
-                    ? const Center(
-                        child: Text('+', style: TextStyle(fontSize: 40)),
-                      )
-                    : kIsWeb
-                    ? Image.network(
-                        fit: BoxFit.fill,
-                        imagePath!,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                              child: Text("Error al cargar imagen web"),
-                            ),
-                      )
-                    // Importante: La clase File ya está importada en el inicio del archivo
-                    : Image.file(File(imagePath!), fit: BoxFit.cover),
+                    ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                    : (widget.recetaEditar?.imagenBase64 != null &&
+                              widget.recetaEditar!.imagenBase64!.isNotEmpty
+                          ? Image.memory(
+                              base64Decode(
+                                widget.recetaEditar!.imagenBase64!
+                                    .split(',')
+                                    .last,
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                          : const Center(
+                              child: Text('+', style: TextStyle(fontSize: 40)),
+                            )),
               ),
             ),
 
