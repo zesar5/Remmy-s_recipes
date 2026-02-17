@@ -300,7 +300,7 @@ exports.forgotPassword = async (req, res) => {
 
     // Inserta o actualiza en tabla 'usuario_recuperacion' (solo Id_usuario, reset_code, reset_expires)
     await require("../config/db").query(
-      'INSERT INTO usuario_recuperacion (Id_usuario, reset_code, reset_expires) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE reset_code = VALUES(reset_code), reset_expires = VALUES(reset_expires)',
+      'INSERT INTO usuario_recuperacion (Id_usuario, codigo_recuperacion, fecha_expiracion) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE codigo_recuperacion = VALUES(codigo_recuperacion), fecha_expiracion = VALUES(fecha_expiracion)',
       [userId, resetCode, expires]
     );
 
@@ -308,12 +308,16 @@ exports.forgotPassword = async (req, res) => {
     const nodemailer = require('nodemailer');
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-  tls: { ciphers: 'SSLv3' },
-  family: 4 // Fuerza IPv4 (agrega esta línea)
-});
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: userEmail, // Usa el email de la tabla usuario
@@ -333,7 +337,7 @@ exports.forgotPassword = async (req, res) => {
 exports.verifyResetCode = async (req, res) => {
   const { code } = req.body;
   try {
-    const [rows] = await require("../config/db").query('SELECT Id_usuario FROM usuario_recuperacion WHERE reset_code = ? AND reset_expires > NOW()', [code]);
+    const [rows] = await require("../config/db").query('SELECT Id_usuario FROM usuario_recuperacion WHERE codigo_recuperacion = ? AND fecha_expiracion > NOW()', [code]);
     if (rows.length === 0) {
       return res.status(400).json({ mensaje: 'Código inválido o expirado' });
     }
@@ -365,7 +369,7 @@ exports.resetPassword = async (req, res) => {
     await require("../config/db").query('UPDATE usuario SET contrasena = ? WHERE Id_usuario = ?', [hashedPassword, decoded.userId]);
 
     // Limpia código en tabla 'usuario_recuperacion'
-    await require("../config/db").query('UPDATE usuario_recuperacion SET reset_code = NULL, reset_expires = NULL WHERE Id_usuario = ?', [decoded.userId]);
+    await require("../config/db").query('UPDATE usuario_recuperacion SET codigo_recuperacion = NULL, fecha_expiracion = NULL WHERE Id_usuario = ?', [decoded.userId]);
 
     logger.info(`Contraseña reseteada para usuario ${decoded.userId}`);
     res.status(200).json({ mensaje: 'Contraseña cambiada exitosamente' });
