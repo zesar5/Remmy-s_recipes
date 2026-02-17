@@ -14,6 +14,7 @@ import '../services/config.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
 import '../l10n/app_localizations.dart';
+import 'login_screen.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -42,6 +43,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  // Clave global para controlar el Scaffold (necesaria para abrir el drawer)
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   // Lista de recetas mostradas en el grid (versión ligera para home)
   List<Receta> recipes = [];
 
@@ -59,52 +63,6 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     logger.i('HomeScreen inicializada - Cargando recetas');
     fetchRecipes(); // Carga las recetas al iniciar la pantalla
-  }
-
-  // =======================
-  // MENÚ PRINCIPAL (☰)
-  // =======================
-  void _openMenuSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Botón Comunidad
-              ListTile(
-                leading: const Icon(Icons.people),
-                title: const Text("Comunidad"),
-                onTap: () {
-                  Navigator.pop(context);
-                  logger.i("Ir a Comunidad");
-                  // TODO: Navegar a pantalla comunidad
-                },
-              ),
-
-              const Divider(),
-
-              // Botón Idioma
-              ListTile(
-                leading: const Icon(Icons.language),
-                title: const Text("Idioma"),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showLanguageDialog(context);
-                  logger.i("Cambiar idioma");
-                  // TODO: Abrir selector de idioma
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   // =======================
@@ -398,8 +356,47 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey, // Clave para controlar el drawer
       // Color de fondo cálido (típico tema cocina/recetas)
       backgroundColor: const Color(0xFFDEB887),
+
+      // Drawer lateral (menú que se abre desde el lado izquierdo)
+      drawer: Drawer(
+        backgroundColor: Colors.white, // Color de fondo similar al de la app
+        child: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Botón Comunidad
+                ListTile(
+                  leading: const Icon(Icons.people),
+                  title: const Text("Comunidad"),
+                  onTap: () {
+                    Navigator.pop(context); // Cierra el drawer
+                    logger.i("Ir a Comunidad");
+                    // TODO: Navegar a pantalla comunidad
+                  },
+                ),
+
+                const Divider(),
+
+                // Botón Idioma
+                ListTile(
+                  leading: const Icon(Icons.language),
+                  title: const Text("Idioma"),
+                  onTap: () {
+                    Navigator.pop(context); // Cierra el drawer
+                    _showLanguageDialog(context);
+                    logger.i("Cambiar idioma");
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
 
       // Botón flotante para crear nueva receta
       floatingActionButton: FloatingActionButton(
@@ -413,13 +410,25 @@ class _MainPageState extends State<MainPage> {
             'Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}',
           ); // Debug
 
+          // Verificar si el usuario está logueado
+          if (widget.authService.currentUser == null) {
+            logger.w('Intento de crear receta sin usuario logueado');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.debesIniciarSesion,
+                ),
+              ),
+            );
+            return;
+          }
+
           // Navega a formulario de creación de receta
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => RecipeFormPage(
-                token:
-                    widget.authService.accessToken!, // ← Asume que no es null
+                token: widget.authService.accessToken!,
               ),
             ),
           );
@@ -520,7 +529,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  /// Barra superior con iconos: menú, búsqueda y perfil
+  /// Barra superior con iconos: menú + búsqueda + perfil
   Row _buildTopBar(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -528,7 +537,7 @@ class _MainPageState extends State<MainPage> {
         _topIcon(
           Icons.menu,
           onTap: () {
-            _openMenuSheet(context);
+            _scaffoldKey.currentState?.openDrawer(); // Abre el drawer lateral
           },
         ),
         Row(
@@ -550,15 +559,66 @@ class _MainPageState extends State<MainPage> {
                   logger.w(
                     'Intento de acceder a perfil sin usuario logueado',
                   ); // Advertencia
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        AppLocalizations.of(context)!.debesIniciarSesion,
-                      ),
+                 showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFFDEB887),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Necesitas iniciar sesión",  // Título corregido
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+
+              // Botón para ir a la página de iniciar sesión
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppStrings.colorFondo,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                ),
+                onPressed: () {
+                  Navigator.pop(context); // Cierra el diálogo
+                  // Navega a la pantalla de login (reemplaza 'LoginScreen' con el nombre real de tu pantalla de login si es diferente)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>  LoginScreen(authService: widget.authService),
                     ),
                   );
-                  return;
-                }
+                  logger.i("Navegando a pantalla de login");
+                },
+                child: const Text("Ir a la página de iniciar sesión"),  // Texto corregido
+              ),
+
+              const SizedBox(height: 10),
+
+              // Botón para permanecer de invitado
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppStrings.colorFondo,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 45),
+                ),
+                onPressed: () {
+                  Navigator.pop(context); // Cierra el diálogo y permanece en la pantalla
+                  logger.i("Permaneciendo como invitado");
+                },
+                child: const Text("Permanecer de invitado"),  // Texto corregido
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    return;
+  }
 
                 logger.i('Navegando a pantalla de perfil');
 
