@@ -93,10 +93,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       // Mensaje específico para correo
       if (correo.text.isEmpty) {
-        errorCorreoMensaje = "Campo requerido";
+        errorCorreoMensaje = AppLocalizations.of(context)!.campoRequerido;
         errorCorreo = true;
       } else if (!validarCorreo(correo.text)) {
-        errorCorreoMensaje = "Formato inválido";
+        errorCorreoMensaje = AppLocalizations.of(context)!.formatoInvalido;
         errorCorreo = true;
       } else {
         errorCorreoMensaje = null;
@@ -114,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       logger.w(
         'Validación fallida: Campos requeridos incompletos',
       ); // Advertencia
-      mostrarMensaje("Por favor, completa todos los campos requeridos.");
+      mostrarMensaje(AppLocalizations.of(context)!.completaTodosLosCampos);
       return;
     }
 
@@ -125,7 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorConfirmar = true;
       });
       logger.w('Validación fallida: Contraseñas no coinciden');
-      mostrarMensaje("Las contraseñas no coinciden.");
+      mostrarMensaje(AppLocalizations.of(context)!.contrasenyaNoCoinciden);
       return;
     }
 
@@ -138,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'Validación fallida: Contraseña no cumple requisitos de fortaleza',
       ); // Advertencia
       mostrarMensaje(
-        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+        AppLocalizations.of(context)!.requisitosContrasenya,
       );
       return;
     }
@@ -168,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Éxito → mensaje y redirigir a login
       logger.i('Registro exitoso - Navegando a login'); // Log de éxito
       mostrarMensaje(
-        "Usuario registrado exitosamente.",
+        AppLocalizations.of(context)!.registrarUsuarioExitoso,
         onClose: () {
           Navigator.pushReplacement(
             context,
@@ -194,11 +194,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Información"),
+        title: Text(AppLocalizations.of(context)!.informacion),
         content: Text(mensaje),
         actions: [
           TextButton(
-            child: const Text("OK"),
+            child: Text(AppLocalizations.of(context)!.ok),
             onPressed: () {
               Navigator.pop(context);
               if (onClose != null) onClose();
@@ -371,7 +371,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               borderSide: BorderSide(color: Colors.red, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
+            errorText: error ? (errorTextMessage ?? AppLocalizations.of(context)!.campoRequerido) : null,
           ),
         ),
       ],
@@ -382,11 +382,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("País"),
+        Text(AppLocalizations.of(context)!.pais),
         const SizedBox(height: 5),
         DropdownButtonFormField<String>(
           value: paisSeleccionado,
-          hint: const Text("Selecciona un país"),
+          hint: Text(AppLocalizations.of(context)!.seleccionarPais),
           isExpanded: true,
           items: paises
               .map((p) => DropdownMenuItem(value: p, child: Text(p)))
@@ -401,7 +401,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            errorText: errorPais ? "Campo requerido" : null,
+            errorText: errorPais ? AppLocalizations.of(context)!.campoRequerido : null,
           ),
         ),
       ],
@@ -416,7 +416,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 5),
         DropdownButtonFormField<int>(
           value: anioSeleccionado,
-          hint: const Text("Selecciona un año"),
+          hint: Text(AppLocalizations.of(context)!.seleccionarAnio),
           isExpanded: true,
           items: anios
               .map((a) => DropdownMenuItem(value: a, child: Text("$a")))
@@ -431,7 +431,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            errorText: errorAnio ? "Campo requerido" : null,
+            errorText: errorAnio ? AppLocalizations.of(context)!.campoRequerido : null,
           ),
         ),
       ],

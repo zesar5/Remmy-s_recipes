@@ -274,7 +274,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pushNamed('/home'),
-              child: Text('OK'),
+              child: Text(AppLocalizations.of(context)!.ok),
             ),
           ],
         ),

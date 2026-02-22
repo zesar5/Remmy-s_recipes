@@ -41,7 +41,7 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
 
     if (code.length != 6 || !RegExp(r'^\d{6}$').hasMatch(code)) {
       setState(() => _errorCode = true);
-      mostrarMensaje("Introduce un código de 6 dígitos válido.");
+      mostrarMensaje(AppLocalizations.of(context)!.introduceCodigoValido);
       return;
     }
 
@@ -69,11 +69,11 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Información"),
+        title: Text(AppLocalizations.of(context)!.informacion),
         content: Text(mensaje),
         actions: [
           TextButton(
-            child: const Text("OK"),
+            child: Text(AppLocalizations.of(context)!.ok),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -91,12 +91,12 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
           child: Column(
             children: [
               Text(
-                'Introduce el Código',
+                AppLocalizations.of(context)!.introduceCodigo,
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
               const SizedBox(height: 20),
               Text(
-                'Hemos enviado un código a ${widget.email}. Introduce los 6 dígitos:',
+                '${AppLocalizations.of(context)!.hemosEnviadoCodigo} ${widget.email}. ${AppLocalizations.of(context)!.introduceLosSeisDigitos}',
               ),
               const SizedBox(height: 20),
               Row(
@@ -142,12 +142,12 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
                 onPressed: _isLoading ? null : _verifyCode,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Verificar Código'),
+                    : Text(AppLocalizations.of(context)!.verificarCodigo),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Volver',
+                child: Text(
+                  AppLocalizations.of(context)!.volver,
                   style: TextStyle(color: Colors.blue),
                 ),
               ),

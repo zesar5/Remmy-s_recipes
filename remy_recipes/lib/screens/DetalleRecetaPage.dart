@@ -35,7 +35,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   void _toggleLike() {
     if (widget.authService.currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes iniciar sesión para dar like')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.debesIniciarSesionParaLike)),
       );
       return;
     }
@@ -44,8 +44,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
     });
     logger.i(
       _liked
-          ? 'Like añadido a receta ${widget.receta.id}'
-          : 'Like quitado de receta ${widget.receta.id}',
+          ? '${AppLocalizations.of(context)!.likeAnyadido} ${widget.receta.id}'
+          : '${AppLocalizations.of(context)!.likeQuitado} ${widget.receta.id}',
     );
     //AQUI IRA LO DE BACKEND
   }
@@ -88,9 +88,9 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                   Navigator.pop(context, true); // Vuelve atrás y refresca
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text(
-                        'Error al eliminar receta. Verifica permisos.',
+                        AppLocalizations.of(context)!.errorEliminarPorPermisos,
                       ),
                     ),
                   );
@@ -98,7 +98,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
               } catch (e) {
                 logger.e('Error al eliminar receta: $e'); // Log de error
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Error al eliminar receta')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.errorEliminarReceta)),
                 );
               }
             },
@@ -275,8 +275,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Información',
+                  Text(
+                    AppLocalizations.of(context)!.informacion,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -286,13 +286,13 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                   const SizedBox(height: 8),
                   // Duración
                   Text(
-                    'Duración: ${widget.receta.duracion != null ? '${widget.receta.duracion} minutos' : 'No especificada'}',
+                    '${AppLocalizations.of(context)!.duracionInformacion} ${widget.receta.duracion != null ? '${widget.receta.duracion} minutos' : 'No especificada'}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   // País
                   Text(
-                    'País: ${widget.receta.pais ?? 'No especificado'}',
+                    '${AppLocalizations.of(context)!.paisInformacion} ${widget.receta.pais ?? 'No especificado'}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 8),
@@ -302,8 +302,8 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Alérgenos:',
+                        Text(
+                          AppLocalizations.of(context)!.alergenosInformacion,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -326,14 +326,14 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
                       ],
                     )
                   else
-                    const Text(
-                      'Alérgenos: Ninguno especificado',
+                    Text(
+                      AppLocalizations.of(context)!.alergenosSinEspecificar,
                       style: TextStyle(fontSize: 16),
                     ),
                   const SizedBox(height: 8),
                   // Estación
                   Text(
-                    'Estación: ${widget.receta.estacion ?? 'No especificada'}',
+                    '${AppLocalizations.of(context)!.estacionInformacion} ${widget.receta.estacion ?? 'No especificada'}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -344,7 +344,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 12, bottom: 16),
             child: Text(
-              'Creado por: ${widget.receta.creadorNombre ?? "Desconocido"}',
+              '${AppLocalizations.of(context)!.creadoPor} ${widget.receta.creadorNombre ?? "Desconocido"}',
               textAlign: TextAlign.right,
               style: const TextStyle(
                 fontSize: 14,

@@ -111,13 +111,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
               }
             },
             itemBuilder: (BuildContext context) => [
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'editar',
-                child: Text('Editar perfil'),
+                child: Text(AppLocalizations.of(context)!.editarPerfil),
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'cerrar',
-                child: Text('Cerrar sesión'),
+                child: Text(AppLocalizations.of(context)!.cerrarSesion),
               ),
             ],
             icon: const Icon(Icons.more_vert, color: Colors.black),

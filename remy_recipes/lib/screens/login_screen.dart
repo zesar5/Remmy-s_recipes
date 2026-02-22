@@ -302,8 +302,8 @@ class _LoginScreenState extends State<LoginScreen> {
             Wrap(
               alignment: WrapAlignment.center,
               children: [
-                const Text(
-                  'Al continuar aceptas los ',
+                Text(
+                  AppLocalizations.of(context)!.aceptasCondiciones,
                   style: TextStyle(color: Colors.black),
                 ),
                 GestureDetector(
@@ -313,8 +313,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (_) => const TermsScreen()),
                     );
                   },
-                  child: const Text(
-                    'Terminos de Servicio',
+                  child: Text(
+                    AppLocalizations.of(context)!.terminosServicios,
                     style: TextStyle(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,
@@ -329,8 +329,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (_) => const TermsScreen()),
                     );
                   },
-                  child: const Text(
-                    'Politica de privacidad',
+                  child: Text(
+                    AppLocalizations.of(context)!.politicaPrivacidadDos,
                     style: TextStyle(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,

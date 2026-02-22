@@ -76,7 +76,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aceptarTerminos => 'By clicking, you accept our Terms of';
 
   @override
-  String get politicaPrivacidad => 'service and Privacy Policy';
+  String get politicaPrivacidadLogin => 'service and Privacy Policy';
 
   @override
   String get ok => 'OK';
@@ -246,6 +246,193 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agregarPasoBtn => 'Add step';
+
+  @override
+  String get alergenosInformacion => 'Allergens: ';
+
+  @override
+  String get paisInformacion => 'Country: ';
+
+  @override
+  String get duracionInformacion => 'Duration: ';
+
+  @override
+  String get alergenosSinEspecificar => 'Allergens: None specified';
+
+  @override
+  String get estacionInformacion => 'Season: ';
+
+  @override
+  String get creadoPor => 'Created by: ';
+
+  @override
+  String get debesIniciarSesionParaLike =>
+      'You must log in to like this recipe';
+
+  @override
+  String get likeAnyadido => 'Like added to recipe';
+
+  @override
+  String get likeQuitado => 'Like removed from recipe';
+
+  @override
+  String get errorEliminarReceta => 'Error deleting recipe';
+
+  @override
+  String get errorEliminarPorPermisos =>
+      'Error deleting recipe. Check permissions';
+
+  @override
+  String get necesitamosPermisos => 'We need permission to access your photos';
+
+  @override
+  String get permisosFotosBloqueado =>
+      'Photo permission is blocked, enable it in settings';
+
+  @override
+  String get ajustes => 'Settings';
+
+  @override
+  String get nombreUsuario => 'Username';
+
+  @override
+  String get descripcionSinPuntos => 'Description';
+
+  @override
+  String get introduceCodigoValido => 'Enter a valid 6-digit code';
+
+  @override
+  String get introduceCodigo => 'Enter the code';
+
+  @override
+  String get hemosEnviadoCodigo => 'We have sent a code to ';
+
+  @override
+  String get introduceLosSeisDigitos => 'Enter the 6 digits:';
+
+  @override
+  String get verificarCodigo => 'Verify code';
+
+  @override
+  String get volver => 'Back';
+
+  @override
+  String get enviarCodigo => 'Send code';
+
+  @override
+  String get campoRequerido => 'Required field';
+
+  @override
+  String get formatoInvalido => 'Invalid format';
+
+  @override
+  String get contrasenyaCambiada => 'Password changed successfully';
+
+  @override
+  String get nuevaContrasenya => 'New password';
+
+  @override
+  String get cambiarContrasenya => 'Change password';
+
+  @override
+  String get requisitosContrasenya =>
+      'The password must be at least 8 characters long, include one uppercase letter, one lowercase letter, a number, and a symbol.';
+
+  @override
+  String get debil => 'Weak';
+
+  @override
+  String get contrasenyaNoCoinciden => 'Passwords do not match';
+
+  @override
+  String get noCoinciden => 'Do not match';
+
+  @override
+  String get completaTodosLosCampos => 'Fill in all fields';
+
+  @override
+  String get camposRequeridos => 'Required fields';
+
+  @override
+  String get aQueIdioma =>
+      'Which language do you want to translate the app to?';
+
+  @override
+  String get idiomaEspanyol => 'Spanish';
+
+  @override
+  String get idiomaIngles => 'English';
+
+  @override
+  String get buscarReceta => 'Search recipe or recipe by ingredient...';
+
+  @override
+  String get cargarRecetasPredeterminadas => 'Load default recipes';
+
+  @override
+  String get aplicarFiltros => 'Apply filters';
+
+  @override
+  String get comunidad => 'Community';
+
+  @override
+  String get idioma => 'Language';
+
+  @override
+  String get necesitasIniciarSesion => 'You need to sign in';
+
+  @override
+  String get irPaginaIniciarSesion => 'Go to login page';
+
+  @override
+  String get permanecerInvitado => 'Stay as guest';
+
+  @override
+  String get aceptasCondiciones => 'By continuing you accept the ';
+
+  @override
+  String get terminosServicios => 'Terms of service';
+
+  @override
+  String get politicaPrivacidadDos => 'Privacy policy';
+
+  @override
+  String get cerrarSesion => 'Log out';
+
+  @override
+  String get guardados => 'Saved';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get terminosPolitica => 'Terms and Policy';
+
+  @override
+  String get parrafoUnoTerminosServicios =>
+      'By using this application, you agree to comply with these terms. If you do not agree with any of them, please do not use the app.';
+
+  @override
+  String get parrafoDosTerminosServicios =>
+      'We reserve the right to modify or update these terms at any time.';
+
+  @override
+  String get politicaPrivacidad => 'Privacy Policy';
+
+  @override
+  String get parrafoUnoPoliticaPrivacidad =>
+      'Your privacy is important to us.\nThe personal information we collect is used solely to improve the user experience.';
+
+  @override
+  String get parrafoDosPoliticaPrivacidad =>
+      'We do not share your personal data with third parties without your consent.';
+
+  @override
+  String get contacto => 'Contact';
+
+  @override
+  String get parrafoUnoContacto =>
+      'If you have any questions about these terms or the use of the application, you can contact us through the official channels.';
 
   @override
   String get exitoBtnOk => 'OK';

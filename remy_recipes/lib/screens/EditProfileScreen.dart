@@ -45,8 +45,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (status.isDenied) {
       logger.w('permiso de fotos denegado');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Necesitamos permiso para acceder a tus fotos'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.necesitamosPermisos),
         ),
       );
       return false;
@@ -55,10 +55,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       logger.e("permiso denegado permanentemente");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'permiso de fotos bloqueado, activalo en ajustes.',
+          content: Text(
+            AppLocalizations.of(context)!.permisosFotosBloqueado,
           ),
-          action: SnackBarAction(label: 'Ajustes', onPressed: openAppSettings),
+          action: SnackBarAction(label: AppLocalizations.of(context)!.ajustes, onPressed: openAppSettings),
         ),
       );
       return false;
@@ -103,7 +103,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       logger.e('Error actualizando perfil: $e'); // Log de error
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')));
     }
   }
 
@@ -117,8 +117,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          'Editar Perfil',
+        title: Text(
+          AppLocalizations.of(context)!.editarPerfil,
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -161,14 +161,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             // Nombre
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: 'Nombre de usuario'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.nombreUsuario),
             ),
             const SizedBox(height: 20),
 
             // Descripción
             TextField(
               controller: descripcionController,
-              decoration: const InputDecoration(labelText: 'Descripción'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descripcionSinPuntos),
               maxLines: 3,
             ),
           ],

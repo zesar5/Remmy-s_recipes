@@ -230,11 +230,11 @@ abstract class AppLocalizations {
   /// **'Al hacer click, aceptas nuestros Términos de'**
   String get aceptarTerminos;
 
-  /// No description provided for @politicaPrivacidad.
+  /// No description provided for @politicaPrivacidadLogin.
   ///
   /// In es, this message translates to:
   /// **'servicio y Política de privacidad'**
-  String get politicaPrivacidad;
+  String get politicaPrivacidadLogin;
 
   /// No description provided for @ok.
   ///
@@ -571,6 +571,360 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agregar paso'**
   String get agregarPasoBtn;
+
+  /// No description provided for @alergenosInformacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Alérgenos: '**
+  String get alergenosInformacion;
+
+  /// No description provided for @paisInformacion.
+  ///
+  /// In es, this message translates to:
+  /// **'País: '**
+  String get paisInformacion;
+
+  /// No description provided for @duracionInformacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Duración: '**
+  String get duracionInformacion;
+
+  /// No description provided for @alergenosSinEspecificar.
+  ///
+  /// In es, this message translates to:
+  /// **'Alérgenos: Ninguno especificado'**
+  String get alergenosSinEspecificar;
+
+  /// No description provided for @estacionInformacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Estación: '**
+  String get estacionInformacion;
+
+  /// No description provided for @creadoPor.
+  ///
+  /// In es, this message translates to:
+  /// **'Creado por: '**
+  String get creadoPor;
+
+  /// No description provided for @debesIniciarSesionParaLike.
+  ///
+  /// In es, this message translates to:
+  /// **'Debes iniciar sesión para dar like'**
+  String get debesIniciarSesionParaLike;
+
+  /// No description provided for @likeAnyadido.
+  ///
+  /// In es, this message translates to:
+  /// **'Like añadido a receta'**
+  String get likeAnyadido;
+
+  /// No description provided for @likeQuitado.
+  ///
+  /// In es, this message translates to:
+  /// **'Like quitado de receta'**
+  String get likeQuitado;
+
+  /// No description provided for @errorEliminarReceta.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al eliminar receta'**
+  String get errorEliminarReceta;
+
+  /// No description provided for @errorEliminarPorPermisos.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al eliminar receta. Verifica permisos'**
+  String get errorEliminarPorPermisos;
+
+  /// No description provided for @necesitamosPermisos.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitamos permiso para acceder a tus fotos'**
+  String get necesitamosPermisos;
+
+  /// No description provided for @permisosFotosBloqueado.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de fotos bloqueado, activalo en ajustes'**
+  String get permisosFotosBloqueado;
+
+  /// No description provided for @ajustes.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get ajustes;
+
+  /// No description provided for @nombreUsuario.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de usuario'**
+  String get nombreUsuario;
+
+  /// No description provided for @descripcionSinPuntos.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción'**
+  String get descripcionSinPuntos;
+
+  /// No description provided for @introduceCodigoValido.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un código de 6 dígitos válido'**
+  String get introduceCodigoValido;
+
+  /// No description provided for @introduceCodigo.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el código'**
+  String get introduceCodigo;
+
+  /// No description provided for @hemosEnviadoCodigo.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos enviado un código a '**
+  String get hemosEnviadoCodigo;
+
+  /// No description provided for @introduceLosSeisDigitos.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce los 6 dígitos:'**
+  String get introduceLosSeisDigitos;
+
+  /// No description provided for @verificarCodigo.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificar código'**
+  String get verificarCodigo;
+
+  /// No description provided for @volver.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver'**
+  String get volver;
+
+  /// No description provided for @enviarCodigo.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar código'**
+  String get enviarCodigo;
+
+  /// No description provided for @campoRequerido.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo requerido'**
+  String get campoRequerido;
+
+  /// No description provided for @formatoInvalido.
+  ///
+  /// In es, this message translates to:
+  /// **'Formato inválido'**
+  String get formatoInvalido;
+
+  /// No description provided for @contrasenyaCambiada.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña cambiada exitosamente'**
+  String get contrasenyaCambiada;
+
+  /// No description provided for @nuevaContrasenya.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get nuevaContrasenya;
+
+  /// No description provided for @cambiarContrasenya.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña'**
+  String get cambiarContrasenya;
+
+  /// No description provided for @requisitosContrasenya.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.'**
+  String get requisitosContrasenya;
+
+  /// No description provided for @debil.
+  ///
+  /// In es, this message translates to:
+  /// **'Débil'**
+  String get debil;
+
+  /// No description provided for @contrasenyaNoCoinciden.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get contrasenyaNoCoinciden;
+
+  /// No description provided for @noCoinciden.
+  ///
+  /// In es, this message translates to:
+  /// **'No coinciden'**
+  String get noCoinciden;
+
+  /// No description provided for @completaTodosLosCampos.
+  ///
+  /// In es, this message translates to:
+  /// **'Completa todos los campos'**
+  String get completaTodosLosCampos;
+
+  /// No description provided for @camposRequeridos.
+  ///
+  /// In es, this message translates to:
+  /// **'Campos requeridos'**
+  String get camposRequeridos;
+
+  /// No description provided for @aQueIdioma.
+  ///
+  /// In es, this message translates to:
+  /// **'¿A qué idioma quieres traducir la app?'**
+  String get aQueIdioma;
+
+  /// No description provided for @idiomaEspanyol.
+  ///
+  /// In es, this message translates to:
+  /// **'Español'**
+  String get idiomaEspanyol;
+
+  /// No description provided for @idiomaIngles.
+  ///
+  /// In es, this message translates to:
+  /// **'Inglés'**
+  String get idiomaIngles;
+
+  /// No description provided for @buscarReceta.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar receta o receta por ingrediente...'**
+  String get buscarReceta;
+
+  /// No description provided for @cargarRecetasPredeterminadas.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargar recetas predeterminadas'**
+  String get cargarRecetasPredeterminadas;
+
+  /// No description provided for @aplicarFiltros.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplicar filtros'**
+  String get aplicarFiltros;
+
+  /// No description provided for @comunidad.
+  ///
+  /// In es, this message translates to:
+  /// **'Comunidad'**
+  String get comunidad;
+
+  /// No description provided for @idioma.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma'**
+  String get idioma;
+
+  /// No description provided for @necesitasIniciarSesion.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitas iniciar sesión'**
+  String get necesitasIniciarSesion;
+
+  /// No description provided for @irPaginaIniciarSesion.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a la página de iniciar sesión'**
+  String get irPaginaIniciarSesion;
+
+  /// No description provided for @permanecerInvitado.
+  ///
+  /// In es, this message translates to:
+  /// **'Permanecer de invitado'**
+  String get permanecerInvitado;
+
+  /// No description provided for @aceptasCondiciones.
+  ///
+  /// In es, this message translates to:
+  /// **'Al continuar aceptas los '**
+  String get aceptasCondiciones;
+
+  /// No description provided for @terminosServicios.
+  ///
+  /// In es, this message translates to:
+  /// **'Terminos de servicio'**
+  String get terminosServicios;
+
+  /// No description provided for @politicaPrivacidadDos.
+  ///
+  /// In es, this message translates to:
+  /// **'Politica de privacidad'**
+  String get politicaPrivacidadDos;
+
+  /// No description provided for @cerrarSesion.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get cerrarSesion;
+
+  /// No description provided for @guardados.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardados'**
+  String get guardados;
+
+  /// No description provided for @home.
+  ///
+  /// In es, this message translates to:
+  /// **'Casa'**
+  String get home;
+
+  /// No description provided for @terminosPolitica.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos y política'**
+  String get terminosPolitica;
+
+  /// No description provided for @parrafoUnoTerminosServicios.
+  ///
+  /// In es, this message translates to:
+  /// **'Al utilizar esta aplicación, aceptas cumplir con estos términos. Si no estás de acuerdo con alguno de ellos, no uses la app por favor'**
+  String get parrafoUnoTerminosServicios;
+
+  /// No description provided for @parrafoDosTerminosServicios.
+  ///
+  /// In es, this message translates to:
+  /// **'Nos reservamos el derecho de modificar o actualizar estos términos en cualquier momento.'**
+  String get parrafoDosTerminosServicios;
+
+  /// No description provided for @politicaPrivacidad.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de privacidad'**
+  String get politicaPrivacidad;
+
+  /// No description provided for @parrafoUnoPoliticaPrivacidad.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu privacidad es importante para nosotros.\nLa información personal que recopilamos se utiliza únicamente para mejorar la experiencia de usuario.'**
+  String get parrafoUnoPoliticaPrivacidad;
+
+  /// No description provided for @parrafoDosPoliticaPrivacidad.
+  ///
+  /// In es, this message translates to:
+  /// **'No compartimos tus datos personales con terceros sin tu consentimiento.'**
+  String get parrafoDosPoliticaPrivacidad;
+
+  /// No description provided for @contacto.
+  ///
+  /// In es, this message translates to:
+  /// **'Contacto'**
+  String get contacto;
+
+  /// No description provided for @parrafoUnoContacto.
+  ///
+  /// In es, this message translates to:
+  /// **'Si tienes dudas sobre estos términos o sobre el uso de la aplicación, puedes contactarnos a través de los canales oficiales.'**
+  String get parrafoUnoContacto;
 
   /// No description provided for @exitoBtnOk.
   ///

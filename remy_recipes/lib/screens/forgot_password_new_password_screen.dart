@@ -38,26 +38,26 @@ class _ForgotPasswordNewPasswordScreenState
     if (newPass.isEmpty || confirmPass.isEmpty) {
       setState(() {
         _errorPassword = true;
-        _errorPasswordMessage = "Campos requeridos";
+        _errorPasswordMessage = AppLocalizations.of(context)!.camposRequeridos;
       });
-      mostrarMensaje("Completa todos los campos.");
+      mostrarMensaje(AppLocalizations.of(context)!.completaTodosLosCampos);
       return;
     }
     if (newPass != confirmPass) {
       setState(() {
         _errorPassword = true;
-        _errorPasswordMessage = "No coinciden";
+        _errorPasswordMessage = AppLocalizations.of(context)!.noCoinciden;
       });
-      mostrarMensaje("Las contraseñas no coinciden.");
+      mostrarMensaje(AppLocalizations.of(context)!.contrasenyaNoCoinciden);
       return;
     }
     if (!validarContrasenyaFuerte(newPass)) {
       setState(() {
         _errorPassword = true;
-        _errorPasswordMessage = "Débil";
+        _errorPasswordMessage = AppLocalizations.of(context)!.debil;
       });
       mostrarMensaje(
-        "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+        AppLocalizations.of(context)!.requisitosContrasenya,
       );
       return;
     }
@@ -67,7 +67,7 @@ class _ForgotPasswordNewPasswordScreenState
       await widget.authService.resetPassword(widget.resetToken, newPass);
       logger.i('Contraseña cambiada');
       mostrarMensaje(
-        "Contraseña cambiada exitosamente.",
+        AppLocalizations.of(context)!.contrasenyaCambiada,
         onClose: () {
           Navigator.of(
             context,
@@ -86,11 +86,11 @@ class _ForgotPasswordNewPasswordScreenState
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Información"),
+        title: Text(AppLocalizations.of(context)!.informacion),
         content: Text(mensaje),
         actions: [
           TextButton(
-            child: const Text("OK"),
+            child: Text(AppLocalizations.of(context)!.ok),
             onPressed: () {
               Navigator.pop(context);
               if (onClose != null) onClose();
@@ -111,12 +111,12 @@ class _ForgotPasswordNewPasswordScreenState
           child: Column(
             children: [
               Text(
-                'Nueva Contraseña',
+                AppLocalizations.of(context)!.nuevaContrasenya,
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
               const SizedBox(height: 20),
               campoTexto(
-                "Nueva contraseña",
+                AppLocalizations.of(context)!.nuevaContrasenya,
                 controller: _newPasswordController,
                 esPassword: true,
                 error: _errorPassword,
@@ -124,7 +124,7 @@ class _ForgotPasswordNewPasswordScreenState
               ),
               const SizedBox(height: 10),
               campoTexto(
-                "Confirmar contraseña",
+                AppLocalizations.of(context)!.confirmarContrasena,
                 controller: _confirmPasswordController,
                 esPassword: true,
                 error: _errorPassword,
@@ -140,12 +140,12 @@ class _ForgotPasswordNewPasswordScreenState
                 onPressed: _isLoading ? null : _resetPassword,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Cambiar Contraseña'),
+                    : Text(AppLocalizations.of(context)!.cambiarContrasenya),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Volver',
+                child: Text(
+                  AppLocalizations.of(context)!.volver,
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
@@ -189,7 +189,7 @@ class _ForgotPasswordNewPasswordScreenState
               borderSide: BorderSide(color: Colors.red, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
+            errorText: error ? (errorTextMessage ?? AppLocalizations.of(context)!.campoRequerido) : null,
           ),
         ),
       ],

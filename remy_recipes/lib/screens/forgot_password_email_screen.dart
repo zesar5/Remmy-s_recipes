@@ -30,17 +30,17 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
     if (email.isEmpty) {
       setState(() {
         _errorEmail = true;
-        _errorEmailMessage = "Campo requerido";
+        _errorEmailMessage = AppLocalizations.of(context)!.campoRequerido;
       });
-      mostrarMensaje("Por favor, introduce tu correo.");
+      mostrarMensaje(AppLocalizations.of(context)!.correoVacioMsg);
       return;
     }
     if (!validarCorreo(email)) {
       setState(() {
         _errorEmail = true;
-        _errorEmailMessage = "Formato inválido";
+        _errorEmailMessage = AppLocalizations.of(context)!.formatoInvalido;
       });
-      mostrarMensaje("Correo inválido.");
+      mostrarMensaje(AppLocalizations.of(context)!.correoInvalido);
       return;
     }
 
@@ -68,11 +68,11 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Información"),
+        title: Text(AppLocalizations.of(context)!.informacion),
         content: Text(mensaje),
         actions: [
           TextButton(
-            child: const Text("OK"),
+            child: Text(AppLocalizations.of(context)!.ok),
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -90,12 +90,12 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
           child: Column(
             children: [
               Text(
-                'Recuperar Contraseña',
+                AppLocalizations.of(context)!.recuperarContrasena,
                 style: TextStyle(fontSize: 28, fontFamily: "Alegreya"),
               ),
               const SizedBox(height: 20),
               campoTexto(
-                "Correo electrónico",
+                AppLocalizations.of(context)!.correoElectronico,
                 controller: _emailController,
                 error: _errorEmail,
                 errorTextMessage: _errorEmailMessage,
@@ -110,12 +110,12 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
                 onPressed: _isLoading ? null : _sendCode,
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Enviar Código'),
+                    : Text(AppLocalizations.of(context)!.enviarCodigo),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Volver',
+                child: Text(
+                  AppLocalizations.of(context)!.volver,
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
@@ -151,7 +151,7 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
               borderSide: BorderSide(color: Colors.red, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            errorText: error ? (errorTextMessage ?? "Campo requerido") : null,
+            errorText: error ? (errorTextMessage ?? AppLocalizations.of(context)!.campoRequerido) : null,
           ),
         ),
       ],

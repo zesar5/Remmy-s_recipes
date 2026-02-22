@@ -12,8 +12,8 @@ class TermsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
 
         elevation: 0,
-        title: const Text(
-          'Términos y Política',
+        title: Text(
+          AppLocalizations.of(context)!.politicaPrivacidad,
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
       ),
@@ -21,41 +21,27 @@ class TermsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            _SectionTittle('Terminos de Servicio'),
-            _Paragraph(
-              'Al utilizar esta aplicación, aceptas cumplir con estos términos. '
-              'Si no estás de acuerdo con alguno de ellos, no uses la app por favor',
-            ),
-            SizedBox(height: 16),
-
-            _Paragraph(
-              'Nos reservamos el derecho de modificar o actualizar estos términos '
-              'en cualquier momento.',
-            ),
-
-            SizedBox(height: 32),
-
-            _SectionTittle('Politica de privacidad'),
-            _Paragraph(
-              'Tu privacidad es importante para nosotros. '
-              'La información personal que recopilamos se utiliza únicamente '
-              'para mejorar la experiencia de usuario.',
-            ),
+          children:[
+            _SectionTittle(AppLocalizations.of(context)!.terminosServicios),
+            _Paragraph(AppLocalizations.of(context)!.parrafoUnoTerminosServicios),
 
             SizedBox(height: 16),
 
-            _Paragraph(
-              'No compartimos tus datos personales con terceros sin tu consentimiento.',
-            ),
+            _Paragraph(AppLocalizations.of(context)!.parrafoDosTerminosServicios),
 
             SizedBox(height: 32),
 
-            _SectionTittle('Contacto'),
-            _Paragraph(
-              'Si tienes dudas sobre estos términos o sobre el uso de la aplicación, '
-              'puedes contactarnos a través de los canales oficiales.',
-            ),
+            _SectionTittle(AppLocalizations.of(context)!.politicaPrivacidad),
+            _Paragraph(AppLocalizations.of(context)!.parrafoUnoPoliticaPrivacidad),
+
+            SizedBox(height: 16),
+
+            _Paragraph(AppLocalizations.of(context)!.parrafoDosPoliticaPrivacidad),
+
+            SizedBox(height: 32),
+
+            _SectionTittle(AppLocalizations.of(context)!.contacto),
+            _Paragraph(AppLocalizations.of(context)!.parrafoUnoContacto),
           ],
         ),
       ),

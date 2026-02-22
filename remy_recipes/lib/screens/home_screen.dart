@@ -77,8 +77,8 @@ class _MainPageState extends State<MainPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text(
-            "¿A qué idioma quieres traducir la app?",
+          title: Text(
+            AppLocalizations.of(context)!.aQueIdioma,
             textAlign: TextAlign.center,
           ),
           content: Column(
@@ -100,7 +100,7 @@ class _MainPageState extends State<MainPage> {
 
                   logger.i("Idioma cambiado a Español");
                 },
-                child: const Text("Español"),
+                child: Text(AppLocalizations.of(context)!.idiomaEspanyol),
               ),
 
               const SizedBox(height: 10),
@@ -119,7 +119,7 @@ class _MainPageState extends State<MainPage> {
 
                   logger.i("Idioma cambiado a Inglés");
                 },
-                child: const Text("Inglés"),
+                child: Text(AppLocalizations.of(context)!.idiomaIngles),
               ),
             ],
           ),
@@ -169,7 +169,7 @@ class _MainPageState extends State<MainPage> {
                         _textoBusqueda = value;
                       },
                       decoration: InputDecoration(
-                        hintText: "Buscar receta o receta por ingrediente...",
+                        hintText: AppLocalizations.of(context)!.buscarReceta,
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
@@ -184,9 +184,9 @@ class _MainPageState extends State<MainPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _combo("origen", AppStrings.countries),
-                        _combo("estaciones", AppStrings.seasons),
-                        _combo("duración", [
+                        _combo(AppLocalizations.of(context)!.pais, AppStrings.countries),
+                        _combo(AppLocalizations.of(context)!.estacionLabel, AppStrings.seasons),
+                        _combo(AppLocalizations.of(context)!.duracionLabel, [
                           "5 min",
                           "10 min",
                           "20 min",
@@ -194,7 +194,7 @@ class _MainPageState extends State<MainPage> {
                           "60 min",
                           "90 min",
                         ]),
-                        _combo("alergenos", AppStrings.allergens),
+                        _combo(AppLocalizations.of(context)!.alergenosLabel, AppStrings.allergens),
                       ],
                     ),
 
@@ -220,7 +220,7 @@ class _MainPageState extends State<MainPage> {
                           _cargarRecetasPredeterminadas();
                           Navigator.pop(context);
                         },
-                        child: const Text("Cargar recetas predeterminadas"),
+                        child: Text(AppLocalizations.of(context)!.cargarRecetasPredeterminadas),
                       ),
                     ),
 
@@ -242,7 +242,7 @@ class _MainPageState extends State<MainPage> {
                         _aplicarFiltro();
                         Navigator.pop(context);
                       },
-                      child: const Text("Aplicar filtros"),
+                      child: Text(AppLocalizations.of(context)!.aplicarFiltros),
                     ),
                   ],
                 ),
@@ -301,16 +301,16 @@ class _MainPageState extends State<MainPage> {
         onChanged: (value) {
           setState(() {
             switch (tipo) {
-              case 'origen':
+              case 'País':
                 _pais = value;
                 break;
-              case 'estaciones':
+              case 'Estación':
                 _estacion = value;
                 break;
-              case 'duración':
+              case 'Duración (min)':
                 _duracion = int.tryParse(value!.replaceAll(' min', ''));
                 break;
-              case 'alergenos':
+              case 'Alérgenos':
                 _alergenos = value;
                 break;
             }
@@ -372,7 +372,7 @@ class _MainPageState extends State<MainPage> {
                 // Botón Comunidad
                 ListTile(
                   leading: const Icon(Icons.people),
-                  title: const Text("Comunidad"),
+                  title: Text(AppLocalizations.of(context)!.comunidad),
                   onTap: () {
                     Navigator.pop(context); // Cierra el drawer
                     logger.i("Ir a Comunidad");
@@ -385,7 +385,7 @@ class _MainPageState extends State<MainPage> {
                 // Botón Idioma
                 ListTile(
                   leading: const Icon(Icons.language),
-                  title: const Text("Idioma"),
+                  title: Text(AppLocalizations.of(context)!.idioma),
                   onTap: () {
                     Navigator.pop(context); // Cierra el drawer
                     _showLanguageDialog(context);
@@ -567,8 +567,8 @@ class _MainPageState extends State<MainPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text(
-            "Necesitas iniciar sesión",  // Título corregido
+          title: Text(
+            AppLocalizations.of(context)!.necesitasIniciarSesion,  // Título corregido
             textAlign: TextAlign.center,
           ),
           content: Column(
@@ -594,7 +594,7 @@ class _MainPageState extends State<MainPage> {
                   );
                   logger.i("Navegando a pantalla de login");
                 },
-                child: const Text("Ir a la página de iniciar sesión"),  // Texto corregido
+                child: Text(AppLocalizations.of(context)!.irPaginaIniciarSesion),  // Texto corregido
               ),
 
               const SizedBox(height: 10),
@@ -610,7 +610,7 @@ class _MainPageState extends State<MainPage> {
                   Navigator.pop(context); // Cierra el diálogo y permanece en la pantalla
                   logger.i("Permaneciendo como invitado");
                 },
-                child: const Text("Permanecer de invitado"),  // Texto corregido
+                child: Text(AppLocalizations.of(context)!.permanecerInvitado),  // Texto corregido
               ),
             ],
           ),
