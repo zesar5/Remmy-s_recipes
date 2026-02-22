@@ -27,7 +27,21 @@ class DetalleRecetaPage extends StatefulWidget {
 
 class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   bool _liked = false;
+   
 
+  // ==============================================
+  //        VERIFICAR SI ES PROPIETARIO
+  // ==============================================
+  
+  /// Retorna true si el usuario actual es el creador de la receta
+  bool get _esPropietario {
+    final usuarioActual = widget.authService.currentUser;
+    if (usuarioActual == null) return false;
+    
+    // Asumiendo que Receta tiene un campo 'creadorId'
+    // Ajusta el nombre del campo según tu modelo
+    return widget.receta.creadorNombre == usuarioActual.id;
+  }
   // ==============================================
   //              TOGGLE LIKE
   // ==============================================
@@ -130,11 +144,31 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
         foregroundColor: Colors.white,
         elevation: 2,
         actions: [
+
+          //==============================
+          //BOTÓN DE FAVORITOS
+          //==============================
+
+          IconButton(
+            icon: Icon(
+              _liked ? Icons.favorite: Icons.favorite_border,
+              color: _liked ? Colors.red : Colors.white,
+            ),
+            onPressed: _toggleLike,
+          ),
           // Botón EDITAR (solo visible si el usuario es propietario)
           // Nota: actualmente NO verifica propiedad → cualquiera ve los botones
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
+              if(!_esPropietario){
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Solo el creador de la receta tiene permiso para editarla'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
               logger.i(
                 'Navegando a edición de receta: ${widget.receta.titulo}',
               );
@@ -161,9 +195,23 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
           ),
 
           // Botón ELIMINAR
-          IconButton(
+           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () => _confirmarEliminar(context),
+            onPressed: () {
+              // Verificar propiedad antes de eliminar
+              if (!_esPropietario) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Solo el creador de la receta puede eliminarla'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              // Tu código existente de confirmación eliminar
+              _confirmarEliminar(context);
+            },
           ),
         ],
       ),
