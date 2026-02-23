@@ -437,93 +437,113 @@ class _MainPageState extends State<MainPage> {
       ),
 
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Barra superior: menú + búsqueda + perfil
-              _buildTopBar(context),
+        child: CustomScrollView(
+          slivers: [
+            // 🔒 TOP BAR FIJA
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _TopBarSliver(
+                child: _buildTopBar(context),
+              ),
+            ),
 
-              const SizedBox(height: 10),
+            // CONTENIDO QUE SCROLLA
+            SliverPadding(
+              padding: const EdgeInsets.all(14),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    const SizedBox(height: 10),
 
-              // Sección del logo y título de la app
-              Column(
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.appName,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontFamily: 'Alegreya',
-                      color: Colors.black,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 3,
-                          color: Colors.black26,
+                    Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.appName,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontFamily: 'Alegreya',
+                            color: Colors.black,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(1, 1),
+                                blurRadius: 3,
+                                color: Colors.black26,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        Center(
+                          child: Transform.scale(
+                            scale: 1.7,
+                            child: SizedBox(
+                              width: 260,
+                              height: 240,
+                              child: Image.asset(
+                                "assets/logosinfondoBien.png",
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    textAlign: TextAlign.center,
-                  ),
 
-                  // Logo centrado y escalado
-                  Center(
-                    child: Transform.scale(
-                      scale: 1.7,
-                      child: SizedBox(
-                        width: 260,
-                        height: 240,
-                        child: Image.asset(
-                          "assets/logosinfondoBien.png",
-                          fit: BoxFit.contain,
-                        ),
+                    const SizedBox(height: 10),
+
+                    Text(
+                      AppLocalizations.of(context)!.recetas,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+
+            // LOADING
+            if (loading)
+              const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (recipes.isEmpty)
+              SliverFillRemaining(
+                child: Center(
+                  child: Text(AppLocalizations.of(context)!.noHayRecetas),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, i) {
+                      final r = recipes[i];
+                      return RecipeButton(
+                        recipe: r,
+                        authService: widget.authService,
+                      );
+                    },
+                    childCount: recipes.length,
                   ),
-                ],
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 250,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.85,
+                  ),
+                ),
               ),
 
-              const SizedBox(height: 10),
-
-              // Título de la sección de recetas
-              Text(
-                AppLocalizations.of(context)!.recetas,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Área principal: grid de recetas
-              Expanded(
-                child: loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : recipes.isEmpty
-                    ? Center(
-                        child: Text(AppLocalizations.of(context)!.noHayRecetas),
-                      )
-                    : GridView.builder(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent:
-                                  250, // tamaño máximo de cada tarjeta
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio: 0.85, // proporción altura/ancho
-                            ),
-                        itemCount: recipes.length,
-                        itemBuilder: (_, i) {
-                          final Receta r = recipes[i];
-                          return RecipeButton(
-                            recipe: r,
-                            authService: widget.authService,
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80),
+            ),
+          ],
         ),
       ),
     );
@@ -807,4 +827,29 @@ class RecipeButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TopBarSliver extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _TopBarSliver({required this.child});
+
+  @override
+  double get minExtent => 60;
+  @override
+  double get maxExtent => 60;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: const Color(0xFFDEB887),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      alignment: Alignment.center,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _TopBarSliver oldDelegate) => false;
 }
