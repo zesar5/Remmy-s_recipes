@@ -301,16 +301,16 @@ class _MainPageState extends State<MainPage> {
         onChanged: (value) {
           setState(() {
             switch (tipo) {
-              case 'País':
+              case 'País' || 'Country':
                 _pais = value;
                 break;
-              case 'Estación':
+              case 'Estación' || 'Season':
                 _estacion = value;
                 break;
-              case 'Duración (min)':
+              case 'Duración (min)' || 'Duration (min)':
                 _duracion = int.tryParse(value!.replaceAll(' min', ''));
                 break;
-              case 'Alérgenos':
+              case 'Alérgenos' || 'Allergens':
                 _alergenos = value;
                 break;
             }
