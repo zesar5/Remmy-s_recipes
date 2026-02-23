@@ -25,14 +25,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController descripcionController;
   File? imagenPerfil;
   final picker = ImagePicker();
+  ImageProvider? avatarImage;
 
   @override
   void initState() {
     super.initState();
-    logger.i('Inicializando pantalla de edición de perfil'); // Log de inicio
+
+    // Log de inicio
     final user = widget.authService.currentUser!;
     nameController = TextEditingController(text: user.userName);
     descripcionController = TextEditingController(text: user.descripcion ?? '');
+
+    if (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty) {
+      avatarImage = MemoryImage(base64Decode(user.fotoPerfil!.split(',').last));
+    } else {
+      avatarImage = null;
+    }
+    logger.i('Inicializando pantalla de edición de perfil');
   }
 
   Future<bool> _checkPhotoPermisission() async {
@@ -55,10 +64,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       logger.e("permiso denegado permanentemente");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.permisosFotosBloqueado,
+          content: Text(AppLocalizations.of(context)!.permisosFotosBloqueado),
+          action: SnackBarAction(
+            label: AppLocalizations.of(context)!.ajustes,
+            onPressed: openAppSettings,
           ),
-          action: SnackBarAction(label: AppLocalizations.of(context)!.ajustes, onPressed: openAppSettings),
         ),
       );
       return false;
@@ -101,9 +111,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       Navigator.pop(context, true); // Regresar a PerfilScreen
     } catch (e) {
       logger.e('Error actualizando perfil: $e'); // Log de error
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
+      );
     }
   }
 
@@ -140,18 +150,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               onTap: seleccionarImagen,
               child: CircleAvatar(
                 radius: 60,
+                backgroundColor: Colors.grey.shade300,
                 backgroundImage: imagenPerfil != null
                     ? FileImage(imagenPerfil!)
-                    : (widget.authService.currentUser!.fotoPerfil != null
-                          ? MemoryImage(
-                              base64Decode(
-                                widget.authService.currentUser!.fotoPerfil!,
-                              ),
-                            )
-                          : null),
-                child:
-                    imagenPerfil == null &&
-                        widget.authService.currentUser!.fotoPerfil == null
+                    : avatarImage,
+                child: imagenPerfil == null && avatarImage == null
                     ? const Icon(Icons.camera_alt, size: 40)
                     : null,
               ),
@@ -161,14 +164,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             // Nombre
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.nombreUsuario),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.nombreUsuario,
+              ),
             ),
             const SizedBox(height: 20),
 
             // Descripción
             TextField(
               controller: descripcionController,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.descripcionSinPuntos),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.descripcionSinPuntos,
+              ),
               maxLines: 3,
             ),
           ],
