@@ -68,30 +68,38 @@ class Usuario {
   // Obtener perfil
   static async obtenerPerfil(id) {
     const [rows] = await db.query(
-      "SELECT * FROM usuario WHERE Id_usuario = ?",
+      "SELECT u.*, ui.imagen FROM usuario u LEFT JOIN usuario_imagen ui ON u.Id_usuario = ui.Id_usuario WHERE u.Id_usuario = ?",
       [id],
     );
 
     if (rows.length === 0) return null;
+    const user = rows[0];
 
-    // Convertimos la fila cruda de la BD en nuestra entidad
-    return new UsuarioEntity(rows[0]);
+    if (user.imagen) {
+      user.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
+    } else {
+      user.fotoPerfil = null;
+    }
+    console.log("FOTO PERFIL ENVIADA:");
+    console.log(user.fotoPerfil);
+
+    return user;
   }
-  
-  static async actualizarPerfil(id, data){
-    const{nombre, descripcion, fotoPerfil} = data;
+
+  static async actualizarPerfil(id, data) {
+    const { nombre, descripcion, fotoPerfil } = data;
 
     await db.query(
-      'UPDATE usuario SET nombre = ?, descripcion = ? WHERE ID_usuario = ?',
-      [nombre, descripcion, id]
+      "UPDATE usuario SET nombre = ?, descripcion = ? WHERE ID_usuario = ?",
+      [nombre, descripcion, id],
     );
 
-    if(fotoPerfil){
-      const cleanBase64 = fotoPerfil.replace(/^data:image\/\w+;base64,/, "")
+    if (fotoPerfil) {
+      const cleanBase64 = fotoPerfil.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(cleanBase64, "base64");
       await db.query(
-        'INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)',
-        [id, buffer]
+        "INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)",
+        [id, buffer],
       );
     }
     //Devuelve el perfil actualizado
