@@ -55,7 +55,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     // Cargamos el usuario desde AuthService
     user = widget.authService.currentUser!;
 
-    // Intentamos cargar las recetas del usuario
+    // Cargamos las recetas del usuario
     _cargarRecetasGuardadas();
   }
 

@@ -27,7 +27,7 @@ class DetalleRecetaPage extends StatefulWidget {
 
 class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   bool _liked = false;
-   
+  bool _cargandoFavorito=false;
 
   // ==============================================
   //        VERIFICAR SI ES PROPIETARIO
@@ -43,26 +43,67 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
     return widget.receta.creadorNombre == usuarioActual.id;
   }
   // ==============================================
-  //              TOGGLE LIKE
-  // ==============================================
+//         CARGAR ESTADO DE FAVORITO
+// ==============================================
 
-  void _toggleLike() {
-    if (widget.authService.currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.debesIniciarSesionParaLike)),
-      );
-      return;
+Future<void> _cargarEstadoFavorito() async {
+  if (widget.authService.currentUser == null) return;
+  if (widget.receta.id == null) return;
+  
+  try {
+    final esFav = await esFavorito(
+      int.parse(widget.receta.id!),
+      widget.authService.accessToken!,
+    );
+    
+    if (mounted) {
+      setState(() {
+        _liked = esFav;
+      });
     }
-    setState(() {
-      _liked = !_liked;
-    });
+  } catch (e) {
+    logger.e('Error al cargar estado de favorito: $e');
+  }
+}
+
+// ==============================================
+//              TOGGLE FAVORITO
+// ==============================================
+
+void _toggleLike() async {
+  if (widget.authService.currentUser == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.debesIniciarSesionParaLike)),
+    );
+    return;
+  }
+
+  if (widget.receta.id == null) return;
+
+  final likedAnterior = _liked;
+  setState(() {
+    _liked = !_liked;
+  });
+
+  try {
+    await toggleFavorito(
+      int.parse(widget.receta.id!),
+      widget.authService.accessToken!,
+    );
+    
     logger.i(
       _liked
           ? '${AppLocalizations.of(context)!.likeAnyadido} ${widget.receta.id}'
           : '${AppLocalizations.of(context)!.likeQuitado} ${widget.receta.id}',
     );
-    //AQUI IRA LO DE BACKEND
+  } catch (e) {
+    if (mounted) {
+      setState(() {
+        _liked = likedAnterior;
+      });
+    }
   }
+}
 
   // ==============================================
   //          DIÁLOGO DE CONFIRMACIÓN ELIMINAR
@@ -132,6 +173,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
 
   @override
   Widget build(BuildContext context) {
+    _cargarEstadoFavorito();
     logger.i(
       'Construyendo pantalla de detalle para receta: ${widget.receta.titulo}',
     ); // Log de construcción
