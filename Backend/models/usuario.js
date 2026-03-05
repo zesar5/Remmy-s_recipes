@@ -86,6 +86,13 @@ class Usuario {
     return user;
   }
 
+  static async obtenerTodosUsuarios(){
+    const [rows] =await db.query(
+      "SELECT Id_usuario, nombre, pais, email, descripcion, anioNacimiento, FROM usuario"
+    );
+    return rows;
+  }
+
   static async actualizarPerfil(id, data) {
     const { nombre, descripcion, fotoPerfil } = data;
 

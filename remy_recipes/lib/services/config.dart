@@ -14,6 +14,7 @@ class ApiEndpoints {
   static String get perfil => '$baseUrl/usuarios/perfil';
   static String get homeRecetas => '$baseUrl/recetas/?rangoInicio=1&rangoFin=4';
   static String get obtenerRecetaUsuario => '$baseUrl/recetas/usuario';
+  
 
   //Endpoints para olvidé mi contraseña
 

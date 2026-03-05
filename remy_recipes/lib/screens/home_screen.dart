@@ -10,6 +10,7 @@ import 'dart:typed_data';
 import 'recipes_form_page.dart';
 import '../services/auth_service.dart';
 import 'DetalleRecetaPage.dart';
+import 'community_screen.dart';
 import '../services/config.dart';
 import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
@@ -377,6 +378,11 @@ class _MainPageState extends State<MainPage> {
                     Navigator.pop(context); // Cierra el drawer
                     logger.i("Ir a Comunidad");
                     // TODO: Navegar a pantalla comunidad
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => ComunidadScreen()),
+                      );
+                      
                   },
                 ),
 
