@@ -278,3 +278,169 @@ Future<List<Receta>> recetaFiltrada({
     return [];
   }
 }
+
+// =====================================================
+//                    FUNCIONES DE FAVORITOS
+// =====================================================
+
+/// Obtiene todas las recetas favoritas del usuario
+/// Ruta: GET /recetas/favoritos
+Future<List<Receta>> obtenerFavoritos(String token) async {
+  logger.i('Obteniendo favoritos del usuario');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/favoritos');
+  
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    logger.d('Respuesta obtenerFavoritos - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final favoritos = data.map((item) => Receta.fromHomeJson(item)).toList();
+      logger.i('Favoritos obtenidos: ${favoritos.length} recetas');
+      return favoritos;
+    } else {
+      logger.e('Error al obtener favoritos: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    logger.e('Excepción en obtenerFavoritos: $e');
+    return [];
+  }
+}
+
+/// Añade una receta a favoritos
+/// Ruta: POST /recetas/favoritos/:recetaId
+Future<bool> anadirFavorito(int recetaId, String token) async {
+  logger.i('Añadiendo a favoritos receta ID: $recetaId');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/favoritos/$recetaId');
+  
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    logger.d('Respuesta anadirFavorito - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      logger.i('Receta añadida a favoritos exitosamente');
+      return true;
+    } else if (response.statusCode == 400) {
+      logger.w('La receta ya está en favoritos');
+      return false;
+    } else {
+      logger.e('Error al añadir favorito: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    logger.e('Excepción en anadirFavorito: $e');
+    return false;
+  }
+}
+
+/// Elimina una receta de favoritos
+/// Ruta: DELETE /recetas/favoritos/:recetaId
+Future<bool> eliminarFavorito(int recetaId, String token) async {
+  logger.i('Eliminando de favoritos receta ID: $recetaId');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/favoritos/$recetaId');
+  
+  try {
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    logger.d('Respuesta eliminarFavorito - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      logger.i('Receta eliminada de favoritos exitosamente');
+      return true;
+    } else {
+      logger.e('Error al eliminar favorito: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    logger.e('Excepción en eliminarFavorito: $e');
+    return false;
+  }
+}
+
+/// Verifica si una receta está en favoritos
+/// Ruta: GET /recetas/favoritos/:recetaId/check
+Future<bool> esFavorito(int recetaId, String token) async {
+  logger.d('Verificando si receta $recetaId está en favoritos');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/favoritos/$recetaId/check');
+  
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final estaEnFavoritos = data['esFavorito'] ?? false;
+      logger.d('Receta $recetaId en favoritos: $estaEnFavoritos');
+      return estaEnFavoritos;
+    } else {
+      logger.e('Error al verificar favorito: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    logger.e('Excepción en esFavorito: $e');
+    return false;
+  }
+}
+
+/// Toggle favorito: añade si no existe, elimina si existe
+/// Ruta: POST /recetas/favoritos/:recetaId/toggle
+Future<bool> toggleFavorito(int recetaId, String token) async {
+  logger.i('Toggle favorito para receta ID: $recetaId');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/favoritos/$recetaId/toggle');
+  
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    logger.d('Respuesta toggleFavorito - Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final esFavorito = data['esFavorito'] ?? false;
+      logger.i('Toggle favorito completado. Estado final: $esFavorito');
+      return esFavorito;
+    } else {
+      logger.e('Error en toggle favorito: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    logger.e('Excepción en toggleFavorito: $e');
+    return false;
+  }
+}

@@ -371,4 +371,88 @@ const RecetaModel = {
   }
 };
 
+//MODELO DE FAVORITOS
+const FavoritoModel = {
+  /**
+   * Añade una receta a favoritos
+   */
+  anadirFavorito: async (usuarioId, recetaId) => {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO favorito (Id_usuario, Id_receta) VALUES (?, ?)",
+        [usuarioId, recetaId]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        console.log("⚠️ La receta ya está en favoritos");
+        return false;
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Elimina una receta de favoritos
+   */
+  eliminarFavorito: async (usuarioId, recetaId) => {
+    const [result] = await db.query(
+      "DELETE FROM favorito WHERE Id_usuario = ? AND Id_receta = ?",
+      [usuarioId, recetaId]
+    );
+    return result.affectedRows > 0;
+  },
+
+  /**
+   * Verifica si una receta está en favoritos
+   */
+  esFavorito: async (usuarioId, recetaId) => {
+    const [rows] = await db.query(
+      "SELECT Id_favorito FROM favorito WHERE Id_usuario = ? AND Id_receta = ?",
+      [usuarioId, recetaId]
+    );
+    return rows.length > 0;
+  },
+
+  /**
+   * Obtiene todas las recetas favoritas de un usuario
+   */
+  obtenerFavoritosPorUsuario: async (usuarioId) => {
+    const [rows] = await db.query(
+      `SELECT 
+        r.Id_receta,
+        r.titulo,
+        ri.imagen
+      FROM favorito f
+      JOIN receta r ON r.Id_receta = f.Id_receta
+      LEFT JOIN receta_imagen ri ON ri.Id_receta = f.Id_receta
+      WHERE f.Id_usuario = ?
+      ORDER BY f.fecha_guardado DESC`,
+      [usuarioId]
+    );
+
+    return rows.map(row => ({
+      id: row.Id_receta.toString(),
+      titulo: row.titulo,
+      imagenBase64: row.imagen 
+        ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` 
+        : null
+    }));
+  },
+
+  /**
+   * Toggle favorito: añade si no existe, elimina si existe
+   */
+  toggleFavorito: async (usuarioId, recetaId) => {
+    const esFavorito = await FavoritoModel.esFavorito(usuarioId, recetaId);
+    
+    if (esFavorito) {
+      await FavoritoModel.eliminarFavorito(usuarioId, recetaId);
+      return { esFavorito: false, accion: 'eliminado' };
+    } else {
+      await FavoritoModel.anadirFavorito(usuarioId, recetaId);
+      return { esFavorito: true, accion: 'añadido' };
+    }
+  }
+};
 module.exports = { RecetaEntity, RecetaModel };

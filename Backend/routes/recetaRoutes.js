@@ -15,5 +15,101 @@ router.post("/", auth, recetaController.crearReceta);
 router.put("/:id", auth, recetaController.actualizarReceta);
 router.delete("/:id", auth, recetaController.eliminarReceta);
 
+// =====================================================
+//                  RUTAS DE FAVORITOS
+// =====================================================
+
+/**
+ * GET /recetas/favoritos
+ * Obtiene todas las recetas favoritas del usuario
+ */
+router.get("/favoritos", auth, async (req, res) => {
+  try {
+    console.log("🚀 Obteniendo favoritos para usuario:", req.userId);
+    const favoritos = await FavoritoModel.obtenerFavoritosPorUsuario(req.userId);
+    console.log("✅ Favoritos obtenidos:", favoritos.length);
+    res.json(favoritos);
+  } catch (err) {
+    console.error("❌ Error al obtener favoritos:", err);
+    res.status(500).json({ mensaje: err.message });
+  }
+});
+
+/**
+ * POST /recetas/favoritos/:recetaId
+ * Añade una receta a favoritos
+ */
+router.post("/favoritos/:recetaId", auth, async (req, res) => {
+  try {
+    const recetaId = parseInt(req.params.recetaId);
+    console.log("⭐ Añadiendo a favoritos - Usuario:", req.userId, "Receta:", recetaId);
+
+    const resultado = await FavoritoModel.anadirFavorito(req.userId, recetaId);
+
+    if (resultado) {
+      res.json({ mensaje: 'Receta añadida a favoritos' });
+    } else {
+      res.status(400).json({ mensaje: 'La receta ya está en favoritos' });
+    }
+  } catch (err) {
+    console.error("❌ Error al añadir favorito:", err);
+    res.status(500).json({ mensaje: err.message });
+  }
+});
+
+/**
+ * DELETE /recetas/favoritos/:recetaId
+ * Elimina una receta de favoritos
+ */
+router.delete("/favoritos/:recetaId", auth, async (req, res) => {
+  try {
+    const recetaId = parseInt(req.params.recetaId);
+    console.log("💔 Eliminando de favoritos - Usuario:", req.userId, "Receta:", recetaId);
+
+    await FavoritoModel.eliminarFavorito(req.userId, recetaId);
+    res.json({ mensaje: 'Receta eliminada de favoritos' });
+  } catch (err) {
+    console.error("❌ Error al eliminar favorito:", err);
+    res.status(500).json({ mensaje: err.message });
+  }
+});
+
+/**
+ * GET /recetas/favoritos/:recetaId/check
+ * Verifica si una receta está en favoritos
+ */
+router.get("/favoritos/:recetaId/check", auth, async (req, res) => {
+  try {
+    const recetaId = parseInt(req.params.recetaId);
+    const esFavorito = await FavoritoModel.esFavorito(req.userId, recetaId);
+    res.json({ esFavorito });
+  } catch (err) {
+    console.error("❌ Error al verificar favorito:", err);
+    res.status(500).json({ mensaje: err.message });
+  }
+});
+
+/**
+ * POST /recetas/favoritos/:recetaId/toggle
+ * Toggle: añade si no existe, elimina si existe
+ */
+router.post("/favoritos/:recetaId/toggle", auth, async (req, res) => {
+  try {
+    const recetaId = parseInt(req.params.recetaId);
+    console.log("🔄 Toggle favorito - Usuario:", req.userId, "Receta:", recetaId);
+
+    const resultado = await FavoritoModel.toggleFavorito(req.userId, recetaId);
+    
+    res.json({
+      esFavorito: resultado.esFavorito,
+      mensaje: resultado.accion === 'añadido' 
+        ? 'Receta añadida a favoritos' 
+        : 'Receta eliminada de favoritos'
+    });
+  } catch (err) {
+    console.error("❌ Error en toggle favorito:", err);
+    res.status(500).json({ mensaje: err.message });
+  }
+});
 
 module.exports = router;
