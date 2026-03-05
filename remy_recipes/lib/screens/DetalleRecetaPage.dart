@@ -45,7 +45,11 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   // ==============================================
 //         CARGAR ESTADO DE FAVORITO
 // ==============================================
-
+@override
+void initState(){
+  super.initState();
+  _cargarEstadoFavorito();
+}
 Future<void> _cargarEstadoFavorito() async {
   if (widget.authService.currentUser == null) return;
   if (widget.receta.id == null) return;
@@ -173,7 +177,7 @@ void _toggleLike() async {
 
   @override
   Widget build(BuildContext context) {
-    _cargarEstadoFavorito();
+   
     logger.i(
       'Construyendo pantalla de detalle para receta: ${widget.receta.titulo}',
     ); // Log de construcción

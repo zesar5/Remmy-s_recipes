@@ -455,4 +455,4 @@ const FavoritoModel = {
     }
   }
 };
-module.exports = { RecetaEntity, RecetaModel };
+module.exports = { RecetaEntity, RecetaModel, FavoritoModel };

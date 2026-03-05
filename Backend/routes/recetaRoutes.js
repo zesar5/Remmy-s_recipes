@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require("../middlewares/authMiddleware");
 const authOpcional = require("../middlewares/authOpcional");
 const recetaController = require("../controllers/recetaController");
-
+const FavoritoModel = require("../models/receta");
 //Las rutas CRUD
 router.get("/usuario/:userId", auth, recetaController.obtenerRecetaUsuario);
 router.get("/publicas", recetaController.obtenerRecetasPublicas);

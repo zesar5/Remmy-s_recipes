@@ -34,7 +34,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   late Usuario user;
   List<Receta> recetasGuardadas = []; // Recetas propias del usuario
-  List<String> favoritos = []; // Lista simulada/pendiente de implementación
+  List<Receta> favoritos = []; // Lista simulada/pendiente de implementación
   List<String> personas = []; // Lista simulada/pendiente de implementación
   String currentView = "home"; // Vista activa en el menú inferior
   String hovered = ""; // Para efecto hover (más útil en web)
@@ -57,6 +57,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     // Cargamos las recetas del usuario
     _cargarRecetasGuardadas();
+    //Cargamos las recetas favoritas
+    _cargarFavoritos();
   }
 
   /// Carga las recetas propias del usuario (públicas + privadas)
@@ -82,6 +84,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
       });
     } catch (e) {
       logger.e("Error cargando recetas del usuario: $e");
+    }
+  }
+  //Declaramos la función de cargar los favoritos del usuario
+  Future<void> _cargarFavoritos() async {
+    if (widget.authService.accessToken == null) return;
+    try {
+      final lista = await obtenerFavoritos(widget.authService.accessToken!);
+      setState(() {
+        favoritos = lista;
+      });
+    } catch (e) {
+      logger.e("Error cargando favoritos: $e");
     }
   }
 
@@ -294,14 +308,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
   //             CONTENIDO DINÁMICO
   // ==============================================
 
-  Widget _buildContent() {
+   Widget _buildContent() {
     switch (currentView) {
       case "favoritos":
-        return _buildListaEditable(
-          titulo: "Favoritos",
-          lista: favoritos,
-          onAdd: () => _addToList(favoritos),
-        );
+        // ⚠️ CAMBIO: Usar GridView en lugar de _buildListaEditable
+        if (favoritos.isEmpty) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)!.noRecetasGuardadas,
+              style: TextStyle(fontSize: 16),
+            ),
+          );
+        }
+        return _buildFavoritosGrid(); // Llamamos a una nueva función
+
       case "guardados":
         return _buildRecetasGuardadas();
       case "personas":
@@ -313,6 +333,104 @@ class _PerfilScreenState extends State<PerfilScreen> {
       default:
         return _buildHome();
     }
+  }
+
+  // ⚠️ NUEVA FUNCIÓN: Muestra los favoritos en cuadrícula
+  Widget _buildFavoritosGrid() {
+    if (favoritos.isEmpty) {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context)!.noRecetasGuardadas,
+          style: TextStyle(fontSize: 16),
+        ),
+      );
+    }
+
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.75,
+      ),
+      itemCount: favoritos.length,
+      itemBuilder: (context, index) {
+        final receta = favoritos[index];
+        Uint8List? imageBytes;
+
+        final String? base64String = receta.imagenBase64;
+        if (base64String != null && base64String.contains(',')) {
+          try {
+            final base64Image = base64String.split(',').last;
+            if (base64Image.isNotEmpty) {
+              imageBytes = base64Decode(base64Image);
+            }
+          } catch (e) {
+            logger.e(
+              'Error decodificando imagen de receta ${receta.id}: $e',
+            );
+          }
+        }
+
+        return GestureDetector(
+          onTap: () async {
+            logger.i(
+              'Click en favorito: ${receta.titulo} (ID: ${receta.id})',
+            );
+            try {
+              final recetaCompleta = await obtenerRecetaPorId(
+                widget.authService.accessToken!,
+                receta.id!,
+              );
+              logger.i('Receta completa cargada para detalle');
+
+              final refrescar = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DetalleRecetaPage(
+                    receta: recetaCompleta,
+                    authService: widget.authService,
+                  ),
+                ),
+              );
+
+              // ⚠️ IMPORTANTE: Refrescar favoritos si se eliminó algo
+              if (refrescar == true) _cargarFavoritos();
+            } catch (e, s) {
+              logger.e("🔥 ERROR en onTap: $e");
+              logger.d(s);
+            }
+          },
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: imageBytes != null
+                      ? Image.memory(imageBytes, fit: BoxFit.cover)
+                      : Container(
+                          color: Colors.grey.shade300,
+                          child: const Icon(Icons.image, size: 50),
+                        ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    receta.titulo,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   /// Muestra las recetas propias del usuario en un grid
