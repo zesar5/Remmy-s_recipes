@@ -14,6 +14,10 @@ router.post("/registro", usuarioController.registrarUsuario);
 // PERFIL
 router.get("/perfil/:id", usuarioController.obtenerPerfil);
 
+//LISTAR TODOS LOS USUARIOS
+router.get("/usuarios", usuarioController.obtenerTodosUsuarios);
+
+router.get("/comunidad", usuarioController.obtenerUsuariosComunidad);
 // OBTENER FOTO
 router.get("/foto/:id", usuarioController.obtenerFotoPerfil);
 
@@ -41,33 +45,31 @@ router.post(
   upload.single("profilePic"),
   async (req, res) => {
     try {
-//ID REAL DEL USUARIO
-// viene del token JWT
- //lo que hace esque extrae el id y lo guarda en req.userId
- //para que no se hagan un lio entre los usuarios
-      const userId = req.userId; 
-        
+      //ID REAL DEL USUARIO
+      // viene del token JWT
+      //lo que hace esque extrae el id y lo guarda en req.userId
+      //para que no se hagan un lio entre los usuarios
+      const userId = req.userId;
+
       //log utiles para la depuracion
       console.log("FILE:", req.file);
       console.log("USER ID TOKEN:", userId);
-
 
       //en caso de que no se envio ningun archivo
       if (!req.file) {
         return res.status(400).json({ message: "No se envió imagen" });
       }
-//guardamos la imagen en la base de datos
+      //guardamos la imagen en la base de datos
       await db.query(
         `INSERT INTO usuario_imagen (Id_usuario, imagen)
          VALUES (?, ?)
          ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)`,
         [userId, req.file.buffer],
       );
-//en caso de que todo haya ido bien
+      //en caso de que todo haya ido bien
       res.json({ ok: true });
-
     } catch (error) {
-        //capturamos cualquier error
+      //capturamos cualquier error
       console.error("❌ Error subiendo foto:", error);
       res.status(500).json({ message: "Error subiendo imagen" });
     }

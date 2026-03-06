@@ -86,9 +86,20 @@ class Usuario {
     return user;
   }
 
-  static async obtenerTodosUsuarios(){
-    const [rows] =await db.query(
-      "SELECT Id_usuario, nombre, pais, email, descripcion, anioNacimiento, FROM usuario"
+  static async obtenerTodosUsuarios() {
+    const [rows] = await db.query(
+      "SELECT Id_usuario, nombre, pais, email, descripcion, anioNacimiento FROM usuario",
+    );
+    return rows;
+  }
+  static async obtenerUsuariosComunidad() {
+    const [rows] = await db.query(
+      `SELECT
+      u.Id_usuario,
+      u.nombre,
+      u.descripcion
+      FROM usuario u
+      `,
     );
     return rows;
   }

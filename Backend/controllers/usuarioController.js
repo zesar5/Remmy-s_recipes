@@ -50,7 +50,7 @@ exports.loginUsuario = async (req, res) => {
     const usuario = rows[0];
     const passwordCorrecta = await bcrypt.compare(
       contrasena,
-      usuario.contrasena
+      usuario.contrasena,
     );
 
     if (!passwordCorrecta) {
@@ -206,15 +206,12 @@ exports.obtenerPerfil = async (req, res) => {
 // 3️. Devuelve la imagen como archivo (NO como JSON)
 // 4️. Permite que Flutter la muestre con Image.network()
 
-
-
 exports.obtenerFotoPerfil = async (req, res) => {
-  
   //extraemos el id del usuario desde la URL
   const { id } = req.params;
 
   try {
-    //ejecutamos una consulta a la base de daros 
+    //ejecutamos una consulta a la base de daros
     //buscamos la ultim foto subida por ese usuario
     const [rows] = await require("../config/db").query(
       `SELECT imagen 
@@ -222,9 +219,9 @@ exports.obtenerFotoPerfil = async (req, res) => {
        WHERE Id_usuario = ? 
        ORDER BY creado_en DESC 
        LIMIT 1`,
-      [id],//valor que sustituye el ?
+      [id], //valor que sustituye el ?
     );
-      // si el user no tiene imagen guardada mandamos un 404 para que flutter mandeicono por defecto
+    // si el user no tiene imagen guardada mandamos un 404 para que flutter mandeicono por defecto
     if (rows.length === 0) {
       return res.status(404).send("Sin imagen");
     }
@@ -244,6 +241,39 @@ exports.obtenerFotoPerfil = async (req, res) => {
 };
 
 // ────────────────────────────────────────────────
+//              OBTENER TODOS LOS USUARIOS
+// ────────────────────────────────────────────────
+
+exports.obtenerTodosUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.obtenerTodosUsuarios();
+    res.json(usuarios);
+  } catch (error) {
+    console.error("Error obtenido usuarios:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.obtenerUsuariosComunidad = async (req, res) => {
+  try {
+    const usuarios = await Usuario.obtenerUsuariosComunidad();
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    const usuariosConFoto = usuarios.map((u) => ({
+      id: u.Id_usuario,
+      nombre: u.nombre,
+      descripcion: u.descripcion,
+      foto: `${baseUrl}/foto/${u.Id_usuario}`,
+    }));
+    res.json(usuariosConFoto);
+  } catch (error) {
+    console.error("Error obteniendo comunidad:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// ────────────────────────────────────────────────
 //               ACTUALIZAR PERFIL USUARIO
 // ────────────────────────────────────────────────
 
@@ -257,18 +287,25 @@ exports.obtenerFotoPerfil = async (req, res) => {
  */
 exports.actualizarPerfilUsuario = async (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, fotoPerfil } = req.body;  // Campos enviados por Flutter
+  const { nombre, descripcion, fotoPerfil } = req.body; // Campos enviados por Flutter
   const t = getMessages(req);
 
   try {
     // Verifica que el usuario autenticado sea el mismo que se actualiza
     if (req.userId !== parseInt(id)) {
-      logger.info("Intento de actualización no autorizado", { id, userId: req.userId });
+      logger.info("Intento de actualización no autorizado", {
+        id,
+        userId: req.userId,
+      });
       return res.status(403).json({ mensaje: t.notAuthorized });
     }
 
     // Actualiza usando el modelo
-    const updatedUser = await Usuario.actualizarPerfil(id, { nombre, descripcion, fotoPerfil });
+    const updatedUser = await Usuario.actualizarPerfil(id, {
+      nombre,
+      descripcion,
+      fotoPerfil,
+    });
 
     if (!updatedUser) {
       logger.info("Usuario no encontrado para actualizar", { id });
@@ -276,7 +313,7 @@ exports.actualizarPerfilUsuario = async (req, res) => {
     }
 
     logger.info("Perfil actualizado exitosamente", { id });
-    res.json(updatedUser);  // Devuelve el usuario actualizado
+    res.json(updatedUser); // Devuelve el usuario actualizado
   } catch (err) {
     logger.error("Error al actualizar perfil", { err: err.message });
     res.status(500).json({ error: err.message });
@@ -287,9 +324,12 @@ exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     // Busca usuario por email en tabla 'usuario' (obtiene Id_usuario y email)
-    const [rows] = await require("../config/db").query('SELECT Id_usuario, email FROM usuario WHERE email = ?', [email]);
+    const [rows] = await require("../config/db").query(
+      "SELECT Id_usuario, email FROM usuario WHERE email = ?",
+      [email],
+    );
     if (rows.length === 0) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
     const userId = rows[0].Id_usuario;
     const userEmail = rows[0].email; // Lo usamos para el email, pero no lo guardamos en usuario_recuperacion
@@ -300,36 +340,36 @@ exports.forgotPassword = async (req, res) => {
 
     // Inserta o actualiza en tabla 'usuario_recuperacion' (solo Id_usuario, reset_code, reset_expires)
     await require("../config/db").query(
-      'INSERT INTO usuario_recuperacion (Id_usuario, codigo_recuperacion, fecha_expiracion) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE codigo_recuperacion = VALUES(codigo_recuperacion), fecha_expiracion = VALUES(fecha_expiracion)',
-      [userId, resetCode, expires]
+      "INSERT INTO usuario_recuperacion (Id_usuario, codigo_recuperacion, fecha_expiracion) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE codigo_recuperacion = VALUES(codigo_recuperacion), fecha_expiracion = VALUES(fecha_expiracion)",
+      [userId, resetCode, expires],
     );
 
     // Envía email (usa userEmail obtenido de usuario)
-    const nodemailer = require('nodemailer');
+    const nodemailer = require("nodemailer");
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        pass: process.env.EMAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false
-      }
+        rejectUnauthorized: false,
+      },
     });
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: userEmail, // Usa el email de la tabla usuario
-      subject: 'Código de recuperación de contraseña',
+      subject: "Código de recuperación de contraseña",
       text: `Tu código de verificación es: ${resetCode}. Expira en 10 minutos.`,
     });
 
     logger.info(`Código enviado a ${userEmail}`);
-    res.status(200).json({ mensaje: 'Código enviado' });
+    res.status(200).json({ mensaje: "Código enviado" });
   } catch (error) {
-    logger.error('Error en forgotPassword:', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    logger.error("Error en forgotPassword:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
@@ -337,20 +377,27 @@ exports.forgotPassword = async (req, res) => {
 exports.verifyResetCode = async (req, res) => {
   const { code } = req.body;
   try {
-    const [rows] = await require("../config/db").query('SELECT Id_usuario FROM usuario_recuperacion WHERE codigo_recuperacion = ? AND fecha_expiracion > NOW()', [code]);
+    const [rows] = await require("../config/db").query(
+      "SELECT Id_usuario FROM usuario_recuperacion WHERE codigo_recuperacion = ? AND fecha_expiracion > NOW()",
+      [code],
+    );
     if (rows.length === 0) {
-      return res.status(400).json({ mensaje: 'Código inválido o expirado' });
+      return res.status(400).json({ mensaje: "Código inválido o expirado" });
     }
 
     // Genera token temporal (usa jsonwebtoken)
-    const jwt = require('jsonwebtoken');
-    const resetToken = jwt.sign({ userId: rows[0].Id_usuario }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    const jwt = require("jsonwebtoken");
+    const resetToken = jwt.sign(
+      { userId: rows[0].Id_usuario },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" },
+    );
 
     logger.info(`Código verificado para usuario ${rows[0].Id_usuario}`);
     res.status(200).json({ resetToken });
   } catch (error) {
-    logger.error('Error en verifyResetCode:', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    logger.error("Error en verifyResetCode:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
@@ -358,27 +405,31 @@ exports.verifyResetCode = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   const { resetToken, newPassword } = req.body;
   try {
-    const jwt = require('jsonwebtoken');
+    const jwt = require("jsonwebtoken");
     const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
-    const bcrypt = require('bcrypt');
+    const bcrypt = require("bcrypt");
 
     // Hash nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Actualiza contraseña en tabla 'usuario'
-    await require("../config/db").query('UPDATE usuario SET contrasena = ? WHERE Id_usuario = ?', [hashedPassword, decoded.userId]);
+    await require("../config/db").query(
+      "UPDATE usuario SET contrasena = ? WHERE Id_usuario = ?",
+      [hashedPassword, decoded.userId],
+    );
 
     // Limpia código en tabla 'usuario_recuperacion'
-    await require("../config/db").query('UPDATE usuario_recuperacion SET codigo_recuperacion = NULL, fecha_expiracion = NULL WHERE Id_usuario = ?', [decoded.userId]);
+    await require("../config/db").query(
+      "UPDATE usuario_recuperacion SET codigo_recuperacion = NULL, fecha_expiracion = NULL WHERE Id_usuario = ?",
+      [decoded.userId],
+    );
 
     logger.info(`Contraseña reseteada para usuario ${decoded.userId}`);
-    res.status(200).json({ mensaje: 'Contraseña cambiada exitosamente' });
+    res.status(200).json({ mensaje: "Contraseña cambiada exitosamente" });
   } catch (error) {
-    logger.error('Error en resetPassword:', error);
-    res.status(400).json({ mensaje: 'Token inválido o expirado' });
+    logger.error("Error en resetPassword:", error);
+    res.status(400).json({ mensaje: "Token inválido o expirado" });
   }
 };
 
 module.exports = exports;
-
-
