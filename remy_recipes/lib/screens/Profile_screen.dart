@@ -21,8 +21,14 @@ import '../l10n/app_localizations.dart';
 
 class PerfilScreen extends StatefulWidget {
   final AuthService authService;
-
-  const PerfilScreen({super.key, required this.authService});
+  final Usuario? usuarioAMostrar;
+  final bool viewOnly;
+  const PerfilScreen({
+    super.key,
+    required this.authService,
+    this.usuarioAMostrar,
+    this.viewOnly = false,
+  });
 
   @override
   State<PerfilScreen> createState() => _PerfilScreenState();
@@ -53,7 +59,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
 
     // Cargamos el usuario desde AuthService
-    user = widget.authService.currentUser!;
+    user = widget.usuarioAMostrar ?? widget.authService.currentUser!;
 
     // Cargamos las recetas del usuario
     _cargarRecetasGuardadas();
@@ -86,8 +92,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       logger.e("Error cargando recetas del usuario: $e");
     }
   }
+
   //Declaramos la función de cargar los favoritos del usuario
   Future<void> _cargarFavoritos() async {
+    if (widget.viewOnly) return;
     if (widget.authService.accessToken == null) return;
     try {
       final lista = await obtenerFavoritos(widget.authService.accessToken!);
@@ -113,38 +121,38 @@ class _PerfilScreenState extends State<PerfilScreen> {
           0xFFDEB887,
         ), // Color característico de la app
         elevation: 0, // Sin sombra para que se integre con la cabecera
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'editar') {
-                logger.i('Seleccionando editar perfil');
-                _editarPerfil();
-              } else if (value == 'cerrar') {
-                logger.i('Seleccionando cerrar sesión');
-                _cerrarSesion();
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem<String>(
-                value: 'editar',
-                child: Text(AppLocalizations.of(context)!.editarPerfil),
-              ),
-              PopupMenuItem<String>(
-                value: 'cerrar',
-                child: Text(AppLocalizations.of(context)!.cerrarSesion),
-              ),
-            ],
-            icon: const Icon(Icons.more_vert, color: Colors.black),
-          ),
-        ],
+        actions: widget.viewOnly
+            ? null
+            : [
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'editar') {
+                      logger.i('Seleccionando editar perfil');
+                      _editarPerfil();
+                    } else if (value == 'cerrar') {
+                      logger.i('Seleccionando cerrar sesión');
+                      _cerrarSesion();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem<String>(
+                      value: 'editar',
+                      child: Text(AppLocalizations.of(context)!.editarPerfil),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'cerrar',
+                      child: Text(AppLocalizations.of(context)!.cerrarSesion),
+                    ),
+                  ],
+                  icon: const Icon(Icons.more_vert, color: Colors.black),
+                ),
+              ],
       ),
       body: Column(
         children: [
           // Cabecera con foto, nombre y descripción (sin el menú, que ahora está en AppBar)
           _buildHeader(),
-
-          // Barra de navegación inferior (menú de vistas)
-          _buildMenuBar(),
+          if (!widget.viewOnly) _buildMenuBar(),
 
           // Contenido dinámico según la vista seleccionada
           Expanded(
@@ -308,7 +316,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   //             CONTENIDO DINÁMICO
   // ==============================================
 
-   Widget _buildContent() {
+  Widget _buildContent() {
     switch (currentView) {
       case "favoritos":
         // ⚠️ CAMBIO: Usar GridView en lugar de _buildListaEditable
@@ -320,7 +328,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
             ),
           );
         }
-        return _buildFavoritosGrid(); // Llamamos a una nueva función
+        return widget.viewOnly
+            ? _buildHome()
+            : _buildFavoritosGrid(); // Llamamos a una nueva función
 
       case "guardados":
         return _buildRecetasGuardadas();
@@ -366,17 +376,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
               imageBytes = base64Decode(base64Image);
             }
           } catch (e) {
-            logger.e(
-              'Error decodificando imagen de receta ${receta.id}: $e',
-            );
+            logger.e('Error decodificando imagen de receta ${receta.id}: $e');
           }
         }
 
         return GestureDetector(
           onTap: () async {
-            logger.i(
-              'Click en favorito: ${receta.titulo} (ID: ${receta.id})',
-            );
+            logger.i('Click en favorito: ${receta.titulo} (ID: ${receta.id})');
             try {
               final recetaCompleta = await obtenerRecetaPorId(
                 widget.authService.accessToken!,
@@ -608,6 +614,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }*/
 
   void _editarPerfil() {
+    if (widget.viewOnly) return;
     logger.i('Navegando a pantalla de edición de perfil'); // Log de navegación
     Navigator.push(
       context,
@@ -626,6 +633,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   void _cerrarSesion() {
+    if (widget.viewOnly) return;
     logger.i(
       'Cerrando sesión - Llamando a logout y navegando a login',
     ); // Log de acción

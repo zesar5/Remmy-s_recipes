@@ -264,7 +264,7 @@ exports.obtenerUsuariosComunidad = async (req, res) => {
       id: u.Id_usuario,
       nombre: u.nombre,
       descripcion: u.descripcion,
-      foto: `${baseUrl}/foto/${u.Id_usuario}`,
+      fotoPerfil: u.fotoPerfil,
     }));
     res.json(usuariosConFoto);
   } catch (error) {

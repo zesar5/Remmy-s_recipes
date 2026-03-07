@@ -47,7 +47,7 @@ class Usuario {
       descripcion: json['descripcion'],
       anioNacimiento: json['anioNacimiento'], // puede ser int o null
       // La foto podría venir como base64 completo o null
-      fotoPerfil: json['fotoPerfil'],
+      fotoPerfil: json['fotoPerfil'] ?? json['foto'],
     );
   }
 

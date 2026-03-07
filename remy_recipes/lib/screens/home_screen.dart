@@ -185,8 +185,14 @@ class _MainPageState extends State<MainPage> {
                       spacing: 12,
                       runSpacing: 12,
                       children: [
-                        _combo(AppLocalizations.of(context)!.pais, AppStrings.countries),
-                        _combo(AppLocalizations.of(context)!.estacionLabel, AppStrings.seasons),
+                        _combo(
+                          AppLocalizations.of(context)!.pais,
+                          AppStrings.countries,
+                        ),
+                        _combo(
+                          AppLocalizations.of(context)!.estacionLabel,
+                          AppStrings.seasons,
+                        ),
                         _combo(AppLocalizations.of(context)!.duracionLabel, [
                           "5 min",
                           "10 min",
@@ -195,7 +201,10 @@ class _MainPageState extends State<MainPage> {
                           "60 min",
                           "90 min",
                         ]),
-                        _combo(AppLocalizations.of(context)!.alergenosLabel, AppStrings.allergens),
+                        _combo(
+                          AppLocalizations.of(context)!.alergenosLabel,
+                          AppStrings.allergens,
+                        ),
                       ],
                     ),
 
@@ -221,7 +230,11 @@ class _MainPageState extends State<MainPage> {
                           _cargarRecetasPredeterminadas();
                           Navigator.pop(context);
                         },
-                        child: Text(AppLocalizations.of(context)!.cargarRecetasPredeterminadas),
+                        child: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.cargarRecetasPredeterminadas,
+                        ),
                       ),
                     ),
 
@@ -379,10 +392,12 @@ class _MainPageState extends State<MainPage> {
                     logger.i("Ir a Comunidad");
                     // TODO: Navegar a pantalla comunidad
                     Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => ComunidadScreen()),
-                      );
-                      
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ComunidadScreen(authService: authService),
+                      ),
+                    );
                   },
                 ),
 
@@ -421,9 +436,7 @@ class _MainPageState extends State<MainPage> {
             logger.w('Intento de crear receta sin usuario logueado');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  AppLocalizations.of(context)!.debesIniciarSesion,
-                ),
+                content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
               ),
             );
             return;
@@ -433,9 +446,8 @@ class _MainPageState extends State<MainPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => RecipeFormPage(
-                token: widget.authService.accessToken!,
-              ),
+              builder: (_) =>
+                  RecipeFormPage(token: widget.authService.accessToken!),
             ),
           );
         },
@@ -448,67 +460,63 @@ class _MainPageState extends State<MainPage> {
             // 🔒 TOP BAR FIJA
             SliverPersistentHeader(
               pinned: true,
-              delegate: _TopBarSliver(
-                child: _buildTopBar(context),
-              ),
+              delegate: _TopBarSliver(child: _buildTopBar(context)),
             ),
 
             // CONTENIDO QUE SCROLLA
             SliverPadding(
               padding: const EdgeInsets.all(14),
               sliver: SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    const SizedBox(height: 10),
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 10),
 
-                    Column(
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!.appName,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontFamily: 'Alegreya',
-                            color: Colors.black,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(1, 1),
-                                blurRadius: 3,
-                                color: Colors.black26,
-                              ),
-                            ],
-                          ),
-                          textAlign: TextAlign.center,
+                  Column(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.appName,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontFamily: 'Alegreya',
+                          color: Colors.black,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(1, 1),
+                              blurRadius: 3,
+                              color: Colors.black26,
+                            ),
+                          ],
                         ),
+                        textAlign: TextAlign.center,
+                      ),
 
-                        Center(
-                          child: Transform.scale(
-                            scale: 1.7,
-                            child: SizedBox(
-                              width: 260,
-                              height: 240,
-                              child: Image.asset(
-                                "assets/logosinfondoBien.png",
-                                fit: BoxFit.contain,
-                              ),
+                      Center(
+                        child: Transform.scale(
+                          scale: 1.7,
+                          child: SizedBox(
+                            width: 260,
+                            height: 240,
+                            child: Image.asset(
+                              "assets/logosinfondoBien.png",
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Text(
-                      AppLocalizations.of(context)!.recetas,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    ],
+                  ),
 
-                    const SizedBox(height: 10),
-                  ],
-                ),
+                  const SizedBox(height: 10),
+
+                  Text(
+                    AppLocalizations.of(context)!.recetas,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+                ]),
               ),
             ),
 
@@ -527,16 +535,13 @@ class _MainPageState extends State<MainPage> {
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, i) {
-                      final r = recipes[i];
-                      return RecipeButton(
-                        recipe: r,
-                        authService: widget.authService,
-                      );
-                    },
-                    childCount: recipes.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, i) {
+                    final r = recipes[i];
+                    return RecipeButton(
+                      recipe: r,
+                      authService: widget.authService,
+                    );
+                  }, childCount: recipes.length),
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 250,
                     crossAxisSpacing: 12,
@@ -546,9 +551,7 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
 
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 80),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
       ),
@@ -585,66 +588,80 @@ class _MainPageState extends State<MainPage> {
                   logger.w(
                     'Intento de acceder a perfil sin usuario logueado',
                   ); // Advertencia
-                 showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFDEB887),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            AppLocalizations.of(context)!.necesitasIniciarSesion,  // Título corregido
-            textAlign: TextAlign.center,
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        backgroundColor: const Color(0xFFDEB887),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        title: Text(
+                          AppLocalizations.of(
+                            context,
+                          )!.necesitasIniciarSesion, // Título corregido
+                          textAlign: TextAlign.center,
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 10),
 
-              // Botón para ir a la página de iniciar sesión
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppStrings.colorFondo,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 45),
-                ),
-                onPressed: () {
-                  Navigator.pop(context); // Cierra el diálogo
-                  // Navega a la pantalla de login (reemplaza 'LoginScreen' con el nombre real de tu pantalla de login si es diferente)
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>  LoginScreen(authService: widget.authService),
-                    ),
+                            // Botón para ir a la página de iniciar sesión
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppStrings.colorFondo,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 45),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context); // Cierra el diálogo
+                                // Navega a la pantalla de login (reemplaza 'LoginScreen' con el nombre real de tu pantalla de login si es diferente)
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => LoginScreen(
+                                      authService: widget.authService,
+                                    ),
+                                  ),
+                                );
+                                logger.i("Navegando a pantalla de login");
+                              },
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.irPaginaIniciarSesion,
+                              ), // Texto corregido
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            // Botón para permanecer de invitado
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppStrings.colorFondo,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 45),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(
+                                  context,
+                                ); // Cierra el diálogo y permanece en la pantalla
+                                logger.i("Permaneciendo como invitado");
+                              },
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.permanecerInvitado,
+                              ), // Texto corregido
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   );
-                  logger.i("Navegando a pantalla de login");
-                },
-                child: Text(AppLocalizations.of(context)!.irPaginaIniciarSesion),  // Texto corregido
-              ),
-
-              const SizedBox(height: 10),
-
-              // Botón para permanecer de invitado
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppStrings.colorFondo,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 45),
-                ),
-                onPressed: () {
-                  Navigator.pop(context); // Cierra el diálogo y permanece en la pantalla
-                  logger.i("Permaneciendo como invitado");
-                },
-                child: Text(AppLocalizations.of(context)!.permanecerInvitado),  // Texto corregido
-              ),
-            ],
-          ),
-        );
-      },
-    );
-    return;
-  }
+                  return;
+                }
 
                 logger.i('Navegando a pantalla de perfil');
 
@@ -847,7 +864,10 @@ class _TopBarSliver extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: const Color(0xFFDEB887),
       padding: const EdgeInsets.symmetric(horizontal: 14),

@@ -97,11 +97,21 @@ class Usuario {
       `SELECT
       u.Id_usuario,
       u.nombre,
-      u.descripcion
+      u.descripcion,
+      ui.imagen
       FROM usuario u
+      LEFT JOIN usuario_imagen ui
+      ON u.Id_usuario = ui.Id_usuario
       `,
     );
-    return rows;
+    return rows.map((user) => {
+      if (user.imagen) {
+        user.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
+      } else {
+        user.fotoPerfil = null;
+      }
+      return user;
+    });
   }
 
   static async actualizarPerfil(id, data) {

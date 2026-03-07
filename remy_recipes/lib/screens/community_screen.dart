@@ -1,25 +1,34 @@
 import 'dart:math';
-
+import 'dart:convert';
 import '../../services/config.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'Profile_screen.dart';
+import '../services/auth_service.dart';
+import 'package:logger/logger.dart';
 import 'package:remy_recipes/data/models/usuario.dart';
 
 class ComunidadScreen extends StatefulWidget {
+  final AuthService authService;
+
+  const ComunidadScreen({super.key, required this.authService});
+
   @override
-  _ComunidadScreenState createState() => _ComunidadScreenState();
+  State<ComunidadScreen> createState() => _ComunidadScreenState();
 }
 
 class _ComunidadScreenState extends State<ComunidadScreen> {
+  final Logger logger = Logger();
   List<Usuario> usuarios = [];
   bool isLoading = true;
+  late AuthService authService;
 
   @override
   void initState() {
     super.initState();
     fetchUsuarios();
+    authService = widget.authService;
   }
 
   Future<void> fetchUsuarios() async {
@@ -42,7 +51,8 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Remmy´s Recipes'), leading: BackButton()),
+      backgroundColor: const Color(0xFFDEB887),
+      appBar: AppBar(title: Text("Remmy's Recipes"), leading: BackButton()),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -50,10 +60,31 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
               itemBuilder: (context, index) {
                 final user = usuarios[index];
                 return ListTile(
-                  leading: CircleAvatar(child: Text(user.userName[0])),
+                  leading: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.grey.shade300,
+
+                    backgroundImage:
+                        user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
+                        ? NetworkImage(user.fotoPerfil!)
+                        : null,
+
+                    child: (user.fotoPerfil == null || user.fotoPerfil!.isEmpty)
+                        ? const Icon(Icons.person)
+                        : null,
+                  ),
                   title: Text(user.userName),
                   onTap: () {
-                    Navigator.pushNamed(context, '/perfil', arguments: user.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PerfilScreen(
+                          authService: widget.authService,
+                          usuarioAMostrar: user, // usuario de la lista
+                          viewOnly: true, // modo solo visualización
+                        ),
+                      ),
+                    );
                   },
                 );
               },
