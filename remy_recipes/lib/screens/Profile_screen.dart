@@ -382,6 +382,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
         return GestureDetector(
           onTap: () async {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
+            );
             logger.i('Click en favorito: ${receta.titulo} (ID: ${receta.id})');
             try {
               final recetaCompleta = await obtenerRecetaPorId(
@@ -389,6 +394,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 receta.id!,
               );
               logger.i('Receta completa cargada para detalle');
+
+              Navigator.pop(context);
 
               final refrescar = await Navigator.push(
                 context,
@@ -403,6 +410,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               // ⚠️ IMPORTANTE: Refrescar favoritos si se eliminó algo
               if (refrescar == true) _cargarFavoritos();
             } catch (e, s) {
+              Navigator.pop(context);
               logger.e("🔥 ERROR en onTap: $e");
               logger.d(s);
             }
@@ -478,6 +486,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
         return GestureDetector(
           onTap: () async {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
+            );
             logger.i(
               'Click en receta guardada: ${receta.titulo} (ID: ${receta.id})',
             ); // Log de acción
@@ -486,6 +499,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 widget.authService.accessToken!,
                 receta.id!,
               );
+              Navigator.pop(context);
               logger.i('Receta completa cargada para detalle'); // Log de éxito
 
               final refrescar = await Navigator.push(
@@ -501,6 +515,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               // Si se eliminó o modificó la receta → recargar lista
               if (refrescar == true) _cargarRecetasGuardadas();
             } catch (e, s) {
+              Navigator.pop(context);
               logger.e("🔥 ERROR en onTap: $e");
               logger.d(s); //Debug adicional
             }

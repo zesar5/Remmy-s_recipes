@@ -780,11 +780,19 @@ class RecipeButton extends StatelessWidget {
         logger.i(
           '🖱️ Click en receta con id: ${recipe.titulo} (ID: ${recipe.id})',
         );
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => const Center(child: CircularProgressIndicator()),
+        );
 
         try {
           // Carga la receta completa (detalle) desde el backend
           final recetaCompleta = await obtenerRecetaPublicaPorId(recipe.id!);
           logger.i('Receta completa cargada - Navegando a detalle');
+
+          Navigator.pop(context);
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -795,6 +803,7 @@ class RecipeButton extends StatelessWidget {
             ),
           );
         } catch (e) {
+          Navigator.pop(context);
           logger.e("🔥 ERROR al cargar receta pública: $e");
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
