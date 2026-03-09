@@ -94,16 +94,18 @@ class Usuario {
   }
   static async obtenerUsuariosComunidad() {
     const [rows] = await db.query(
-      `SELECT
-      u.Id_usuario,
-      u.nombre,
-      u.descripcion,
-      ui.imagen
-      FROM usuario u
-      LEFT JOIN usuario_imagen ui
-      ON u.Id_usuario = ui.Id_usuario
-      `,
+      `SELECT 
+        u.Id_usuario,
+        u.nombre,
+        u.descripcion,
+        MAX(ui.imagen) AS imagen   -- toma solo una imagen por usuario
+     FROM usuario u
+     LEFT JOIN usuario_imagen ui
+       ON u.Id_usuario = ui.Id_usuario
+     GROUP BY u.Id_usuario, u.nombre, u.descripcion
+    `,
     );
+
     return rows.map((user) => {
       if (user.imagen) {
         user.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;

@@ -31,3 +31,4 @@
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-17T18:37:48.501Z"}
 {"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-22T14:11:06.414Z"}
 {"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-22T14:11:18.403Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-03-09T09:00:35.354Z"}
