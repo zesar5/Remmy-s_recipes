@@ -97,11 +97,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Future<void> _cargarFavoritos() async {
     if (widget.viewOnly) return;
     if (widget.authService.accessToken == null) return;
+    logger.i('INICIANDO CARGA DE FAVORITOS');
     try {
       final lista = await obtenerFavoritos(widget.authService.accessToken!);
+      logger.i('FAVORITOS RECIBIDOS: ${lista.length}');
       setState(() {
         favoritos = lista;
       });
+
+      logger.i('Favoritos actualizados: ${favoritos.length}');
     } catch (e) {
       logger.e("Error cargando favoritos: $e");
     }
@@ -280,6 +284,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
         onTap: () {
           logger.i('Cambiando vista a: $view'); // Log de navegación
           setState(() => currentView = view);
+           if (view == "favoritos") {
+          _cargarFavoritos();
+        }
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),

@@ -3,17 +3,10 @@ const router = express.Router();
 const auth = require("../middlewares/authMiddleware");
 const authOpcional = require("../middlewares/authOpcional");
 const recetaController = require("../controllers/recetaController");
-const FavoritoModel = require("../models/receta");
-//Las rutas CRUD
-router.get("/usuario/:userId", auth, recetaController.obtenerRecetaUsuario);
-router.get("/publicas", recetaController.obtenerRecetasPublicas);
-router.get("/publicas/:id", recetaController.obtenerRecetaPublicaPorId);
-router.post("/filtrar", authOpcional, recetaController.obtenerRecetasFiltradas);
-router.get("/:id", auth, recetaController.obtenerRecetaPorId);
-router.get('/', recetaController.getRecetas);
-router.post("/", auth, recetaController.crearReceta);
-router.put("/:id", auth, recetaController.actualizarReceta);
-router.delete("/:id", auth, recetaController.eliminarReceta);
+const { RecetaEntity, RecetaModel, FavoritoModel } = require("../models/receta");
+console.log("🔍 DEBUG: FavoritoModel =", FavoritoModel);
+console.log("🔍 DEBUG: FavoritoModel.esFavorito =", typeof FavoritoModel.esFavorito);
+console.log("🔍 DEBUG: FavoritoModel.anadirFavorito =", typeof FavoritoModel.anadirFavorito);
 
 // =====================================================
 //                  RUTAS DE FAVORITOS
@@ -111,5 +104,17 @@ router.post("/favoritos/:recetaId/toggle", auth, async (req, res) => {
     res.status(500).json({ mensaje: err.message });
   }
 });
+//Las rutas CRUD
+router.get("/usuario/:userId", auth, recetaController.obtenerRecetaUsuario);
+router.get("/publicas", recetaController.obtenerRecetasPublicas);
+router.get("/publicas/:id", recetaController.obtenerRecetaPublicaPorId);
+router.post("/filtrar", authOpcional, recetaController.obtenerRecetasFiltradas);
+router.get("/:id", auth, recetaController.obtenerRecetaPorId);
+router.get('/', recetaController.getRecetas);
+router.post("/", auth, recetaController.crearReceta);
+router.put("/:id", auth, recetaController.actualizarReceta);
+router.delete("/:id", auth, recetaController.eliminarReceta);
+
+
 
 module.exports = router;

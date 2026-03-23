@@ -379,7 +379,7 @@ const FavoritoModel = {
   anadirFavorito: async (usuarioId, recetaId) => {
     try {
       const [result] = await db.query(
-        "INSERT INTO favorito (Id_usuario, Id_receta) VALUES (?, ?)",
+        "INSERT INTO favoritos (Id_usuario, Id_receta) VALUES (?, ?)",
         [usuarioId, recetaId]
       );
       return result.affectedRows > 0;
@@ -397,7 +397,7 @@ const FavoritoModel = {
    */
   eliminarFavorito: async (usuarioId, recetaId) => {
     const [result] = await db.query(
-      "DELETE FROM favorito WHERE Id_usuario = ? AND Id_receta = ?",
+      "DELETE FROM favoritos WHERE Id_usuario = ? AND Id_receta = ?",
       [usuarioId, recetaId]
     );
     return result.affectedRows > 0;
@@ -407,12 +407,12 @@ const FavoritoModel = {
    * Verifica si una receta está en favoritos
    */
   esFavorito: async (usuarioId, recetaId) => {
-    const [rows] = await db.query(
-      "SELECT Id_favorito FROM favorito WHERE Id_usuario = ? AND Id_receta = ?",
-      [usuarioId, recetaId]
-    );
-    return rows.length > 0;
-  },
+  const [rows] = await db.query(
+    "SELECT 1 FROM favoritos WHERE Id_usuario = ? AND Id_receta = ?",
+    [usuarioId, recetaId]
+  );
+  return rows.length > 0;
+},
 
   /**
    * Obtiene todas las recetas favoritas de un usuario
@@ -423,7 +423,7 @@ const FavoritoModel = {
         r.Id_receta,
         r.titulo,
         ri.imagen
-      FROM favorito f
+      FROM favoritos f
       JOIN receta r ON r.Id_receta = f.Id_receta
       LEFT JOIN receta_imagen ri ON ri.Id_receta = f.Id_receta
       WHERE f.Id_usuario = ?

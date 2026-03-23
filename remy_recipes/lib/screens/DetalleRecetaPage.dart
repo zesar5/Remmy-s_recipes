@@ -189,6 +189,12 @@ void _toggleLike() async {
         backgroundColor: AppStrings.colorFondo,
         foregroundColor: Colors.white,
         elevation: 2,
+        leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context, true); // ← Devuelve true al cerrar
+        },
+      ),
         actions: [
 
           //==============================
