@@ -264,7 +264,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _menuButton("❤", AppLocalizations.of(context)!.favoritos),
+          _menuButton("❤", "favoritos"),
           _menuButton("🔖", "guardados"),
           _menuButton("🏠", "home"),
           _menuButton("👥", AppLocalizations.of(context)!.personas),
@@ -275,82 +275,82 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   /// Botón del menú con efecto hover (útil en web) y selección
   Widget _menuButton(String icon, String view) {
-    bool isSelected = currentView == view;
+  bool isSelected = currentView == view;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => hovered = view),
-      onExit: (_) => setState(() => hovered = ""),
-      child: GestureDetector(
-        onTap: () {
-          logger.i('Cambiando vista a: $view'); // Log de navegación
-          setState(() => currentView = view);
-           if (view == "favoritos") {
+  return MouseRegion(
+    onEnter: (_) => setState(() => hovered = view),
+    onExit: (_) => setState(() => hovered = ""),
+    child: GestureDetector(
+      onTap: () {
+        setState(() => currentView = view);
+        
+        // ⚠️ AÑADIR ESTA LÍNEA:
+        if (view == "favoritos") {
           _cargarFavoritos();
         }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 85,
-          height: 55,
-          decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFF575757)
-                : (hovered == view
-                      ? Colors.white.withOpacity(0.15)
-                      : const Color(0xFF3A3A3A)),
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: hovered == view
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            icon,
-            style: const TextStyle(fontSize: 26, color: Colors.white),
-          ),
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 85,
+        height: 55,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF575757)
+              : (hovered == view
+                  ? Colors.white.withOpacity(0.15)
+                  : const Color(0xFF3A3A3A)),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: hovered == view
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          icon,
+          style: const TextStyle(fontSize: 26, color: Colors.white),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ==============================================
   //             CONTENIDO DINÁMICO
   // ==============================================
 
-  Widget _buildContent() {
-    switch (currentView) {
-      case "favoritos":
-        // ⚠️ CAMBIO: Usar GridView en lugar de _buildListaEditable
-        if (favoritos.isEmpty) {
-          return Center(
-            child: Text(
-              AppLocalizations.of(context)!.noRecetasGuardadas,
-              style: TextStyle(fontSize: 16),
-            ),
-          );
-        }
-        return widget.viewOnly
-            ? _buildHome()
-            : _buildFavoritosGrid(); // Llamamos a una nueva función
-
-      case "guardados":
-        return _buildRecetasGuardadas();
-      case "personas":
-        return _buildListaEditable(
-          titulo: "Personas",
-          lista: personas,
-          onAdd: () => _addToList(personas),
+ Widget _buildContent() {
+  switch (currentView) {
+    case "favoritos":
+      if (favoritos.isEmpty) {
+        return Center(
+          child: Text(
+            AppLocalizations.of(context)!.noRecetasGuardadas,
+            style: TextStyle(fontSize: 16),
+          ),
         );
-      default:
-        return _buildHome();
-    }
+      }
+      return widget.viewOnly
+          ? _buildHome()
+          : _buildFavoritosGrid();
+
+    case "guardados":
+      return _buildRecetasGuardadas();
+    case "personas":
+      return _buildListaEditable(
+        titulo: "Personas",
+        lista: personas,
+        onAdd: () => _addToList(personas),
+      );
+    default:
+      return _buildHome();
   }
+}
 
   // ⚠️ NUEVA FUNCIÓN: Muestra los favoritos en cuadrícula
   Widget _buildFavoritosGrid() {
