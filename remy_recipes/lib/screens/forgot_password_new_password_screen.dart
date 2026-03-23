@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import '../l10n/app_localizations.dart';
 import '../utils/validators.dart'; // Para validarContrasenyaFuerte
 import '../main.dart';
+import '../screens/login_screen.dart';
 
 class ForgotPasswordNewPasswordScreen extends StatefulWidget {
   final AuthService authService;
@@ -69,9 +70,12 @@ class _ForgotPasswordNewPasswordScreenState
       mostrarMensaje(
         AppLocalizations.of(context)!.contrasenyaCambiada,
         onClose: () {
-          Navigator.of(
-            context,
-          ).popUntil((route) => route.isFirst); // Vuelve a LoginScreen
+        Navigator.of(context).pushAndRemoveUntil(
+  MaterialPageRoute(
+    builder: (_) => LoginScreen(authService: widget.authService),
+  ),
+  (route) => false,
+);// Vuelve a LoginScreen
         },
       );
     } catch (e) {
