@@ -23,7 +23,7 @@ class RecipeFormPage extends StatefulWidget {
   @override
   State<RecipeFormPage> createState() => _RecipeFormPageState();
 }
-
+bool isLoanding = false;
 class _RecipeFormPageState extends State<RecipeFormPage> {
   @override
   void initState() {
@@ -297,6 +297,11 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   }
 
   Future<void> _guardarReceta() async {
+    if (isLoanding) return;
+    setState(() => isLoanding = true);
+    try{
+
+    
     logger.i('Iniciando guardado de receta');
     if (!isFormValid()) {
       _mostrarError(AppLocalizations.of(context)!.debeRellenarCampos);
@@ -352,6 +357,11 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     } else {
       logger.e('Error al guardar receta en servidor');
       _mostrarError('Error al guardar la receta en el servidor');
+    }
+    }catch (e){
+      _mostrarError(e.toString());
+    }finally{
+      setState(() => isLoanding = false);
     }
   }
 

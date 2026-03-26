@@ -14,7 +14,7 @@ import '../l10n/app_localizations.dart';
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
 // ==========================================================================
-
+ 
 class RegisterScreen extends StatefulWidget {
   final AuthService authService;
 
@@ -23,7 +23,7 @@ class RegisterScreen extends StatefulWidget {
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
-
+bool isLoanding = false;
 class _RegisterScreenState extends State<RegisterScreen> {
   // Controladores de texto
   final name = TextEditingController();
@@ -84,6 +84,10 @@ bool _ocultarConfirmar = true;
   // ==============================================
 
   void registrar() async {
+    if (isLoanding) return;
+    setState(() => isLoanding=true);
+
+    
     logger.i('Iniciando proceso de registro'); // Log de inicio
     // 1. Marcar visualmente campos vacíos
     setState(() {
@@ -185,6 +189,8 @@ bool _ocultarConfirmar = true;
       // Error del backend (ej: usuario ya existe, email duplicado)
       logger.e('Error en registro: $e'); // Log de error
       mostrarMensaje(e.toString().replaceAll("Exception:", ""));
+    }finally{
+      setState(() => isLoanding= false);
     }
   }
 
@@ -346,8 +352,17 @@ bool _ocultarConfirmar = true;
                   foregroundColor: Colors.white,
                   minimumSize: const Size(250, 40),
                 ),
-                onPressed: registrar,
-                child: Text(AppLocalizations.of(context)!.registrarse),
+                onPressed: isLoanding ? null : registrar,
+                child: isLoanding 
+                ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                : Text(AppLocalizations.of(context)!.registrarse),
               ),
             ],
           ),
