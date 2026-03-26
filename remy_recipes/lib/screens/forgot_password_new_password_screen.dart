@@ -18,7 +18,8 @@ class ForgotPasswordNewPasswordScreen extends StatefulWidget {
   State<ForgotPasswordNewPasswordScreen> createState() =>
       _ForgotPasswordNewPasswordScreenState();
 }
-
+bool _ocultarContrasena = true;
+bool _ocultarConfirmar = true;
 class _ForgotPasswordNewPasswordScreenState
     extends State<ForgotPasswordNewPasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
@@ -125,6 +126,12 @@ class _ForgotPasswordNewPasswordScreenState
                 esPassword: true,
                 error: _errorPassword,
                 errorTextMessage: _errorPasswordMessage,
+                 ocultarTexto: _ocultarContrasena,
+                toggleVisibilidad: () {
+                  setState(() {
+                    _ocultarContrasena = !_ocultarContrasena;
+                  });
+                },
               ),
               const SizedBox(height: 10),
               campoTexto(
@@ -133,6 +140,12 @@ class _ForgotPasswordNewPasswordScreenState
                 esPassword: true,
                 error: _errorPassword,
                 errorTextMessage: _errorPasswordMessage,
+                ocultarTexto: _ocultarConfirmar,
+                toggleVisibilidad: () {
+                  setState(() {
+                    _ocultarConfirmar= !_ocultarConfirmar;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -171,6 +184,8 @@ class _ForgotPasswordNewPasswordScreenState
     int maxLineas = 1,
     bool error = false,
     String? errorTextMessage,
+    bool? ocultarTexto,
+    VoidCallback? toggleVisibilidad,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,12 +194,24 @@ class _ForgotPasswordNewPasswordScreenState
         const SizedBox(height: 5),
         TextField(
           controller: controller,
-          obscureText: esPassword,
+          obscureText: esPassword ? (ocultarTexto ?? true) : false,
           maxLines: maxLineas,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+
+            suffixIcon: esPassword
+                ? IconButton(
+                   icon: Icon(
+                    (ocultarTexto ?? true)
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+                   ),
+                   onPressed: toggleVisibilidad,
+                   )
+                   :null,
+
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
               borderRadius: BorderRadius.all(Radius.circular(10)),

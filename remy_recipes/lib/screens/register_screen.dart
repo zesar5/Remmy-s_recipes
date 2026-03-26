@@ -49,6 +49,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool errorPais = false;
   bool errorAnio = false;
 
+  bool _ocultarContrasena = true;
+bool _ocultarConfirmar = true;
+
   String? errorCorreoMensaje; // Mensaje personalizado para correo
 
   List<String> paises = AppStrings.countries;
@@ -300,6 +303,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: contrasenya,
                 esPassword: true,
                 error: errorContrasenya,
+                ocultarTexto: _ocultarContrasena,
+                toggleVisibilidad: () {
+                  setState(() {
+                    _ocultarContrasena = !_ocultarContrasena;
+                  });
+                },
+                
               ),
 
               const SizedBox(height: 10),
@@ -309,7 +319,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: confirmarContrasenya,
                 esPassword: true,
                 error: errorConfirmar,
+               ocultarTexto: _ocultarConfirmar,
+                toggleVisibilidad: () {
+                  setState(() {
+                    _ocultarConfirmar = !_ocultarConfirmar;
+                  });
+                },
+                
               ),
+
 
               const SizedBox(height: 10),
 
@@ -349,6 +367,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     int maxLineas = 1,
     bool error = false,
     String? errorTextMessage,
+    bool? ocultarTexto,
+    VoidCallback? toggleVisibilidad,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,12 +377,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 5),
         TextField(
           controller: controller,
-          obscureText: esPassword,
+          obscureText: esPassword ? (ocultarTexto ?? true) : false,
           maxLines: maxLineas,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+
+              suffixIcon: esPassword
+              ? IconButton(
+                icon: Icon(
+                  (ocultarTexto ?? true)
+                      ? Icons.visibility_off
+                      :Icons.visibility,
+                ),
+                onPressed: toggleVisibilidad,
+              )
+              :null,
+
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
               borderRadius: BorderRadius.all(Radius.circular(10)),
