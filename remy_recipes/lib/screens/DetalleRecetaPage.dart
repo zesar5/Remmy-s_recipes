@@ -211,40 +211,42 @@ void _toggleLike() async {
           // Botón EDITAR (solo visible si el usuario es propietario)
           // Nota: actualmente NO verifica propiedad → cualquiera ve los botones
           IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              if(!_esPropietario){
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Solo el creador de la receta tiene permiso para editarla'),
-                    backgroundColor: Colors.orange,
-                  ),
-                );
-              }
-              logger.i(
-                'Navegando a edición de receta: ${widget.receta.titulo}',
-              );
-              // Navegamos al formulario de edición pasando la receta actual
-              final actualizado = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => RecipeFormPage(
-                    token: authService.accessToken!,
-                    recetaEditar: widget
-                        .receta, // ← Enviamos la receta para prellenar campos
-                  ),
-                ),
-              );
-
-              // Si el formulario devuelve true → hubo cambios → refrescamos
-              if (actualizado == true) {
-                logger.i(
-                  'Receta editada - Refrescando pantalla',
-                ); // Log de resultado
-                Navigator.pop(context, true);
-              }
-            },
+  icon: const Icon(Icons.edit),
+  onPressed: _esPropietario ? () async { // ← Verificación ANTES de navegar
+    logger.i('Navegando a edición de receta: ${widget.receta.titulo}');
+    
+    try {
+      // Navegamos al formulario de edición pasando la receta actual
+      final actualizado = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RecipeFormPage(
+            token: widget.authService.accessToken!, // ← widget.authService
+            recetaEditar: widget.receta,
           ),
+        ),
+      );
+
+      // Solo refrescamos si hubo cambios exitosos
+      if (actualizado == true) {
+        logger.i('Receta editada - Refrescando pantalla');
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      logger.e('Error al navegar a edición: $e');
+      // Si hay error en la navegación, no refrescamos
+    }
+  } : () {
+    // Usuario NO es propietario → mostrar mensaje inmediatamente
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Solo el creador de la receta tiene permiso para editarla'),
+        backgroundColor: Colors.orange,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  },
+),
 
           // Botón ELIMINAR
            IconButton(
