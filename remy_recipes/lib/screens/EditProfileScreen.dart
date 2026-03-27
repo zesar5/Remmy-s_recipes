@@ -20,7 +20,9 @@ class EditProfileScreen extends StatefulWidget {
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
+
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  bool isLoading = false;
   late TextEditingController nameController;
   late TextEditingController descripcionController;
   File? imagenPerfil;
@@ -93,6 +95,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> guardarCambios() async {
+    if (isLoading) return;
+    setState(() => isLoading = true);
     logger.i('Guardando cambios de perfil'); // Log de inicio
     String? base64Image;
     if (imagenPerfil != null) {
@@ -114,6 +118,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
       );
+    }finally{
+      setState(() => isLoading = false);
     }
   }
 
@@ -136,10 +142,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.save), onPressed: guardarCambios),
+          IconButton(
+            icon: const Icon(Icons.save), 
+            onPressed: isLoading ? null: guardarCambios,
+            ),
         ],
       ),
-      body: Padding(
+      body: Stack(
+        children: [
+           Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -177,11 +188,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 labelText: AppLocalizations.of(context)!.descripcionSinPuntos,
               ),
               maxLines: 3,
+
             ),
           ],
         ),
       ),
+
+      if (isLoading)
+      Container(
+        color: Colors.black.withOpacity(0.3),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+        ],
+      ),
     );
+    
   }
 
   @override
