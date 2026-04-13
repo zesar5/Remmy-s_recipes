@@ -350,6 +350,24 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
     }
 
     if (success) {
+      logger.i('Receta guardada exitosamente');
+
+      // Mostrar mensaje de éxito
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.recetaEditar == null
+                ? '¡Receta creada con éxito!'  // Para creación
+                : '¡Receta editada con éxito!', // Para edición
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      // Pequeño delay para que se vea el mensaje antes de volver
+      await Future.delayed(const Duration(milliseconds: 500));
+
       Navigator.pop(
         context,
         true,

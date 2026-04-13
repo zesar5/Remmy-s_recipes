@@ -437,4 +437,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get exitoBtnOk => 'OK';
+
+  @override
+  String get recetaCreadaExito => '¡Receta creada con éxito!';
+
+  @override
+  String get recetaEditadaExito => '¡Receta editada con éxito!';
 }

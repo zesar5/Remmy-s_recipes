@@ -56,12 +56,19 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      logger.i('Response body: ${response.body}');
       final data = json.decode(response.body);
       logger.i('Receta creada con éxito. ID: ${data['id']}');
-      return data['id'].toString();
+      return data['id']?.toString();
     } else {
-      final errorData = json.decode(response.body);
-      logger.e('Error al crear receta: ${errorData['mensaje']}');
+      logger.e('Error HTTP ${response.statusCode} al crear receta');
+      logger.e('Response body: ${response.body}');
+      try {
+        final errorData = json.decode(response.body);
+        logger.e('Error message: ${errorData['mensaje'] ?? errorData['error']}');
+      } catch (e) {
+        logger.e('No se pudo parsear error response: $e');
+      }
       return null;
     }
   } catch (e) {

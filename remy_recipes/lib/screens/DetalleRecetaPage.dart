@@ -37,10 +37,10 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   bool get _esPropietario {
     final usuarioActual = widget.authService.currentUser;
     if (usuarioActual == null) return false;
-    
-    // Asumiendo que Receta tiene un campo 'creadorId'
-    // Ajusta el nombre del campo según tu modelo
-    return widget.receta.creadorNombre == usuarioActual.id;
+
+    // Comparar el ID del usuario actual (convertido a int) con el ID del creador de la receta
+    final userId = int.tryParse(usuarioActual.id);
+    return userId != null && widget.receta.idUsuario == userId;
   }
   // ==============================================
 //         CARGAR ESTADO DE FAVORITO
@@ -196,7 +196,6 @@ void _toggleLike() async {
         },
       ),
         actions: [
-
           //==============================
           //BOTÓN DE FAVORITOS
           //==============================
@@ -208,65 +207,45 @@ void _toggleLike() async {
             ),
             onPressed: _toggleLike,
           ),
-          // Botón EDITAR (solo visible si el usuario es propietario)
-          // Nota: actualmente NO verifica propiedad → cualquiera ve los botones
-          IconButton(
-  icon: const Icon(Icons.edit),
-  onPressed: _esPropietario ? () async { // ← Verificación ANTES de navegar
-    logger.i('Navegando a edición de receta: ${widget.receta.titulo}');
-    
-    try {
-      // Navegamos al formulario de edición pasando la receta actual
-      final actualizado = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => RecipeFormPage(
-            token: widget.authService.accessToken!, // ← widget.authService
-            recetaEditar: widget.receta,
-          ),
-        ),
-      );
 
-      // Solo refrescamos si hubo cambios exitosos
-      if (actualizado == true) {
-        logger.i('Receta editada - Refrescando pantalla');
-        Navigator.pop(context, true);
-      }
-    } catch (e) {
-      logger.e('Error al navegar a edición: $e');
-      // Si hay error en la navegación, no refrescamos
-    }
-  } : () {
-    // Usuario NO es propietario → mostrar mensaje inmediatamente
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Solo el creador de la receta tiene permiso para editarla'),
-        backgroundColor: Colors.orange,
-        duration: Duration(seconds: 3),
-      ),
-    );
-  },
-),
+          // Botones EDITAR y ELIMINAR solo visibles si el usuario es propietario
+          if (_esPropietario) ...[
+            // Botón EDITAR
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                logger.i('Navegando a edición de receta: ${widget.receta.titulo}');
+                
+                try {
+                  // Navegamos al formulario de edición pasando la receta actual
+                  final actualizado = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RecipeFormPage(
+                        token: widget.authService.accessToken!,
+                        recetaEditar: widget.receta,
+                      ),
+                    ),
+                  );
 
-          // Botón ELIMINAR
-           IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              // Verificar propiedad antes de eliminar
-              if (!_esPropietario) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Solo el creador de la receta puede eliminarla'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
+                  // Solo refrescamos si hubo cambios exitosos
+                  if (actualizado == true) {
+                    logger.i('Receta editada - Refrescando pantalla');
+                    Navigator.pop(context, true);
+                  }
+                } catch (e) {
+                  logger.e('Error al navegar a edición: $e');
+                  // Si hay error en la navegación, no refrescamos
+                }
+              },
+            ),
 
-              // Tu código existente de confirmación eliminar
-              _confirmarEliminar(context);
-            },
-          ),
+            // Botón ELIMINAR
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmarEliminar(context),
+            ),
+          ],
         ],
       ),
 

@@ -154,5 +154,7 @@
   "parrafoDosPoliticaPrivacidad": "No compartimos tus datos personales con terceros sin tu consentimiento.",
   "contacto": "Contacto",
   "parrafoUnoContacto": "Si tienes dudas sobre estos términos o sobre el uso de la aplicación, puedes contactarnos a través de los canales oficiales.",
-  "exitoBtnOk": "OK"
+  "exitoBtnOk": "OK",
+  "recetaCreadaExito": "¡Receta creada con éxito!",
+  "recetaEditadaExito": "¡Receta editada con éxito!"
 }

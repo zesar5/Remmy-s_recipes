@@ -931,6 +931,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'OK'**
   String get exitoBtnOk;
+
+  /// No description provided for @recetaCreadaExito.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Receta creada con éxito!'**
+  String get recetaCreadaExito;
+
+  /// No description provided for @recetaEditadaExito.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Receta editada con éxito!'**
+  String get recetaEditadaExito;
 }
 
 class _AppLocalizationsDelegate

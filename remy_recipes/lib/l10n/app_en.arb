@@ -154,5 +154,7 @@
   "parrafoDosPoliticaPrivacidad": "We do not share your personal data with third parties without your consent.",
   "contacto": "Contact",
   "parrafoUnoContacto": "If you have any questions about these terms or the use of the application, you can contact us through the official channels.",
-  "exitoBtnOk": "OK"
+  "exitoBtnOk": "OK",
+  "recetaCreadaExito": "Recipe created successfully!",
+  "recetaEditadaExito": "Recipe edited successfully!"
 }
