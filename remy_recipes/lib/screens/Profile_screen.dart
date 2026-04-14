@@ -264,17 +264,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _menuButton("❤", "favoritos"),
-          _menuButton("🔖", "guardados"),
-          _menuButton("🏠", "home"),
-          _menuButton("👥", AppLocalizations.of(context)!.personas),
+          _menuButton(Icons.favorite, "favoritos"),
+          _menuButton(Icons.bookmark, "guardados"),
+          _menuButton(Icons.home, "home"),
+          _menuButton(Icons.people, AppLocalizations.of(context)!.personas),
         ],
       ),
     );
   }
 
   /// Botón del menú con efecto hover (útil en web) y selección
-  Widget _menuButton(String icon, String view) {
+  Widget _menuButton(IconData icon, String view) {
   bool isSelected = currentView == view;
 
   return MouseRegion(
@@ -311,9 +311,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               : [],
         ),
         alignment: Alignment.center,
-        child: Text(
+        child: Icon(
           icon,
-          style: const TextStyle(fontSize: 26, color: Colors.white),
+          color: Colors.white,
+          size: 24,
         ),
       ),
     ),

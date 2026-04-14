@@ -59,6 +59,9 @@ class _MainPageState extends State<MainPage> {
   int? _duracion;
   String? _alergenos;
 
+  // Estados hover para los iconos
+  String _hoveredIcon = '';
+
   @override
   void initState() {
     super.initState();
@@ -420,38 +423,54 @@ class _MainPageState extends State<MainPage> {
       ),
 
       // Botón flotante para crear nueva receta
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppStrings.colorFondo,
-        foregroundColor: Colors.white,
-        onPressed: () {
-          logger.i(
-            'Navegando a formulario de nueva receta',
-          ); // Log de navegación
-          logger.d(
-            'Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}',
-          ); // Debug
+      floatingActionButton: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: AppStrings.colorFondo,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppStrings.colorFondo.withOpacity(0.4),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          onPressed: () {
+            logger.i(
+              'Navegando a formulario de nueva receta',
+            ); // Log de navegación
+            logger.d(
+              'Token presente: ${widget.authService.accessToken != null ? "Sí" : "No"}',
+            ); // Debug
 
-          // Verificar si el usuario está logueado
-          if (widget.authService.currentUser == null) {
-            logger.w('Intento de crear receta sin usuario logueado');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
+            // Verificar si el usuario está logueado
+            if (widget.authService.currentUser == null) {
+              logger.w('Intento de crear receta sin usuario logueado');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
+                ),
+              );
+              return;
+            }
+
+            // Navega a formulario de creación de receta
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    RecipeFormPage(token: widget.authService.accessToken!),
               ),
             );
-            return;
-          }
-
-          // Navega a formulario de creación de receta
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  RecipeFormPage(token: widget.authService.accessToken!),
-            ),
-          );
-        },
-        child: const Icon(Icons.add, size: 28),
+          },
+          child: const Icon(Icons.add, size: 28),
+        ),
       ),
 
       body: SafeArea(
@@ -565,6 +584,7 @@ class _MainPageState extends State<MainPage> {
       children: [
         _topIcon(
           Icons.menu,
+          iconKey: 'menu',
           onTap: () {
             _scaffoldKey.currentState?.openDrawer(); // Abre el drawer lateral
           },
@@ -573,11 +593,12 @@ class _MainPageState extends State<MainPage> {
           children: [
             _topIcon(
               Icons.search,
+              iconKey: 'search',
               onTap: () {
                 _openSearchSheet(context);
               },
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 12),
 
             // Icono de perfil → navega solo si está logueado
             _topProfileAvatar(
@@ -695,49 +716,92 @@ class _MainPageState extends State<MainPage> {
     required VoidCallback onTap,
   }) {
     final user = authService.currentUser;
+    final isHovered = _hoveredIcon == 'profile';
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hoveredIcon = 'profile'),
+      onExit: (_) => setState(() => _hoveredIcon = ''),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isHovered ? 0.25 : 0.15),
+                blurRadius: isHovered ? 12 : 8,
+                offset: Offset(0, isHovered ? 4 : 3),
+              ),
+            ],
+            border: Border.all(
+              color: isHovered
+                  ? const Color(0xFFDEB887).withOpacity(0.3)
+                  : Colors.white.withOpacity(0.8),
+              width: 1,
             ),
-          ],
-        ),
-
-        child: ClipOval(
-          child: user != null
-              ? Image.network(
-                  '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Text('👤', style: TextStyle(fontSize: 18)),
-                    );
-                  },
-                )
-              : const Center(child: Text('👤', style: TextStyle(fontSize: 18))),
+          ),
+          child: ClipOval(
+            child: user != null
+                ? Image.network(
+                    '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Icon(Icons.person, color: Color(0xFF575757), size: 22),
+                      );
+                    },
+                  )
+                : const Center(
+                    child: Icon(Icons.person, color: Color(0xFF575757), size: 22),
+                  ),
+          ),
         ),
       ),
     );
   }
 
   /// Widget reutilizable para los iconos de la barra superior
-  Widget _topIcon(IconData icon, {VoidCallback? onTap}) {
-    return Material(
-      color: Colors.white.withOpacity(0.8),
-      shape: const CircleBorder(),
-      child: IconButton(
-        icon: Icon(icon, color: Colors.black87),
-        onPressed: onTap ?? () {},
+  Widget _topIcon(IconData icon, {VoidCallback? onTap, String? iconKey}) {
+    final isHovered = _hoveredIcon == (iconKey ?? icon.toString());
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hoveredIcon = iconKey ?? icon.toString()),
+      onExit: (_) => setState(() => _hoveredIcon = ''),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isHovered ? 0.25 : 0.15),
+              blurRadius: isHovered ? 12 : 8,
+              offset: Offset(0, isHovered ? 4 : 3),
+            ),
+          ],
+          border: Border.all(
+            color: isHovered
+                ? const Color(0xFFDEB887).withOpacity(0.3)
+                : Colors.white.withOpacity(0.8),
+            width: 1,
+          ),
+        ),
+        child: IconButton(
+          icon: Icon(
+            icon,
+            color: isHovered ? const Color(0xFFDEB887) : const Color(0xFF575757),
+            size: 22,
+          ),
+          onPressed: onTap ?? () {},
+          splashRadius: 22,
+          padding: EdgeInsets.zero,
+        ),
       ),
     );
   }
