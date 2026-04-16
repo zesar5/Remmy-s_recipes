@@ -20,7 +20,6 @@ class EditProfileScreen extends StatefulWidget {
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLoading = false;
   late TextEditingController nameController;
@@ -118,7 +117,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
       );
-    }finally{
+    } finally {
       setState(() => isLoading = false);
     }
   }
@@ -143,68 +142,77 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save), 
-            onPressed: isLoading ? null: guardarCambios,
-            ),
+            icon: const Icon(Icons.save),
+            onPressed: isLoading ? null : guardarCambios,
+          ),
         ],
       ),
       body: Stack(
         children: [
-           Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 20),
-            // Foto de perfil
-            GestureDetector(
-              onTap: seleccionarImagen,
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage: imagenPerfil != null
-                    ? FileImage(imagenPerfil!)
-                    : avatarImage,
-                child: imagenPerfil == null && avatarImage == null
-                    ? const Icon(Icons.camera_alt, size: 40)
-                    : null,
-              ),
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 20),
+                // Foto de perfil
+                GestureDetector(
+                  onTap: seleccionarImagen,
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.grey.shade300,
+                    child: ClipOval(
+                      child: imagenPerfil != null
+                          ? Image.file(
+                              imagenPerfil!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            )
+                          : (avatarImage != null
+                                ? Image(
+                                    image: avatarImage!,
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.camera_alt, size: 40)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Nombre
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.nombreUsuario,
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Descripción
+                TextField(
+                  controller: descripcionController,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(
+                      context,
+                    )!.descripcionSinPuntos,
+                  ),
+                  maxLines: 3,
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
+          ),
 
-            // Nombre
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.nombreUsuario,
-              ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.3),
+              child: const Center(child: CircularProgressIndicator()),
             ),
-            const SizedBox(height: 20),
-
-            // Descripción
-            TextField(
-              controller: descripcionController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.descripcionSinPuntos,
-              ),
-              maxLines: 3,
-
-            ),
-          ],
-        ),
-      ),
-
-      if (isLoading)
-      Container(
-        color: Colors.black.withOpacity(0.3),
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
         ],
       ),
     );
-    
   }
 
   @override
