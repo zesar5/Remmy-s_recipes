@@ -263,6 +263,17 @@ const RecetaModel = {
 },
 
   /**
+   * Actualiza solo la privacidad de una receta (pública/privada)
+   */
+  actualizarPrivacidad: async (id, publica) => {
+    await db.query(
+      "UPDATE Receta SET publica = ? WHERE Id_receta = ?",
+      [publica ? 1 : 0, id]
+    );
+    return id;
+  },
+
+  /**
    * Eliminación física de la receta
    * (En producción se recomienda más bien un borrado lógico con campo activo/eliminado)
    */

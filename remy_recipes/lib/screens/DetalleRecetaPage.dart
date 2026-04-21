@@ -27,7 +27,9 @@ class DetalleRecetaPage extends StatefulWidget {
 
 class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   bool _liked = false;
-  bool _cargandoFavorito=false;
+  bool _cargandoFavorito = false;
+  bool _cargandoPrivacidad = false;
+  
 
   // ==============================================
   //        VERIFICAR SI ES PROPIETARIO
@@ -90,13 +92,19 @@ void _toggleLike() async {
   });
 
   try {
-    await toggleFavorito(
+    final esFavorito = await toggleFavorito(
       int.parse(widget.receta.id!),
       widget.authService.accessToken!,
     );
     
+    if (mounted) {
+      setState(() {
+        _liked = esFavorito;
+      });
+    }
+    
     logger.i(
-      _liked
+      esFavorito
           ? '${AppLocalizations.of(context)!.likeAnyadido} ${widget.receta.id}'
           : '${AppLocalizations.of(context)!.likeQuitado} ${widget.receta.id}',
     );
@@ -108,6 +116,60 @@ void _toggleLike() async {
     }
   }
 }
+
+  // ==============================================
+  //         CAMBIAR PRIVACIDAD DE RECETA
+  // ==============================================
+
+  /// Cambia la privacidad de la receta y actualiza el estado local
+  Future<void> _cambiarPrivacidad() async {
+    if (_cargandoPrivacidad) return; // Evitar múltiples llamadas
+    
+    setState(() => _cargandoPrivacidad = true);
+    
+    try {
+      final nuevaPrivacidad = !widget.receta.esPublica;
+      final exito = await cambiarPrivacidadReceta(
+        widget.receta.id!,
+        nuevaPrivacidad,
+        widget.authService.accessToken!,
+      );
+      
+      if (exito && mounted) {
+        // Actualizar el estado local creando una nueva instancia
+        setState(() {
+          // Aquí necesitaríamos crear una nueva Receta con esPublica actualizado
+          // Por simplicidad, podemos refrescar la pantalla volviendo atrás
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              nuevaPrivacidad 
+                ? 'Receta ahora es pública'
+                : 'Receta ahora es privada'
+            ),
+          ),
+        );
+        
+        // Refrescar la pantalla
+        Navigator.pop(context, true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al cambiar privacidad')),
+        );
+      }
+    } catch (e) {
+      logger.e('Error cambiando privacidad: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error general')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _cargandoPrivacidad = false);
+      }
+    }
+  }
 
   // ==============================================
   //          DIÁLOGO DE CONFIRMACIÓN ELIMINAR
@@ -244,6 +306,24 @@ void _toggleLike() async {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () => _confirmarEliminar(context),
+            ),
+
+            // Botón PRIVACIDAD
+            IconButton(
+              icon: _cargandoPrivacidad
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    widget.receta.esPublica ? Icons.lock_open : Icons.lock,
+                    color: widget.receta.esPublica ? Colors.green : Colors.orange,
+                  ),
+              onPressed: _cambiarPrivacidad,
+              tooltip: widget.receta.esPublica 
+                ? 'Receta pública - Toca para hacer privada'
+                : 'Receta privada - Toca para hacer pública',
             ),
           ],
         ],

@@ -451,3 +451,34 @@ Future<bool> toggleFavorito(int recetaId, String token) async {
     return false;
   }
 }
+
+/// Cambia la privacidad de una receta (pública/privada)
+/// Ruta: PUT /recetas/:id/privacidad
+/// Requiere token y ser propietario
+Future<bool> cambiarPrivacidadReceta(String recetaId, bool esPublica, String token) async {
+  logger.i('Cambiando privacidad de receta $recetaId a ${esPublica ? 'pública' : 'privada'}');
+  
+  final url = Uri.parse('${ApiEndpoints.recetas}/$recetaId/privacidad');
+  
+  try {
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'publica': esPublica ? 1 : 0}),
+    );
+
+    if (response.statusCode == 200) {
+      logger.i('Privacidad de receta cambiada exitosamente');
+      return true;
+    } else {
+      logger.e('Error cambiando privacidad: ${response.statusCode} - ${response.body}');
+      return false;
+    }
+  } catch (e) {
+    logger.e('Excepción cambiando privacidad: $e');
+    return false;
+  }
+}

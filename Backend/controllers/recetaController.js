@@ -191,6 +191,40 @@ exports.actualizarReceta = async (req, res) => {
 };
 
 /**
+ * Actualiza solo la privacidad de una receta
+ * Solo el propietario puede hacerlo
+ */
+exports.actualizarPrivacidadReceta = async (req, res) => {
+  try {
+    const t = getMessages(req);
+    const esPropietario = await RecetaModel.verificarPropietario(
+      req.params.id,
+      req.userId
+    );
+
+    if (esPropietario === null){
+      logger.error('Error al cambiar privacidad: receta no encontrada');
+      return res.status(404).json({ mensaje: t.recipeNotFound });
+    }
+
+    if (!esPropietario){
+      logger.error('Error al cambiar privacidad: no es creador de la receta');
+      return res
+        .status(403)
+        .json({ mensaje: t.noPermissionEdit });
+    }
+
+    const publica = req.body.publica === 1 || req.body.publica === true;
+    await RecetaModel.actualizarPrivacidad(req.params.id, publica);
+
+    res.json({ mensaje: publica ? 'Receta ahora es pública' : 'Receta ahora es privada' });
+  } catch (err) {
+    logger.error('Error al actualizar privacidad de receta: ', { err: err.message });
+    res.status(500).json({ error: err.message });
+  }
+};
+
+/**
  * Elimina una receta
  * Solo el propietario puede hacerlo
  */

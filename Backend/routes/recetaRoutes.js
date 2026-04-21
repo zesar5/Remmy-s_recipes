@@ -113,6 +113,7 @@ router.get("/:id", auth, recetaController.obtenerRecetaPorId);
 router.get('/', recetaController.getRecetas);
 router.post("/", auth, recetaController.crearReceta);
 router.put("/:id", auth, recetaController.actualizarReceta);
+router.put("/:id/privacidad", auth, recetaController.actualizarPrivacidadReceta);
 router.delete("/:id", auth, recetaController.eliminarReceta);
 
 

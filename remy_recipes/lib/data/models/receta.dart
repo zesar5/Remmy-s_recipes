@@ -29,6 +29,7 @@ class Receta {
   final int? idUsuario;
   final String? imagenBase64;
   final String? creadorNombre;
+  final bool esPublica;
 
   Receta({
     this.id,
@@ -42,6 +43,7 @@ class Receta {
     this.idUsuario,
     this.imagenBase64,
     this.creadorNombre,
+    this.esPublica = false,
   });
 
   // Constructor factory para crear un objeto Receta desde un JSON (GET)
@@ -67,6 +69,7 @@ class Receta {
       idUsuario: json['usuarioId'] as int?,
       imagenBase64: json['imagen']?.toString(),
       creadorNombre: json['creadorNombre']?.toString(),
+      esPublica: json['publica'] == 1 || json['publica'] == true,
     );
   }
 
@@ -98,6 +101,7 @@ class Receta {
       if (estacion != null) 'estacion': estacion,
       if (idUsuario != null) 'Id_usuario': idUsuario,
       if (imagenBase64 != null) 'imagen': imagenBase64,
+      'publica': esPublica ? 1 : 0,
     };
   }
 }
