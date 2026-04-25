@@ -29,6 +29,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
   bool _liked = false;
   bool _cargandoFavorito = false;
   bool _cargandoPrivacidad = false;
+  late bool _esPublica; // Estado local para el icono
   
 
   // ==============================================
@@ -50,6 +51,7 @@ class _DetalleRecetaPageState extends State<DetalleRecetaPage> {
 @override
 void initState(){
   super.initState();
+  _esPublica = widget.receta.esPublica;
   _cargarEstadoFavorito();
 }
 Future<void> _cargarEstadoFavorito() async {
@@ -128,7 +130,7 @@ void _toggleLike() async {
     setState(() => _cargandoPrivacidad = true);
     
     try {
-      final nuevaPrivacidad = !widget.receta.esPublica;
+      final nuevaPrivacidad = !_esPublica;
       final exito = await cambiarPrivacidadReceta(
         widget.receta.id!,
         nuevaPrivacidad,
@@ -136,10 +138,9 @@ void _toggleLike() async {
       );
       
       if (exito && mounted) {
-        // Actualizar el estado local creando una nueva instancia
+        // Actualizar el estado local para cambiar el icono inmediatamente
         setState(() {
-          // Aquí necesitaríamos crear una nueva Receta con esPublica actualizado
-          // Por simplicidad, podemos refrescar la pantalla volviendo atrás
+          _esPublica = nuevaPrivacidad;
         });
         
         ScaffoldMessenger.of(context).showSnackBar(
@@ -149,11 +150,10 @@ void _toggleLike() async {
                 ? 'Receta ahora es pública'
                 : 'Receta ahora es privada'
             ),
+            duration: const Duration(seconds: 2),
           ),
         );
-        
-        // Refrescar la pantalla
-        Navigator.pop(context, true);
+        // NO salir de la pantalla - mantener al usuario aquí
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al cambiar privacidad')),
@@ -317,11 +317,11 @@ void _toggleLike() async {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : Icon(
-                    widget.receta.esPublica ? Icons.lock_open : Icons.lock,
-                    color: widget.receta.esPublica ? Colors.green : Colors.orange,
+                    _esPublica ? Icons.lock_open : Icons.lock,
+                    color: _esPublica ? Colors.green : Colors.orange,
                   ),
               onPressed: _cambiarPrivacidad,
-              tooltip: widget.receta.esPublica 
+              tooltip: _esPublica 
                 ? 'Receta pública - Toca para hacer privada'
                 : 'Receta privada - Toca para hacer pública',
             ),
