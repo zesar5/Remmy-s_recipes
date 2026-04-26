@@ -23,7 +23,9 @@ class RecipeFormPage extends StatefulWidget {
   @override
   State<RecipeFormPage> createState() => _RecipeFormPageState();
 }
+
 bool isLoanding = false;
+
 class _RecipeFormPageState extends State<RecipeFormPage> {
   @override
   void initState() {
@@ -67,10 +69,18 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
 
   final TextEditingController titleController = TextEditingController();
 
-  final List<String> durations = List.generate(
-    60,
-    (index) => ((index + 1) * 5).toString(),
-  ); // 5-300
+  final List<String> durations = [
+    "5 minutos",
+    "10 minutos",
+    "15 minutos",
+    "20 minutos",
+    "30 minutos",
+    "45 minutos",
+    "1 hora",
+    "1 hora 30 minutos",
+    "2 horas",
+    "Más de 2 horas",
+  ];
 
   final List<String> countries = AppStrings.countries;
 
@@ -299,86 +309,84 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   Future<void> _guardarReceta() async {
     if (isLoanding) return;
     setState(() => isLoanding = true);
-    try{
+    try {
+      logger.i('Iniciando guardado de receta');
+      if (!isFormValid()) {
+        _mostrarError(AppLocalizations.of(context)!.debeRellenarCampos);
+        return;
+      }
 
-    
-    logger.i('Iniciando guardado de receta');
-    if (!isFormValid()) {
-      _mostrarError(AppLocalizations.of(context)!.debeRellenarCampos);
-      return;
-    }
-
-    // Construimos el objeto Receta para enviar al backend
-    final receta = Receta(
-      id: widget.recetaEditar?.id,
-      titulo: titleController.text.trim(),
-      ingredientes: ingredients
-          .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
-          .toList(),
-      pasos: steps.map((s) => Paso(descripcion: s.descripcion)).toList(),
-      duracion: int.parse(duration!),
-      pais: country!,
-      alergenos: selectedAllergens.join(','),
-      estacion: season!,
-      imagenBase64: imagePath != null
-          ? base64Encode(
-              File(imagePath!).readAsBytesSync(),
-            ) // ← Convierte archivo a base64
-          : widget.recetaEditar?.imagenBase64,
-    );
-    logger.d(
-      'Datos de receta preparados: Título=${receta.titulo}, Ingredientes=${receta.ingredientes?.length}, Pasos=${receta.pasos?.length}',
-    ); // Debug (sin datos sensibles)
-    //logger que no muestra datos sensibles ya que no llama al json y así no satura consola, lo dejo comentado por si acaso es necesario en un futuro.
-    /*print('TOKEN: ${widget.token}');
+      // Construimos el objeto Receta para enviar al backend
+      final receta = Receta(
+        id: widget.recetaEditar?.id,
+        titulo: titleController.text.trim(),
+        ingredientes: ingredients
+            .map((i) => Ingrediente(nombre: i.nombre, cantidad: i.cantidad))
+            .toList(),
+        pasos: steps.map((s) => Paso(descripcion: s.descripcion)).toList(),
+        duracion: int.parse(duration!),
+        pais: country!,
+        alergenos: selectedAllergens.join(','),
+        estacion: season!,
+        imagenBase64: imagePath != null
+            ? base64Encode(
+                File(imagePath!).readAsBytesSync(),
+              ) // ← Convierte archivo a base64
+            : widget.recetaEditar?.imagenBase64,
+      );
+      logger.d(
+        'Datos de receta preparados: Título=${receta.titulo}, Ingredientes=${receta.ingredientes?.length}, Pasos=${receta.pasos?.length}',
+      ); // Debug (sin datos sensibles)
+      //logger que no muestra datos sensibles ya que no llama al json y así no satura consola, lo dejo comentado por si acaso es necesario en un futuro.
+      /*print('TOKEN: ${widget.token}');
     print('Datos enviados: ${receta.toJson()}');
     */
-    bool success;
+      bool success;
 
-    if (widget.recetaEditar == null) {
-      // MODO CREAR
-      logger.i('Modo crear: Enviando receta al servidor');
-      final String? recetaId = await crearRecetaEnServidor(
-        receta,
-        widget.token,
-      );
-      success = recetaId != null;
-    } else {
-      // MODO EDITAR
-      logger.i('Modo editar: Actualizando receta en servidor');
-      success = await editarReceta(receta, widget.token);
-    }
+      if (widget.recetaEditar == null) {
+        // MODO CREAR
+        logger.i('Modo crear: Enviando receta al servidor');
+        final String? recetaId = await crearRecetaEnServidor(
+          receta,
+          widget.token,
+        );
+        success = recetaId != null;
+      } else {
+        // MODO EDITAR
+        logger.i('Modo editar: Actualizando receta en servidor');
+        success = await editarReceta(receta, widget.token);
+      }
 
-    if (success) {
-      logger.i('Receta guardada exitosamente');
+      if (success) {
+        logger.i('Receta guardada exitosamente');
 
-      // Mostrar mensaje de éxito
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.recetaEditar == null
-                ? '¡Receta creada con éxito!'  // Para creación
-                : '¡Receta editada con éxito!', // Para edición
+        // Mostrar mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              widget.recetaEditar == null
+                  ? '¡Receta creada con éxito!' // Para creación
+                  : '¡Receta editada con éxito!', // Para edición
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
           ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
 
-      // Pequeño delay para que se vea el mensaje antes de volver
-      await Future.delayed(const Duration(milliseconds: 500));
+        // Pequeño delay para que se vea el mensaje antes de volver
+        await Future.delayed(const Duration(milliseconds: 500));
 
-      Navigator.pop(
-        context,
-        true,
-      ); // ← Devuelve true para que la lista se refresque
-    } else {
-      logger.e('Error al guardar receta en servidor');
-      _mostrarError('Error al guardar la receta en el servidor');
-    }
-    }catch (e){
+        Navigator.pop(
+          context,
+          true,
+        ); // ← Devuelve true para que la lista se refresque
+      } else {
+        logger.e('Error al guardar receta en servidor');
+        _mostrarError('Error al guardar la receta en el servidor');
+      }
+    } catch (e) {
       _mostrarError(e.toString());
-    }finally{
+    } finally {
       setState(() => isLoanding = false);
     }
   }

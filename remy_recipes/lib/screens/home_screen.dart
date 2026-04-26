@@ -197,12 +197,16 @@ class _MainPageState extends State<MainPage> {
                           AppStrings.seasons,
                         ),
                         _combo(AppLocalizations.of(context)!.duracionLabel, [
-                          "5 min",
-                          "10 min",
-                          "20 min",
-                          "30 min",
-                          "60 min",
-                          "90 min",
+                          "5 minutos",
+                          "10 minutos",
+                          "15 minutos",
+                          "20 minutos",
+                          "30 minutos",
+                          "45 minutos",
+                          "1 hora",
+                          "1 hora 30 minutos",
+                          "2 horas",
+                          "Más de 2 horas",
                         ]),
                         _combo(
                           AppLocalizations.of(context)!.alergenosLabel,
@@ -274,7 +278,9 @@ class _MainPageState extends State<MainPage> {
   void _aplicarFiltro() async {
     logger.i('Iniciando aplicación de filtros');
     setState(() => loading = true);
-
+    logger.i(
+      'FILTROS: $_textoBusqueda, $_pais, $_estacion, $_duracion, $_alergenos',
+    );
     final recetasFiltradas = await recetaFiltrada(
       texto: _textoBusqueda,
       pais: _pais,
@@ -454,7 +460,9 @@ class _MainPageState extends State<MainPage> {
               logger.w('Intento de crear receta sin usuario logueado');
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(AppLocalizations.of(context)!.debesIniciarSesion),
+                  content: Text(
+                    AppLocalizations.of(context)!.debesIniciarSesion,
+                  ),
                 ),
               );
               return;
@@ -751,12 +759,20 @@ class _MainPageState extends State<MainPage> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Center(
-                        child: Icon(Icons.person, color: Color(0xFF575757), size: 22),
+                        child: Icon(
+                          Icons.person,
+                          color: Color(0xFF575757),
+                          size: 22,
+                        ),
                       );
                     },
                   )
                 : const Center(
-                    child: Icon(Icons.person, color: Color(0xFF575757), size: 22),
+                    child: Icon(
+                      Icons.person,
+                      color: Color(0xFF575757),
+                      size: 22,
+                    ),
                   ),
           ),
         ),
@@ -795,7 +811,9 @@ class _MainPageState extends State<MainPage> {
         child: IconButton(
           icon: Icon(
             icon,
-            color: isHovered ? const Color(0xFFDEB887) : const Color(0xFF575757),
+            color: isHovered
+                ? const Color(0xFFDEB887)
+                : const Color(0xFF575757),
             size: 22,
           ),
           onPressed: onTap ?? () {},
