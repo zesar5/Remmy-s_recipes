@@ -256,17 +256,31 @@ exports.obtenerTodosUsuarios = async (req, res) => {
 
 exports.obtenerUsuariosComunidad = async (req, res) => {
   try {
-    const usuarios = await Usuario.obtenerUsuariosComunidad();
+    // Verificar si se solicitan imágenes
+    const incluirImagenes = req.query.incluirImagenes === 'true';
+    
+    const usuarios = await Usuario.obtenerUsuariosComunidad(incluirImagenes);
 
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const usuariosFormateados = usuarios.map((u) => {
+      const resultado = {
+        id: u.Id_usuario,
+        nombre: u.nombre,
+        descripcion: u.descripcion,
+      };
 
-    const usuariosConFoto = usuarios.map((u) => ({
-      id: u.Id_usuario,
-      nombre: u.nombre,
-      descripcion: u.descripcion,
-      fotoPerfil: u.fotoPerfil,
-    }));
-    res.json(usuariosConFoto);
+      // Si se incluyen imágenes, devolver base64
+      if (incluirImagenes && u.fotoPerfil) {
+        resultado.fotoPerfil = u.fotoPerfil;
+      }
+      // Si NO se incluyen imágenes, devolver URL
+      else if (!incluirImagenes && u.fotoUrl) {
+        resultado.fotoUrl = u.fotoUrl;
+      }
+
+      return resultado;
+    });
+    
+    res.json(usuariosFormateados);
   } catch (error) {
     console.error("Error obteniendo comunidad:", error);
     res.status(500).json({ error: error.message });

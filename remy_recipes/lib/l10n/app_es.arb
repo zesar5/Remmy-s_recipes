@@ -156,5 +156,9 @@
   "parrafoUnoContacto": "Si tienes dudas sobre estos términos o sobre el uso de la aplicación, puedes contactarnos a través de los canales oficiales.",
   "exitoBtnOk": "OK",
   "recetaCreadaExito": "¡Receta creada con éxito!",
-  "recetaEditadaExito": "¡Receta editada con éxito!"
+  "recetaEditadaExito": "¡Receta editada con éxito!",
+  
+  "sesionCaducada": "Sesión caducada",
+  "sesionCaducadaMsg": "Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente para continuar.",
+  "irAlLogin": "Ir al login"
 }

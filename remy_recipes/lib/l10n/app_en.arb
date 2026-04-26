@@ -156,5 +156,9 @@
   "parrafoUnoContacto": "If you have any questions about these terms or the use of the application, you can contact us through the official channels.",
   "exitoBtnOk": "OK",
   "recetaCreadaExito": "Recipe created successfully!",
-  "recetaEditadaExito": "Recipe edited successfully!"
+  "recetaEditadaExito": "Recipe edited successfully!",
+  
+  "sesionCaducada": "Session expired",
+  "sesionCaducadaMsg": "Your session has expired due to inactivity. Please log in again to continue.",
+  "irAlLogin": "Go to login"
 }

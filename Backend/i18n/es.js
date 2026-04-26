@@ -5,6 +5,7 @@ module.exports = {
   mustLogin: "Debes iniciar sesión",
   tokenMissing: "Token no proporcionado",
   tokenInvalid: "Token inválido",
+  tokenExpired: "Sesión caducada por inactividad. Por favor inicia sesión nuevamente",
 
   loginRequiredFields: "Email y contraseña son requeridos",
   invalidCredentials: "Credenciales incorrectas",

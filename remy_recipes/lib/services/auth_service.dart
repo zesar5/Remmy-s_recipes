@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:remy_recipes/main.dart';
+import 'package:flutter/foundation.dart';
 import '../data/models/usuario.dart';
 import 'config.dart';
+import 'session_manager.dart';
 
 // ==========================================================================
 //          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)
@@ -20,6 +22,11 @@ class AuthService {
 
   Usuario? _currentUser;
   Usuario? get currentUser => _currentUser;
+  
+  final SessionManager _sessionManager = SessionManager();
+  
+  // Callback para mostrar diálogo de sesión expirada
+  VoidCallback? _onSessionExpiredUI;
   // ==============================================
   //  MÉTODO PARA AUTO-LOGIN AL ARRANCAR
   // ==============================================
@@ -35,6 +42,10 @@ class AuthService {
 
     _accessToken = token;
     logger.d('Token cargado desde storage: [ENMASCARADO]');
+    
+    // Registrar callback combinado para cuando la sesión expire
+    _sessionManager.setOnSessionExpired(_handleSessionExpiredCombined);
+    
     try {
       // Intentamos cargar el perfil para verificar si el token sigue vigente
       final success = await fetchProfile(int.parse(userIdStr));
@@ -46,6 +57,27 @@ class AuthService {
       await logout();
       return false;
     }
+  }
+  
+  /// Maneja ambas acciones: logout + mostrar diálogo UI
+  Future<void> _handleSessionExpiredCombined() async {
+    logger.e('🔴 SESIÓN EXPIRADA - Ejecutando logout automático');
+    
+    // Siempre hacer logout
+    await logout();
+    
+    // Si hay callback de UI registrado, ejecutarlo
+    if (_onSessionExpiredUI != null) {
+      logger.i('Ejecutando callback de UI para mostrar diálogo');
+      await Future.delayed(Duration(milliseconds: 500)); // Pequeño delay para UI
+      _onSessionExpiredUI!();
+    }
+  }
+  
+  /// Registra el callback de expiración de sesión (para mostrar diálogo)
+  void registerSessionExpiredCallback(VoidCallback callback) {
+    logger.d('Registrando callback de sesión expirada');
+    _onSessionExpiredUI = callback;
   }
 
   // ==============================================
@@ -195,6 +227,13 @@ class AuthService {
       _currentUser = Usuario.fromJson(json.decode(response.body));
       logger.i('Perfil obtenido exitosamente para userId: $userId');
       return true;
+    }else if (response.statusCode == 401) {
+      // Token expirado o inválido
+      logger.e('🔴 Error 401 en fetchProfile - Sesión expirada o inválida');
+      await _sessionManager.handleSessionExpiration(response.statusCode, response.body);
+      _accessToken = null;
+      _currentUser = null;
+      throw Exception('Sesión expirada. Por favor inicia sesión nuevamente.');
     } else {
       // Si falla → limpiamos sesión (token inválido o expirado)
       logger.e(

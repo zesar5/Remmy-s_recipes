@@ -943,6 +943,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'¡Receta editada con éxito!'**
   String get recetaEditadaExito;
+
+  /// No description provided for @sesionCaducada.
+  ///
+  /// In es, this message translates to:
+  /// **'Sesión caducada'**
+  String get sesionCaducada;
+
+  /// No description provided for @sesionCaducadaMsg.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente para continuar.'**
+  String get sesionCaducadaMsg;
+
+  /// No description provided for @irAlLogin.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir al login'**
+  String get irAlLogin;
 }
 
 class _AppLocalizationsDelegate

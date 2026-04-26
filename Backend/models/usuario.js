@@ -92,27 +92,45 @@ class Usuario {
     );
     return rows;
   }
-  static async obtenerUsuariosComunidad() {
-    const [rows] = await db.query(
-      `SELECT 
+  static async obtenerUsuariosComunidad(incluirImagenes = false) {
+    let query = `
+      SELECT 
         u.Id_usuario,
         u.nombre,
-        u.descripcion,
-        MAX(ui.imagen) AS imagen   -- toma solo una imagen por usuario
+        u.descripcion
+    `;
+    
+    // Solo incluir imagen si se solicita
+    if (incluirImagenes) {
+      query += `, ui.imagen`;
+    }
+    
+    query += `
      FROM usuario u
      LEFT JOIN usuario_imagen ui
        ON u.Id_usuario = ui.Id_usuario
      GROUP BY u.Id_usuario, u.nombre, u.descripcion
-    `,
-    );
+     LIMIT 50
+    `;
+
+    const [rows] = await db.query(query);
 
     return rows.map((user) => {
-      if (user.imagen) {
-        user.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
-      } else {
-        user.fotoPerfil = null;
+      const result = {
+        Id_usuario: user.Id_usuario,
+        nombre: user.nombre,
+        descripcion: user.descripcion,
+      };
+
+      // Si se incluyen imágenes y el usuario tiene, convertir a base64
+      if (incluirImagenes && user.imagen) {
+        result.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
+      } else if (!incluirImagenes) {
+        // Si NO se incluyen imágenes, devolver URL para descargarla por separado
+        result.fotoUrl = `/usuarios/foto/${user.Id_usuario}`;
       }
-      return user;
+
+      return result;
     });
   }
 

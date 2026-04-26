@@ -50,10 +50,22 @@ module.exports = function (req, res, next) {
     // 7. Todo bien → continuamos con la siguiente función/middleware/ruta
     next();
   } catch (error) {
-    // Cualquier problema con el token (expirado, inválido, manipulado, etc)
-    console.log("❌ TOKEN INVÁLIDO");
+    // Diferenciamos entre token expirado e inválido
+    console.log("❌ ERROR CON TOKEN:", error.message);
+    
+    if (error.name === 'TokenExpiredError') {
+      // Token expiró por inactividad
+      console.log("⏰ TOKEN EXPIRADO");
+      return res.status(401).json({
+        mensaje: t.tokenExpired || "Sesión caducada por inactividad",
+        code: 'TOKEN_EXPIRED',
+      });
+    }
+    
+    // Cualquier otro problema (inválido, manipulado, etc)
     return res.status(401).json({
       mensaje: t.tokenInvalid,
+      code: 'TOKEN_INVALID',
     });
   }
 };

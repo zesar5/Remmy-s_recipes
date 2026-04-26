@@ -17,6 +17,7 @@ class Usuario {
   final String? descripcion;
   final int? anioNacimiento;
   final String? fotoPerfil; // base64 de la imagen de perfil
+  final String? fotoUrl; // URL relativa de la imagen (/usuarios/foto/{id})
 
   Usuario({
     required this.id,
@@ -28,6 +29,7 @@ class Usuario {
     this.descripcion,
     this.anioNacimiento,
     this.fotoPerfil,
+    this.fotoUrl,
   });
 
   // ------------------------------------------------------------------------
@@ -48,6 +50,8 @@ class Usuario {
       anioNacimiento: json['anioNacimiento'], // puede ser int o null
       // La foto podría venir como base64 completo o null
       fotoPerfil: json['fotoPerfil'] ?? json['foto'],
+      // La URL de la foto (nuevo campo)
+      fotoUrl: json['fotoUrl'],
     );
   }
 

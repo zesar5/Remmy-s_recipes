@@ -5,11 +5,20 @@ import 'package:remy_recipes/main.dart';
 import '../data/models/receta.dart';
 import 'config.dart';
 import 'package:logger/logger.dart';
+import 'session_manager.dart';
 // ==========================================================================
 //          SERVICIO DE RECETAS - CONEXIÓN CON EL BACKEND
 // ==========================================================================
 // Este archivo contiene TODAS las llamadas HTTP relacionadas con recetas.
 // Es el punto central para CRUD y consultas de recetas.
+
+// Helper para manejar errores 401 (sesión expirada)
+Future<void> _checkAndHandleSessionExpiration(int statusCode, String responseBody) async {
+  if (statusCode == 401) {
+    logger.e('🔴 Error 401 detectado en recetas_service - Sesión expirada');
+    await SessionManager().handleSessionExpiration(statusCode, responseBody);
+  }
+}
 
 /// Obtiene TODAS las recetas (normalmente públicas, según backend)
 Future<List<Receta>> obtenerTodasLasRecetas() async {
@@ -60,6 +69,10 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
       final data = json.decode(response.body);
       logger.i('Receta creada con éxito. ID: ${data['id']}');
       return data['id']?.toString();
+    } else if (response.statusCode == 401) {
+      // Sesión expirada
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return null;
     } else {
       logger.e('Error HTTP ${response.statusCode} al crear receta');
       logger.e('Response body: ${response.body}');
@@ -94,6 +107,11 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
   logger.d(
     '⬅️ Respuesta recibida - Status: ${response.statusCode}, ⬅️Body: ${response.body}',
   );
+
+  if (response.statusCode == 401) {
+    await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+    return [];
+  }
 
   if (response.statusCode != 200) {
     logger.e(
@@ -139,6 +157,9 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
     return Receta.fromJson(
       data,
     ); // ← Usa el constructor completo (ingredientes + pasos)
+  } else if (response.statusCode == 401) {
+    await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+    throw Exception('Sesión expirada. Por favor inicia sesión nuevamente.');
   } else {
     logger.e(
       'Error al obtener receta por ID: Status ${response.statusCode}, Body: ${response.body}',
@@ -202,6 +223,9 @@ Future<bool> eliminarReceta(int id, String token) async {
   if (response.statusCode == 200 || response.statusCode == 204) {
     logger.i('Receta eliminada exitosamente'); // Log de éxito
     return true;
+  } else if (response.statusCode == 401) {
+    await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+    return false;
   } else {
     logger.e(
       'Error al eliminar receta: Status ${response.statusCode}',
@@ -228,6 +252,9 @@ Future<bool> editarReceta(Receta receta, String token) async {
   if (response.statusCode == 200) {
     logger.i('Receta editada exitosamente'); // Log de éxito
     return true;
+  } else if (response.statusCode == 401) {
+    await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+    return false;
   } else {
     logger.e(
       'Error al editar receta: Status ${response.statusCode}',
@@ -274,6 +301,9 @@ Future<List<Receta>> recetaFiltrada({
       final List data = json.decode(response.body);
       logger.i('Filtro aplicado exitosamente: ${data.length} resultados');
       return data.map((e) => Receta.fromHomeJson(e)).toList();
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return [];
     } else {
       logger.e(
         'Error en filtro: Status ${response.statusCode}, Body: ${response.body}',
@@ -313,6 +343,9 @@ Future<List<Receta>> obtenerFavoritos(String token) async {
       final favoritos = data.map((item) => Receta.fromHomeJson(item)).toList();
       logger.i('Favoritos obtenidos: ${favoritos.length} recetas');
       return favoritos;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return [];
     } else {
       logger.e('Error al obtener favoritos: ${response.statusCode}');
       return [];
@@ -344,6 +377,9 @@ Future<bool> anadirFavorito(int recetaId, String token) async {
     if (response.statusCode == 200) {
       logger.i('Receta añadida a favoritos exitosamente');
       return true;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return false;
     } else if (response.statusCode == 400) {
       logger.w('La receta ya está en favoritos');
       return false;
@@ -378,6 +414,9 @@ Future<bool> eliminarFavorito(int recetaId, String token) async {
     if (response.statusCode == 200) {
       logger.i('Receta eliminada de favoritos exitosamente');
       return true;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return false;
     } else {
       logger.e('Error al eliminar favorito: ${response.statusCode}');
       return false;
@@ -409,6 +448,9 @@ Future<bool> esFavorito(int recetaId, String token) async {
       final estaEnFavoritos = data['esFavorito'] ?? false;
       logger.d('Receta $recetaId en favoritos: $estaEnFavoritos');
       return estaEnFavoritos;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return false;
     } else {
       logger.e('Error al verificar favorito: ${response.statusCode}');
       return false;
@@ -442,6 +484,9 @@ Future<bool> toggleFavorito(int recetaId, String token) async {
       final esFavorito = data['esFavorito'] ?? false;
       logger.i('Toggle favorito completado. Estado final: $esFavorito');
       return esFavorito;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return false;
     } else {
       logger.e('Error en toggle favorito: ${response.statusCode}');
       return false;
@@ -473,6 +518,9 @@ Future<bool> cambiarPrivacidadReceta(String recetaId, bool esPublica, String tok
     if (response.statusCode == 200) {
       logger.i('Privacidad de receta cambiada exitosamente');
       return true;
+    } else if (response.statusCode == 401) {
+      await _checkAndHandleSessionExpiration(response.statusCode, response.body);
+      return false;
     } else {
       logger.e('Error cambiando privacidad: ${response.statusCode} - ${response.body}');
       return false;

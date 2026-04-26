@@ -442,4 +442,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recetaEditadaExito => 'Recipe edited successfully!';
+
+  @override
+  String get sesionCaducada => 'Session expired';
+
+  @override
+  String get sesionCaducadaMsg =>
+      'Your session has expired due to inactivity. Please log in again to continue.';
+
+  @override
+  String get irAlLogin => 'Go to login';
 }
