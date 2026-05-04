@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:remy_recipes/data/models/receta.dart';
 import 'Profile_screen.dart';
 import 'package:http/http.dart' as http;
-import 'dart:typed_data';
 import 'recipes_form_page.dart';
 import '../services/auth_service.dart';
 import 'DetalleRecetaPage.dart';
@@ -841,20 +840,6 @@ class RecipeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Decodificamos la imagen base64 para mostrarla
-    Uint8List? imageBytes;
-
-    final String? base64String = recipe.imagenBase64;
-    if (base64String != null && base64String.isNotEmpty) {
-      try {
-        final base64Image = base64String.contains(',')
-            ? base64String.split(',').last
-            : base64String;
-        imageBytes = base64Decode(base64Image);
-      } catch (e) {
-        logger.e('Error decodificando imagen de receta ${recipe.id}: $e');
-      }
-    }
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
@@ -915,13 +900,18 @@ class RecipeButton extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(14),
                 ),
-                child: imageBytes != null
-                    ? Image.memory(
-                        imageBytes,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      )
-                    : const Center(child: Icon(Icons.image_not_supported)),
+                child: recipe.imagenUrl != null && recipe.imagenUrl!.isNotEmpty
+                  ? Image.network(
+                      '${ApiEndpoints.uploadImage}/${recipe.imagenUrl}',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(Icons.image_not_supported),
+                        );
+                      },
+                    )
+                  : const Center(child: Icon(Icons.image_not_supported)),
               ),
             ),
 

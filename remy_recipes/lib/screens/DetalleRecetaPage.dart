@@ -2,7 +2,7 @@ import 'package:remy_recipes/main.dart';
 import 'package:remy_recipes/screens/recipes_form_page.dart';
 import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import '../services/config.dart';
 import '../services/recetas_service.dart';
 import '../data/models/receta.dart';
 import '../data/constants/app_strings.dart';
@@ -333,27 +333,28 @@ void _toggleLike() async {
         padding: const EdgeInsets.all(16),
         children: [
           // 🖼 IMAGEN
-          if (widget.receta.imagenBase64 != null)
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black87),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.memory(
-                  base64Decode(
-                    widget.receta.imagenBase64!.replaceFirst(
-                      RegExp(r'data:image/[^;]+;base64,'),
-                      '',
-                    ),
-                  ),
-                  height: 220,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black87),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                '${ApiEndpoints.baseUrl}/recetas/imagen/${widget.receta.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                height: 220,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 220,
+                    color: Colors.grey.shade300,
+                    child: const Icon(Icons.image_not_supported, size: 50),
+                  );
+                },
               ),
             ),
+          ),
 
           const SizedBox(height: 16),
 

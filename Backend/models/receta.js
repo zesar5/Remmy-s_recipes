@@ -44,7 +44,7 @@ const RecetaModel = {
     const recetas = rows.map(row => ({
             id: row.Id_receta,
             titulo: row.titulo,
-            imagenBase64: row.imagen ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` : null
+            imagenBase64: row.imagen || null
         }));
 
         return recetas;
@@ -88,9 +88,7 @@ const RecetaModel = {
     return rows.map(row => ({
       Id_receta: row.Id_receta,
       titulo: row.titulo,
-      imagenBase64: row.imagen
-        ? `data:image/jpeg;base64,${row.imagen.toString("base64")}`
-        : null,
+      imagenBase64: row.imagen || null
     }));
   },
 
@@ -133,7 +131,7 @@ const RecetaModel = {
     receta.ingredientes = ingredientes;
     receta.pasos = pasos; // solo las descripciones
     receta.imagen = imagenes.length
-      ? `data:image/jpeg;base64,${imagenes[0].imagen.toString("base64")}`
+      ? imagenes[0].imagen
       : null;
 
     return new RecetaEntity(receta);
@@ -163,11 +161,9 @@ const RecetaModel = {
 
     // Imagen (si existe)
     if (data.imagen) {
-      const base64Data = data.imagen.replace(/^data:image\/\w+;base64,/, "");
-      const buffer = Buffer.from(base64Data, "base64");
       await db.query(
         "INSERT INTO receta_imagen (imagen, Id_receta) VALUES (?, ?)",
-        [buffer, recetaId]
+        [data.imagen, recetaId]
       );
     }
 
@@ -217,18 +213,10 @@ const RecetaModel = {
 
   // Imagen (si existe, actualizar el buffer existente)
   if (data.imagen) {
-    const base64Data = data.imagen.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(base64Data, "base64");
-    // Actualizar la imagen existente (asumiendo que ya hay una fila en receta_imagen)
     await db.query(
       "UPDATE receta_imagen SET imagen = ? WHERE Id_receta = ?",
-      [buffer, id]
+      [data.imagen, id]
     );
-    // Nota: Si no hay imagen previa, podrías insertar una nueva. Para eso, usa:
-    // await db.query(
-    //   "INSERT INTO receta_imagen (imagen, Id_receta) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)",
-    //   [buffer, id]
-    // );
   }
 
   // Pasos: Eliminar existentes y reinsertar nuevos (similar a crear)
@@ -374,9 +362,7 @@ const RecetaModel = {
     return rows.map(r => {
       return new RecetaEntity({
         ...r,
-        imagen: r.imagen
-          ? `data:image/webp;base64,${r.imagen.toString('base64')}`
-          : null,
+        imagen: r.imagen || null
       });
     });
   }
@@ -445,9 +431,7 @@ const FavoritoModel = {
     return rows.map(row => ({
       id: row.Id_receta.toString(),
       titulo: row.titulo,
-      imagenBase64: row.imagen 
-        ? `data:image/jpeg;base64,${row.imagen.toString('base64')}` 
-        : null
+      imagenBase64: row.imagen || null
     }));
   },
 

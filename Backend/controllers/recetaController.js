@@ -145,6 +145,10 @@ exports.crearReceta = async (req, res) => {
     console.log("Tipo de req.body:", typeof req.body);
     console.log("Tamaño de la imagen:", req.body.imagen?.length);
 
+    if (req.file) {
+      req.body.imagen = `/uploads/recetas/${req.file.filename}`;
+    }
+
     const id = await RecetaModel.crear(req.body, req.userId);
 
     res.status(200).json({
@@ -179,6 +183,10 @@ exports.actualizarReceta = async (req, res) => {
       return res
         .status(403)
         .json({ mensaje: t.noPermissionEdit });
+    }
+
+    if (req.file) {
+      req.body.imagen = `/uploads/recetas/${req.file.filename}`;
     }
 
     await RecetaModel.actualizar(req.params.id, req.body);
@@ -301,10 +309,10 @@ exports.obtenerRecetasFiltradas = async (req, res) => {
     const recetas = await RecetaModel.recetasFiltradas(filtros);
 
     res.status(200).json(recetas);
-  }catch(err){
-    console.error("❌ Error al obtener recetas filtradas:", err);
-    res.status(500).json({
-      error: err.message
-    });
-  }
+    }catch(err){
+      console.error("❌ Error al obtener recetas filtradas:", err);
+      res.status(500).json({
+        error: err.message
+      });
+    }
 };

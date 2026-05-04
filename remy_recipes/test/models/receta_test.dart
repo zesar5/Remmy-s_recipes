@@ -20,7 +20,7 @@ void main() {
 
       expect(receta.id, '15');
       expect(receta.titulo, 'Hamburguesa');
-      expect(receta.imagenBase64, null);
+      expect(receta.imagenUrl, null);
     });
 
     test('fromJson maneja campos opcionales null', () {

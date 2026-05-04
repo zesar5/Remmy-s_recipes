@@ -16,6 +16,7 @@ import '../l10n/app_localizations.dart';
 class RecipeFormPage extends StatefulWidget {
   final Receta? recetaEditar; // Si viene con valor → modo edición
   final String token; // JWT para autenticar las peticiones al backend
+  
 
   const RecipeFormPage({Key? key, required this.token, this.recetaEditar})
     : super(key: key);
@@ -234,7 +235,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       logger.w('Validación fallida: Título vacío'); // Advertencia
       return false;
     }
-    if (imagePath == null && widget.recetaEditar?.imagenBase64 == null) {
+    if (imagePath == null && widget.recetaEditar?.imagenUrl == null) {
       logger.w('Validación fallida: Imagen no seleccionada'); // Advertencia
       return false;
     }
@@ -328,11 +329,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
         pais: country!,
         alergenos: selectedAllergens.join(','),
         estacion: season!,
-        imagenBase64: imagePath != null
-            ? base64Encode(
-                File(imagePath!).readAsBytesSync(),
-              ) // ← Convierte archivo a base64
-            : widget.recetaEditar?.imagenBase64,
+        imagenUrl: widget.recetaEditar?.imagenUrl,
       );
       logger.d(
         'Datos de receta preparados: Título=${receta.titulo}, Ingredientes=${receta.ingredientes?.length}, Pasos=${receta.pasos?.length}',
@@ -346,9 +343,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       if (widget.recetaEditar == null) {
         // MODO CREAR
         logger.i('Modo crear: Enviando receta al servidor');
-        final String? recetaId = await crearRecetaEnServidor(
-          receta,
-          widget.token,
+        final String? recetaId = await crearRecetaConImagen(
+          receta: receta,
+          token: widget.token,
+          imagenFile: imagePath != null ? File(imagePath!) : null,
         );
         success = recetaId != null;
       } else {
@@ -466,14 +464,10 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     imagePath !=
                         null //&& widget.recetaEditar?.imagenBase64 == null
                     ? Image.file(File(imagePath!), fit: BoxFit.cover)
-                    : (widget.recetaEditar?.imagenBase64 != null &&
-                              widget.recetaEditar!.imagenBase64!.isNotEmpty
-                          ? Image.memory(
-                              base64Decode(
-                                widget.recetaEditar!.imagenBase64!
-                                    .split(',')
-                                    .last,
-                              ),
+                    : (widget.recetaEditar?.imagenUrl != null &&
+                              widget.recetaEditar!.imagenUrl!.isNotEmpty
+                          ? Image.network(
+                              widget.recetaEditar!.imagenUrl!,
                               fit: BoxFit.cover,
                             )
                           : const Center(

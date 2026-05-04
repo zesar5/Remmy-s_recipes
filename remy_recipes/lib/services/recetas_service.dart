@@ -530,3 +530,53 @@ Future<bool> cambiarPrivacidadReceta(String recetaId, bool esPublica, String tok
     return false;
   }
 }
+
+Future<String?> crearRecetaConImagen({
+  required Receta receta,
+  required String token,
+  File? imagenFile,
+}) async {
+  final url = Uri.parse(ApiEndpoints.recetas);
+
+  var request = http.MultipartRequest('POST', url);
+
+  request.headers['Authorization'] = 'Bearer $token';
+
+  request.fields['titulo'] = receta.titulo;
+  request.fields['publica'] = receta.esPublica ? '1' : '0';
+
+  if (receta.duracion != null) {
+    request.fields['duracion'] = receta.duracion.toString();
+  }
+
+  if (receta.pais != null) request.fields['pais'] = receta.pais!;
+  if (receta.estacion != null) request.fields['estacion'] = receta.estacion!;
+  if (receta.alergenos != null) request.fields['alergenos'] = receta.alergenos!;
+
+  if (receta.ingredientes != null) {
+    request.fields['ingredientes'] =
+        jsonEncode(receta.ingredientes!.map((i) => i.toJson()).toList());
+  }
+
+  if (receta.pasos != null) {
+    request.fields['pasos'] =
+        jsonEncode(receta.pasos!.map((p) => p.toJson()).toList());
+  }
+
+  if (imagenFile != null) {
+    request.files.add(
+      await http.MultipartFile.fromPath('imagen', imagenFile.path),
+    );
+  }
+
+  final response = await request.send();
+  final respStr = await response.stream.bytesToString();
+
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    final data = json.decode(respStr);
+    return data['id']?.toString();
+  } else {
+    print("ERROR: $respStr");
+    return null;
+  }
+}

@@ -4,6 +4,8 @@ const auth = require("../middlewares/authMiddleware");
 const authOpcional = require("../middlewares/authOpcional");
 const recetaController = require("../controllers/recetaController");
 const { RecetaEntity, RecetaModel, FavoritoModel } = require("../models/receta");
+const upload = require("../middlewares/upload");
+
 console.log("🔍 DEBUG: FavoritoModel =", FavoritoModel);
 console.log("🔍 DEBUG: FavoritoModel.esFavorito =", typeof FavoritoModel.esFavorito);
 console.log("🔍 DEBUG: FavoritoModel.anadirFavorito =", typeof FavoritoModel.anadirFavorito);
@@ -111,8 +113,8 @@ router.get("/publicas/:id", recetaController.obtenerRecetaPublicaPorId);
 router.post("/filtrar", authOpcional, recetaController.obtenerRecetasFiltradas);
 router.get("/:id", auth, recetaController.obtenerRecetaPorId);
 router.get('/', recetaController.getRecetas);
-router.post("/", auth, recetaController.crearReceta);
-router.put("/:id", auth, recetaController.actualizarReceta);
+router.post("/", auth, upload.single("imagen"), recetaController.crearReceta);
+router.put("/:id", auth, upload.single("imagen"), recetaController.actualizarReceta);
 router.put("/:id/privacidad", auth, recetaController.actualizarPrivacidadReceta);
 router.delete("/:id", auth, recetaController.eliminarReceta);
 

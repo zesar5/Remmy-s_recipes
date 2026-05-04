@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:remy_recipes/screens/login_screen.dart';
@@ -9,7 +8,6 @@ import '../services/recetas_service.dart';
 import '../data/models/receta.dart';
 import '../data/models/usuario.dart';
 import 'DetalleRecetaPage.dart';
-import 'dart:convert';
 import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
 import 'EditProfileScreen.dart';
@@ -374,19 +372,19 @@ class _PerfilScreenState extends State<PerfilScreen> {
       itemCount: favoritos.length,
       itemBuilder: (context, index) {
         final receta = favoritos[index];
-        Uint8List? imageBytes;
-
-        final String? base64String = receta.imagenBase64;
-        if (base64String != null && base64String.contains(',')) {
-          try {
-            final base64Image = base64String.split(',').last;
-            if (base64Image.isNotEmpty) {
-              imageBytes = base64Decode(base64Image);
-            }
-          } catch (e) {
-            logger.e('Error decodificando imagen de receta ${receta.id}: $e');
-          }
-        }
+        receta.imagenUrl != null
+          ? Image.network(
+              receta.imagenUrl!,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: Colors.grey.shade300,
+                child: const Icon(Icons.image, size: 50),
+              ),
+            )
+          : Container(
+              color: Colors.grey.shade300,
+              child: const Icon(Icons.image, size: 50),
+            );
 
         return GestureDetector(
           onTap: () async {
@@ -432,12 +430,21 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: imageBytes != null
-                      ? Image.memory(imageBytes, fit: BoxFit.cover)
-                      : Container(
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.image, size: 50),
-                        ),
+                  child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
+                    ? Image.network(
+                        '${ApiEndpoints.baseUrl}/${receta.imagenUrl}',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade300,
+                            child: const Icon(Icons.image, size: 50),
+                          );
+                        },
+                      )
+                    : Container(
+                        color: Colors.grey.shade300,
+                        child: const Icon(Icons.image, size: 50),
+                      ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -476,21 +483,19 @@ class _PerfilScreenState extends State<PerfilScreen> {
       itemCount: recetasGuardadas.length,
       itemBuilder: (context, index) {
         final receta = recetasGuardadas[index];
-        Uint8List? imageBytes;
-
-        final String? base64String = receta.imagenBase64;
-        if (base64String != null && base64String.contains(',')) {
-          try {
-            final base64Image = base64String.split(',').last;
-            if (base64Image.isNotEmpty) {
-              imageBytes = base64Decode(base64Image);
-            }
-          } catch (e) {
-            logger.e(
-              'Error decodificando imagen de receta ${receta.id}: $e',
-            ); // Log de error
-          }
-        }
+        receta.imagenUrl != null
+          ? Image.network(
+              '${ApiEndpoints.uploadImage}/${receta.imagenUrl}',
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: Colors.grey.shade300,
+                child: const Icon(Icons.image, size: 50),
+              ),
+            )
+          : Container(
+              color: Colors.grey.shade300,
+              child: const Icon(Icons.image, size: 50),
+            );
 
         return GestureDetector(
           onTap: () async {
@@ -537,8 +542,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: imageBytes != null
-                      ? Image.memory(imageBytes, fit: BoxFit.cover)
+                  child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
+                      ? Image.network(
+                          '${ApiEndpoints.uploadImage}/${receta.imagenUrl}',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.image, size: 50),
+                            );
+                          },
+                        )
                       : Container(
                           color: Colors.grey.shade300,
                           child: const Icon(Icons.image, size: 50),

@@ -27,7 +27,7 @@ class Receta {
   final String? alergenos;
   final String? estacion;
   final int? idUsuario;
-  final String? imagenBase64;
+  final String? imagenUrl;
   final String? creadorNombre;
   final bool esPublica;
 
@@ -41,7 +41,7 @@ class Receta {
     this.alergenos,
     this.estacion,
     this.idUsuario,
-    this.imagenBase64,
+    this.imagenUrl,
     this.creadorNombre,
     this.esPublica = false,
   });
@@ -67,7 +67,7 @@ class Receta {
       alergenos: json['alergenos']?.toString(),
       estacion: json['estacion']?.toString(),
       idUsuario: json['usuarioId'] as int?,
-      imagenBase64: json['imagen']?.toString(),
+      imagenUrl: json['imagen']?.toString(),
       creadorNombre: json['creadorNombre']?.toString(),
       esPublica: json['publica'] == 1 || json['publica'] == true,
     );
@@ -81,8 +81,7 @@ class Receta {
           ? json['id'].toString()
           : (json['Id_receta']?.toString()),
       titulo: json['titulo']?.toString() ?? 'Sin título',
-      imagenBase64:
-          json['imagenBase64']?.toString() ?? json['imagen']?.toString(),
+      imagenUrl: json['imagen'],
     );
   }
 
@@ -100,7 +99,7 @@ class Receta {
       if (alergenos != null) 'alergenos': alergenos,
       if (estacion != null) 'estacion': estacion,
       if (idUsuario != null) 'Id_usuario': idUsuario,
-      if (imagenBase64 != null) 'imagen': imagenBase64,
+      if (imagenUrl != null) 'imagen': imagenUrl,
       'publica': esPublica ? 1 : 0,
     };
   }

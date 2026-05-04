@@ -21,4 +21,7 @@ class ApiEndpoints {
   static String get forgotPassword => '$baseUrl/usuarios/forgot-password';
   static String get verifyResetCode => '$baseUrl/usuarios/verify-reset-code';
   static String get resetPassword => '$baseUrl/usuarios/reset-password';
+
+  //Edpoint para subir imagenes
+  static String get uploadImage => '$baseUrl/uploads/recetas';
 }
