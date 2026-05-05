@@ -71,16 +71,16 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
   final TextEditingController titleController = TextEditingController();
 
   final List<String> durations = [
-    "5 minutos",
-    "10 minutos",
-    "15 minutos",
-    "20 minutos",
-    "30 minutos",
-    "45 minutos",
-    "1 hora",
-    "1 hora 30 minutos",
-    "2 horas",
-    "Más de 2 horas",
+    "15",
+    "30",
+    "45",
+    "60",
+    "75",
+    "90",
+    "105",
+    "120",
+    "135",
+    "150",
   ];
 
   final List<String> countries = AppStrings.countries;
