@@ -38,3 +38,6 @@
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:36:18.554Z"}
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:36:36.330Z"}
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:50:43.976Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-05-06T15:43:11.944Z"}
+{"err":"data.pasos.map is not a function","level":"error","message":"Error al crear una receta: ","timestamp":"2026-05-06T15:44:14.397Z"}
+{"err":"data.pasos.map is not a function","level":"error","message":"Error al crear una receta: ","timestamp":"2026-05-06T15:45:04.208Z"}
