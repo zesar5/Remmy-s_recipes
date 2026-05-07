@@ -341,7 +341,7 @@ void _toggleLike() async {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                '${ApiEndpoints.baseUrl}/recetas/imagen/${widget.receta.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                '${ApiEndpoints.baseUrl}${widget.receta.imagenUrl}',
                 height: 220,
                 width: double.infinity,
                 fit: BoxFit.cover,

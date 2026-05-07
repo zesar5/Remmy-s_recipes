@@ -149,6 +149,14 @@ exports.crearReceta = async (req, res) => {
       req.body.imagen = `/uploads/recetas/${req.file.filename}`;
     }
 
+    // Parsear campos JSON que llegan como strings desde Flutter
+    if (req.body.pasos && typeof req.body.pasos === 'string') {
+      req.body.pasos = JSON.parse(req.body.pasos);
+    }
+    if (req.body.ingredientes && typeof req.body.ingredientes === 'string') {
+      req.body.ingredientes = JSON.parse(req.body.ingredientes);
+    }
+
     const id = await RecetaModel.crear(req.body, req.userId);
 
     res.status(200).json({
@@ -187,6 +195,14 @@ exports.actualizarReceta = async (req, res) => {
 
     if (req.file) {
       req.body.imagen = `/uploads/recetas/${req.file.filename}`;
+    }
+
+    // Parsear campos JSON que llegan como strings desde Flutter
+    if (req.body.pasos && typeof req.body.pasos === 'string') {
+      req.body.pasos = JSON.parse(req.body.pasos);
+    }
+    if (req.body.ingredientes && typeof req.body.ingredientes === 'string') {
+      req.body.ingredientes = JSON.parse(req.body.ingredientes);
     }
 
     await RecetaModel.actualizar(req.params.id, req.body);
