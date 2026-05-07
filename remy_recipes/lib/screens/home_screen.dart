@@ -902,7 +902,7 @@ class RecipeButton extends StatelessWidget {
                 ),
                 child: recipe.imagenUrl != null && recipe.imagenUrl!.isNotEmpty
                   ? Image.network(
-                      '${ApiEndpoints.baseUrl}${recipe.imagenUrl}',
+                      '${ApiEndpoints.baseUrl}${recipe.imagenUrl!.replaceFirst('/', '')}',
                       fit: BoxFit.cover,
                       width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
