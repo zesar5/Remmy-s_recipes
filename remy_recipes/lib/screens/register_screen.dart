@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 
 import 'login_screen.dart';
 import 'dart:io';
-import 'dart:convert';
 
 import '../services/auth_service.dart';
 import '../l10n/app_localizations.dart';
@@ -150,14 +149,6 @@ bool _ocultarConfirmar = true;
       return;
     }
 
-    // 4. Preparar imagen de perfil en base64 (si existe)
-    String? base64Image;
-    if (imagenPerfil != null) {
-      final bytes = await imagenPerfil!.readAsBytes();
-      base64Image = "data:image/png;base64,${base64Encode(bytes)}";
-      logger.d('Imagen de perfil preparada en base64'); // Debug
-    }
-
     // 5. Llamada real al servicio de autenticación
     try {
       logger.i('Enviando datos de registro al servidor');
@@ -169,8 +160,11 @@ bool _ocultarConfirmar = true;
         pais: paisSeleccionado,
         descripcion: descripcion.text,
         anioNacimiento: anioSeleccionado,
-        fotoPerfil: base64Image,
       );
+
+      if (imagenPerfil != null) {
+        await widget.authService.subirFotoPerfil(imagenPerfil!);
+      }
 
       // Éxito → mensaje y redirigir a login
       logger.i('Registro exitoso - Navegando a login'); // Log de éxito

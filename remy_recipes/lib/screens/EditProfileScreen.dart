@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:remy_recipes/main.dart';
 import '../services/auth_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../l10n/app_localizations.dart';
-
-import '../data/constants/app_strings.dart';
-import 'package:logger/logger.dart';
-import 'Profile_screen.dart';
+import '../services/config.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final AuthService authService;
@@ -24,7 +20,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLoading = false;
   late TextEditingController nameController;
   late TextEditingController descripcionController;
-  File? imagenPerfil;
+  File? imagenPerfilFile;
+  String? imagenPerfilUrl;
   final picker = ImagePicker();
   ImageProvider? avatarImage;
 
@@ -38,7 +35,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     descripcionController = TextEditingController(text: user.descripcion ?? '');
 
     if (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty) {
-      avatarImage = MemoryImage(base64Decode(user.fotoPerfil!.split(',').last));
+      avatarImage = NetworkImage(
+        '${ApiEndpoints.baseUrl}${user.fotoPerfil!.startsWith('/') 
+            ? user.fotoPerfil! 
+            : '/${user.fotoPerfil!}'}',
+      );
     } else {
       avatarImage = null;
     }
@@ -85,9 +86,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!hashPermission) return;
 
     final picked = await picker.pickImage(source: ImageSource.gallery);
+
     if (picked != null) {
-      setState(() => imagenPerfil = File(picked.path));
-      logger.i('Imagen seleccionada'); // Log de éxito
+      setState(() => imagenPerfilFile = File(picked.path));
+      logger.i('Imagen seleccionada');
     } else {
       logger.w('usuario cancelo la seleccion de imagen');
     }
@@ -95,28 +97,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> guardarCambios() async {
     if (isLoading) return;
+
     setState(() => isLoading = true);
-    logger.i('Guardando cambios de perfil'); // Log de inicio
-    String? base64Image;
-    if (imagenPerfil != null) {
-      final bytes = await imagenPerfil!.readAsBytes();
-      base64Image = "data:image/png;base64,${base64Encode(bytes)}";
-    }
+
+    logger.i('Guardando cambios de perfil');
 
     try {
-      // Asumir que AuthService tiene un método updateProfile (agregarlo si no existe)
+
+      if (imagenPerfilFile != null) {
+        imagenPerfilUrl = await widget.authService.subirFotoPerfil(
+          imagenPerfilFile!,
+        );
+      }
       await widget.authService.updateProfile(
         nombreUsuario: nameController.text.trim(),
         descripcion: descripcionController.text.trim(),
-        fotoPerfil: base64Image,
+        fotoPerfil: imagenPerfilUrl,
       );
-      logger.i('Perfil actualizado exitosamente'); // Log de éxito
-      Navigator.pop(context, true); // Regresar a PerfilScreen
+
+      logger.i('Perfil actualizado exitosamente');
+
+      Navigator.pop(context, true);
+
     } catch (e) {
-      logger.e('Error actualizando perfil: $e'); // Log de error
+
+      logger.e('Error actualizando perfil: $e');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
+        SnackBar(
+          content: Text(
+            '${AppLocalizations.of(context)!.error}: $e',
+          ),
+        ),
       );
+
     } finally {
       setState(() => isLoading = false);
     }
@@ -162,9 +176,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     radius: 60,
                     backgroundColor: Colors.grey.shade300,
                     child: ClipOval(
-                      child: imagenPerfil != null
+                      child: imagenPerfilFile != null
                           ? Image.file(
-                              imagenPerfil!,
+                              imagenPerfilFile!,
                               width: 120,
                               height: 120,
                               fit: BoxFit.cover,

@@ -199,19 +199,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
             child: ClipOval(
               // URL del backend para obtener la foto de perfil
               //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
-              child: Image.network(
-                '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
-
-                width: 120,
-                height: 120,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  logger.w(
-                    'Error cargando imagen de perfil - Mostrando placeholder',
-                  ); // Advertencia
-                  return const Text("👤", style: TextStyle(fontSize: 55));
-                },
-              ),
+              child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
+                ? Image.network(
+                    '${ApiEndpoints.baseUrl}${user.fotoPerfil!}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      logger.w('Error cargando imagen de perfil');
+                      return const Text("👤", style: TextStyle(fontSize: 55));
+                    },
+                  )
+                : const Text("👤", style: TextStyle(fontSize: 55)),
             ),
           ),
 
@@ -485,7 +484,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         final receta = recetasGuardadas[index];
         receta.imagenUrl != null
           ? Image.network(
-              '${ApiEndpoints.uploadImage}/${receta.imagenUrl}',
+              '${ApiEndpoints.uploadImage}${receta.imagenUrl}',
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: Colors.grey.shade300,
@@ -544,7 +543,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 Expanded(
                   child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
                       ? Image.network(
-                          '${ApiEndpoints.uploadImage}/${receta.imagenUrl}',
+                          '${ApiEndpoints.uploadImage}${receta.imagenUrl}',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
@@ -662,8 +661,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       if (result == true) {
         // Después de editar, refrescar el perfil
         logger.i('Regresando de edición - Refrescando perfil'); // Log de acción
-        setState(() {
-          user = widget.authService.currentUser!; // Refrescar datos del usuario
+        widget.authService.fetchProfile(int.parse(user.id)).then((_) {
+          setState(() {
+            user = widget.authService.currentUser!;
+          });
         });
       }
     });

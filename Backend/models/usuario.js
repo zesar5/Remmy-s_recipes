@@ -51,17 +51,11 @@ class Usuario {
   }
 
   //Guardar imagen
-  static async guardarImagen(idUsuario, base64Image) {
-    // Quitamos el prefijo "data:image/jpeg;base64," (o similar)
-    const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, "");
-
-    // Convertimos base64 a buffer (formato binario que puede guardar MySQL)
-    const buffer = Buffer.from(cleanBase64, "base64");
-
+  static async guardarImagen(idUsuario, imagePath) {
     await db.query(
       `INSERT INTO usuario_imagen (imagen, Id_usuario)
-            VALUES (?, ?)`,
-      [buffer, idUsuario],
+      VALUES (?, ?)`,
+      [imagePath, idUsuario],
     );
   }
 
@@ -76,7 +70,7 @@ class Usuario {
     const user = rows[0];
 
     if (user.imagen) {
-      user.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
+      user.fotoPerfil = user.imagen;
     } else {
       user.fotoPerfil = null;
     }
@@ -123,11 +117,8 @@ class Usuario {
       };
 
       // Si se incluyen imágenes y el usuario tiene, convertir a base64
-      if (incluirImagenes && user.imagen) {
-        result.fotoPerfil = `data:image/jpeg;base64,${user.imagen.toString("base64")}`;
-      } else if (!incluirImagenes) {
-        // Si NO se incluyen imágenes, devolver URL para descargarla por separado
-        result.fotoUrl = `/usuarios/foto/${user.Id_usuario}`;
+      if (user.imagen) {
+        result.fotoPerfil = user.imagen;
       }
 
       return result;
@@ -143,28 +134,29 @@ class Usuario {
     );
 
     if (fotoPerfil) {
-      const cleanBase64 = fotoPerfil.replace(/^data:image\/\w+;base64,/, "");
-      const buffer = Buffer.from(cleanBase64, "base64");
       await db.query(
-        "INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?) ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)",
-        [id, buffer],
+        `INSERT INTO usuario_imagen (Id_usuario, imagen)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)`,
+        [id, fotoPerfil],
       );
     }
     //Devuelve el perfil actualizado
     return await Usuario.obtenerPerfil(id);
   }
-  static async actualizarRutaFotoPerfil(idUsuario, imagenBuffer) {
+  static async actualizarRutaFotoPerfil(idUsuario, imagePath) {
     const db = require("../config/db");
+
     try {
-      await db.query("DELETE FROM usuario_imagen WHERE Id_usuario=?", [
-        idUsuario,
-      ]);
+      await db.query(
+        `
+        INSERT INTO usuario_imagen (Id_usuario, imagen)
+        VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE imagen = VALUES(imagen)
+        `,
+        [idUsuario, imagePath]
+      );
 
-      const sql =
-        "INSERT INTO usuario_imagen (Id_usuario, imagen) VALUES (?, ?)";
-
-      const [result] = await db.query(sql, [idUsuario, imagenBuffer]);
-      return result;
     } catch (error) {
       console.error("Error en el modelo de actualizar foto:", error);
       throw error;

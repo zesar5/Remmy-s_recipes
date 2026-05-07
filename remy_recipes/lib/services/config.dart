@@ -24,4 +24,7 @@ class ApiEndpoints {
 
   //Edpoint para subir imagenes
   static String get uploadImage => '$baseUrl/uploads/recetas';
+
+  //Endpoint para subir imagen de perfil
+  static String get uploadProfileImage => '$baseUrl/usuarios/foto';
 }

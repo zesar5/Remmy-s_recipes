@@ -206,7 +206,7 @@ exports.obtenerPerfil = async (req, res) => {
 // 3️. Devuelve la imagen como archivo (NO como JSON)
 // 4️. Permite que Flutter la muestre con Image.network()
 
-exports.obtenerFotoPerfil = async (req, res) => {
+/*exports.obtenerFotoPerfil = async (req, res) => {
   //extraemos el id del usuario desde la URL
   const { id } = req.params;
 
@@ -238,7 +238,7 @@ exports.obtenerFotoPerfil = async (req, res) => {
     console.error("Error al obtener foto de perfil:", error);
     res.status(500).json({ error: error.message });
   }
-};
+};*/
 
 // ────────────────────────────────────────────────
 //              OBTENER TODOS LOS USUARIOS

@@ -752,9 +752,11 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           child: ClipOval(
-            child: user != null
+            child: user != null &&
+                    user.fotoPerfil != null &&
+                    user.fotoPerfil!.isNotEmpty
                 ? Image.network(
-                    '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    '${ApiEndpoints.baseUrl}${user.fotoPerfil!}',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Center(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:remy_recipes/main.dart';
@@ -146,7 +147,6 @@ class AuthService {
     String? pais,
     String? descripcion,
     int? anioNacimiento,
-    String? fotoPerfil, // base64 completo (data:image/...;base64,...)
   }) async {
     final url = Uri.parse(ApiEndpoints.register);
 
@@ -162,7 +162,6 @@ class AuthService {
       contrasena2: contrasena2,
       descripcion: descripcion,
       anioNacimiento: anioNacimiento,
-      fotoPerfil: fotoPerfil,
     );
 
     logger.d('Datos de registro enviados: ${newUser.toJsonRegistro()}');
@@ -301,6 +300,42 @@ class AuthService {
         'Error actualizando perfil: Status ${response.statusCode}, Body: ${response.body}',
       );
       throw Exception('Error al actualizar perfil: ${response.body}');
+    }
+  }
+
+  Future<String?> subirFotoPerfil(File imagen) async {
+    if (_accessToken == null || _currentUser == null) {
+      throw Exception('Usuario no autenticado');
+    }
+
+    final uri = Uri.parse(
+      '${ApiEndpoints.baseUrl}/usuarios/foto/${_currentUser!.id}',
+    );
+
+    final request = http.MultipartRequest(
+      'POST',
+      uri,
+    );
+
+    request.headers['Authorization'] = 'Bearer $_accessToken';
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'profilePic',
+        imagen.path,
+      ),
+    );
+
+    final response = await request.send();
+
+    final responseBody = await response.stream.bytesToString();
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(responseBody);
+
+      return data['ruta'];
+    } else {
+      throw Exception('Error subiendo foto');
     }
   }
 
