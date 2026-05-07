@@ -1,0 +1,225 @@
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T11:39:36.470Z"}
+{"email":"armin1234@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-07T11:54:58.301Z"}
+{"email":"armin1234@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-07T11:55:05.154Z"}
+{"email":"soyyelprimo@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-07T12:35:13.745Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:35:48.546Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:36:10.240Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:37:10.007Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:37:17.087Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:39:57.864Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:40:12.036Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-07T12:40:18.250Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T12:41:02.630Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T12:54:47.397Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T12:58:44.025Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T12:59:46.041Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:00:22.491Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:01:31.742Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:06:45.867Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-07T13:08:01.590Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:37:21.079Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:38:21.588Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:40:09.268Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:41:11.125Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T13:52:24.973Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T15:03:21.283Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T16:33:07.488Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T16:34:54.548Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T17:24:35.148Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T17:26:18.322Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T17:27:57.105Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T17:28:34.053Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-07T17:31:47.614Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-07T21:24:57.746Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-07T21:25:07.433Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-07T21:25:14.944Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-07T21:25:32.049Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-09T11:48:51.692Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-09T23:09:08.216Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-09T23:10:23.236Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:10:35.760Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:10:43.863Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:10:51.451Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:10:56.761Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:11:02.257Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-09T23:11:10.073Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-09T23:12:22.608Z"}
+{"id":"13","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-09T23:15:21.799Z"}
+{"email":"soyyelprimo@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-09T23:17:04.428Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-10T18:15:42.002Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-10T18:17:48.580Z"}
+{"id":"9","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-10T18:19:55.766Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-10T21:44:07.282Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-10T21:48:47.264Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-12T11:02:31.849Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-12T11:04:49.980Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-12T11:04:55.986Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-12T11:05:00.188Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-12T11:05:04.490Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-12T11:07:23.127Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-02-12T11:18:37.695Z"}
+{"id":"16","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T11:22:45.699Z"}
+{"err":"connect ETIMEDOUT","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T11:40:39.159Z"}
+{"err":"connect ETIMEDOUT","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T11:40:39.586Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:32.524Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:33.448Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:39.108Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:44.915Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:46.225Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:50.878Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:42:52.092Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:43:03.417Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:43:08.514Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:43:13.765Z"}
+{"level":"error","message":"Error al obtener recetas: receta no encontrada","timestamp":"2026-02-12T11:43:39.834Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T11:48:26.047Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-12T11:50:00.769Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-12T11:51:29.719Z"}
+{"level":"error","message":"Error al obtener receta por ser privada","timestamp":"2026-02-12T11:51:49.064Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T11:53:55.529Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-12T14:22:31.602Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-12T14:22:38.009Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-12T14:23:17.462Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T14:30:39.089Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T14:30:42.068Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T14:31:09.655Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-12T14:32:12.766Z"}
+{"email":"turron@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-12T14:44:30.895Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T15:51:53.314Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T15:51:56.736Z"}
+{"id":"20","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T15:55:42.710Z"}
+{"id":"20","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T15:55:50.796Z"}
+{"id":"20","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T15:56:02.283Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-12T16:01:13.391Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-12T16:01:16.592Z"}
+{"id":"21","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-12T16:41:00.366Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T16:45:59.741Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-02-12T16:46:02.561Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-15T20:13:00.287Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-15T20:29:44.095Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-15T20:59:01.867Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-15T21:15:36.333Z"}
+{"email":"admin2@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-15T22:00:19.984Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T10:40:51.843Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:01:14.165Z"}
+{"code":"ER_BAD_FIELD_ERROR","errno":1054,"level":"error","message":"Error en forgotPassword: Unknown column 'reset_code' in 'INSERT INTO'","sql":"INSERT INTO usuario_recuperacion (Id_usuario, reset_code, reset_expires) VALUES (22, '428855', '2026-02-17 12:11:16.437') ON DUPLICATE KEY UPDATE reset_code = VALUES(reset_code), reset_expires = VALUES(reset_expires)","sqlMessage":"Unknown column 'reset_code' in 'INSERT INTO'","sqlState":"42S22","stack":"Error: Unknown column 'reset_code' in 'INSERT INTO'\n    at PromisePool.query (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\mysql2\\lib\\promise\\pool.js:36:22)\n    at exports.forgotPassword (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\controllers\\usuarioController.js:302:35)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)","timestamp":"2026-02-17T11:01:16.448Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:06:28.476Z"}
+{"code":"ESOCKET","command":"CONN","level":"error","message":"Error en forgotPassword: self-signed certificate in certificate chain","stack":"Error: self-signed certificate in certificate chain\n    at TLSSocket.onConnectSecure (node:_tls_wrap:1631:34)\n    at TLSSocket.emit (node:events:508:28)\n    at TLSSocket._finishInit (node:_tls_wrap:1077:8)\n    at ssl.onhandshakedone (node:_tls_wrap:863:12)","timestamp":"2026-02-17T11:06:40.676Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:09:55.330Z"}
+{"code":"ESOCKET","command":"CONN","level":"error","message":"Error en forgotPassword: self-signed certificate in certificate chain","stack":"Error: self-signed certificate in certificate chain\n    at TLSSocket.onConnectSecure (node:_tls_wrap:1631:34)\n    at TLSSocket.emit (node:events:508:28)\n    at TLSSocket._finishInit (node:_tls_wrap:1077:8)\n    at ssl.onhandshakedone (node:_tls_wrap:863:12)","timestamp":"2026-02-17T11:10:09.058Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:12:21.636Z"}
+{"level":"info","message":"Código enviado a juanjos0306@gmail.com","timestamp":"2026-02-17T11:12:26.381Z"}
+{"code":"ER_BAD_FIELD_ERROR","errno":1054,"level":"error","message":"Error en verifyResetCode: Unknown column 'reset_code' in 'WHERE'","sql":"SELECT Id_usuario FROM usuario_recuperacion WHERE reset_code = '847897' AND reset_expires > NOW()","sqlMessage":"Unknown column 'reset_code' in 'WHERE'","sqlState":"42S22","stack":"Error: Unknown column 'reset_code' in 'WHERE'\n    at PromisePool.query (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\mysql2\\lib\\promise\\pool.js:36:22)\n    at exports.verifyResetCode (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\controllers\\usuarioController.js:340:50)\n    at Layer.handleRequest (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at next (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\lib\\route.js:157:13)\n    at Route.dispatch (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\lib\\route.js:117:3)\n    at handle (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\index.js:435:11)\n    at Layer.handleRequest (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\lib\\layer.js:152:17)\n    at C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\index.js:295:15\n    at processParams (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\index.js:582:12)\n    at next (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\router\\index.js:291:5)","timestamp":"2026-02-17T11:13:07.958Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:15:21.496Z"}
+{"level":"info","message":"Código verificado para usuario 22","timestamp":"2026-02-17T11:15:25.535Z"}
+{"code":"ER_BAD_NULL_ERROR","errno":1048,"level":"error","message":"Error en resetPassword: Column 'codigo_recuperacion' cannot be null","sql":"UPDATE usuario_recuperacion SET codigo_recuperacion = NULL, fecha_expiracion = NULL WHERE Id_usuario = 22","sqlMessage":"Column 'codigo_recuperacion' cannot be null","sqlState":"23000","stack":"Error: Column 'codigo_recuperacion' cannot be null\n    at PromisePool.query (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\node_modules\\mysql2\\lib\\promise\\pool.js:36:22)\n    at exports.resetPassword (C:\\Users\\DELL\\Desktop\\remy_recipes\\Remmy-s_recipes\\Backend\\controllers\\usuarioController.js:372:35)\n    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)","timestamp":"2026-02-17T11:16:01.666Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 22","timestamp":"2026-02-17T11:18:38.423Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-17T11:59:59.294Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:51:48.967Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:51:53.799Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:51:59.568Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:11.102Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:15.871Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:19.561Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:22.536Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:28.879Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:39.179Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:52:44.880Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-02-19T09:53:05.057Z"}
+{"email":"turron@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-19T09:54:34.838Z"}
+{"level":"info","message":"Código enviado a juanjos0306@gmail.com","timestamp":"2026-02-19T10:22:57.126Z"}
+{"level":"info","message":"Código verificado para usuario 22","timestamp":"2026-02-19T10:25:08.823Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-22T13:45:43.401Z"}
+{"email":"juanjos0306@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-22T14:09:58.460Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-02-22T14:11:06.414Z"}
+{"level":"error","message":"Error al eliminar receta: no es creador de ella","timestamp":"2026-02-22T14:11:18.403Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T08:29:57.192Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T08:46:44.071Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:03:40.727Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:13:13.638Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:15:19.566Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:16:53.196Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:17:51.387Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:18:38.331Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:19:12.277Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:20:33.124Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:20:45.537Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:21:21.483Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:22:00.910Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:23:06.595Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:24:52.366Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:48:19.195Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:50:52.675Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T09:53:31.626Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T10:06:33.934Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-02-23T10:10:10.943Z"}
+{"level":"info","message":"Código enviado a juanjos0306@gmail.com","timestamp":"2026-02-23T10:57:59.325Z"}
+{"level":"info","message":"Código verificado para usuario 22","timestamp":"2026-02-23T10:58:23.171Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 22","timestamp":"2026-02-23T10:58:38.100Z"}
+{"id":"22","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-23T11:00:07.022Z"}
+{"email":"zesar@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-24T14:00:26.492Z"}
+{"email":"zesar@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-02-24T14:00:40.547Z"}
+{"id":"22","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-24T14:04:47.539Z"}
+{"id":"22","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-24T14:05:06.570Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-02-24T14:06:17.979Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-03-01T21:23:37.750Z"}
+{"email":"zesar5@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-03-02T14:15:05.773Z"}
+{"id":"22","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T07:06:54.983Z"}
+{"email":"zesar5@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-03-09T10:07:11.021Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T10:30:48.691Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T10:30:51.429Z"}
+{"id":"17","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T10:31:32.121Z"}
+{"err":"Duplicate entry 'cesarovich12@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-03-09T10:36:36.563Z"}
+{"err":"Duplicate entry 'cesarovich12@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-03-09T10:36:43.757Z"}
+{"level":"info","message":"Código enviado a cesarovich12@gmail.com","timestamp":"2026-03-09T10:37:09.990Z"}
+{"level":"info","message":"Código verificado para usuario 12","timestamp":"2026-03-09T10:37:29.244Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 12","timestamp":"2026-03-09T10:38:09.299Z"}
+{"id":"12","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T10:39:09.777Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-03-09T10:45:28.306Z"}
+{"level":"error","message":"Error al editar receta: no es creador de ella","timestamp":"2026-03-09T10:45:32.302Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-03-09T10:52:30.939Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T10:52:57.870Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-03-09T14:31:33.081Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-03-09T14:32:39.679Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:35:32.212Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:35:50.959Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:35:59.001Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:36:08.881Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:36:21.613Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-03-09T14:36:30.912Z"}
+{"level":"info","message":"Código enviado a cesarovich12@gmail.com","timestamp":"2026-03-09T14:38:58.949Z"}
+{"level":"info","message":"Código verificado para usuario 12","timestamp":"2026-03-09T14:39:20.231Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 12","timestamp":"2026-03-09T14:39:50.579Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-03-09T14:48:46.927Z"}
+{"level":"info","message":"Fallo de registro: usuario ya existe en la base de datos","timestamp":"2026-03-09T14:49:09.021Z"}
+{"id":"27","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T15:09:44.960Z"}
+{"id":"27","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-03-09T15:10:17.000Z"}
+{"email":"zesar5@gmail.com","level":"info","message":"Intento de login fallido: contraseña incorrecta","timestamp":"2026-03-09T15:21:20.884Z"}
+{"level":"info","message":"Código enviado a neptunorolerru@gmail.com","timestamp":"2026-03-09T15:29:10.919Z"}
+{"level":"info","message":"Código verificado para usuario 27","timestamp":"2026-03-09T15:29:39.726Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 27","timestamp":"2026-03-09T15:30:08.711Z"}
+{"level":"info","message":"Código enviado a cesarovich12@gmail.com","timestamp":"2026-03-09T15:31:00.298Z"}
+{"level":"info","message":"Código verificado para usuario 12","timestamp":"2026-03-09T15:31:24.336Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 12","timestamp":"2026-03-09T15:31:46.867Z"}
+{"level":"info","message":"Código enviado a cesmelval@alu.edu.gva.es","timestamp":"2026-03-09T15:33:50.351Z"}
+{"level":"info","message":"Código verificado para usuario 28","timestamp":"2026-03-09T15:34:26.456Z"}
+{"level":"info","message":"Contraseña reseteada para usuario 28","timestamp":"2026-03-09T15:34:52.940Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-04-24T11:19:33.771Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-04-26T19:33:56.264Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T17:11:28.463Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T17:13:50.759Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T17:15:48.934Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T17:32:45.171Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T23:07:35.781Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T23:14:11.747Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T23:28:40.305Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-02T23:38:19.472Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-03T10:31:42.316Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-03T10:32:32.966Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-03T12:56:37.705Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-03T13:24:05.486Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-03T13:30:24.240Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-04T21:01:57.405Z"}
+{"level":"info","message":"Error al obtener perfil: usuario no encontrado","timestamp":"2026-05-04T21:11:43.581Z"}
+{"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-05-04T21:13:47.243Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-05T14:25:57.483Z"}
