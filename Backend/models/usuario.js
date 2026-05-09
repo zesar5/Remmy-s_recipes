@@ -70,7 +70,7 @@ class Usuario {
     const user = rows[0];
 
     if (user.imagen) {
-      user.fotoPerfil = user.imagen;
+      user.fotoPerfil = `/uploads/usuarios/${user.imagen}`;
     } else {
       user.fotoPerfil = null;
     }
