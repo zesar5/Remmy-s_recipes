@@ -13,7 +13,7 @@ router.post("/login", usuarioController.loginUsuario);
 router.post("/registro", usuarioController.registrarUsuario);
 
 // PERFIL
-router.get("/perfil/:id", usuarioController.obtenerPerfil);
+router.get("/perfil/:id", auth, usuarioController.obtenerPerfil);
 
 //LISTAR TODOS LOS USUARIOS
 router.get("/usuarios", usuarioController.obtenerTodosUsuarios);

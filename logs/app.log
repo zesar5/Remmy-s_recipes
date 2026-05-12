@@ -223,3 +223,7 @@
 {"level":"info","message":"Error al obtener perfil: usuario no encontrado","timestamp":"2026-05-04T21:11:43.581Z"}
 {"level":"info","message":"Intento de login fallido: Iniciar sesión sin datos introducidos","timestamp":"2026-05-04T21:13:47.243Z"}
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-05-05T14:25:57.483Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-08T12:27:32.987Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-08T12:49:30.539Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-08T13:07:55.897Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-08T13:15:24.289Z"}
