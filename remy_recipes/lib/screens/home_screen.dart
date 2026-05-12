@@ -699,7 +699,9 @@ class _MainPageState extends State<MainPage> {
                     builder: (_) =>
                         PerfilScreen(authService: widget.authService),
                   ),
-                );
+                ).then((_) {
+                  setState(() {});
+                });
               },
             ),
           ],
@@ -756,7 +758,7 @@ class _MainPageState extends State<MainPage> {
                     user.fotoPerfil != null &&
                     user.fotoPerfil!.isNotEmpty
                 ? Image.network(
-                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst(RegExp(r'^/'), '')}',
+                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Center(

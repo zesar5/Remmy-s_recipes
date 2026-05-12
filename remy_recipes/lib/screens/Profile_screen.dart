@@ -201,7 +201,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
               child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
                 ? Image.network(
-                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst('/', '')}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!}?t=${DateTime.now().millisecondsSinceEpoch}',
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,

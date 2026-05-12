@@ -38,7 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       avatarImage = NetworkImage(
         '${ApiEndpoints.baseUrl}${user.fotoPerfil!.startsWith('/') 
             ? user.fotoPerfil! 
-            : '/${user.fotoPerfil!}'}',
+            : '/${user.fotoPerfil!}'}?t=${DateTime.now().millisecondsSinceEpoch}',
       );
     } else {
       avatarImage = null;
