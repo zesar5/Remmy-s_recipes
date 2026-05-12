@@ -756,7 +756,7 @@ class _MainPageState extends State<MainPage> {
                     user.fotoPerfil != null &&
                     user.fotoPerfil!.isNotEmpty
                 ? Image.network(
-                    '${ApiEndpoints.baseUrl}${user.fotoPerfil!}',
+                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst(RegExp(r'^/'), '')}',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Center(
@@ -904,7 +904,7 @@ class RecipeButton extends StatelessWidget {
                 ),
                 child: recipe.imagenUrl != null && recipe.imagenUrl!.isNotEmpty
                   ? Image.network(
-                      '${ApiEndpoints.baseUrl}${recipe.imagenUrl!.replaceFirst('/', '')}',
+                      '${ApiEndpoints.baseUrl}/${recipe.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                       fit: BoxFit.cover,
                       width: double.infinity,
                       errorBuilder: (context, error, stackTrace) {

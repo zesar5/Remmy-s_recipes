@@ -201,7 +201,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
               child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
                 ? Image.network(
-                    '${ApiEndpoints.baseUrl}${user.fotoPerfil!}?t=${DateTime.now().millisecondsSinceEpoch}',
+                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst('/', '')}?t=${DateTime.now().millisecondsSinceEpoch}',
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
@@ -371,19 +371,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       itemCount: favoritos.length,
       itemBuilder: (context, index) {
         final receta = favoritos[index];
-        receta.imagenUrl != null
-          ? Image.network(
-              receta.imagenUrl!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: Colors.grey.shade300,
-                child: const Icon(Icons.image, size: 50),
-              ),
-            )
-          : Container(
-              color: Colors.grey.shade300,
-              child: const Icon(Icons.image, size: 50),
-            );
 
         return GestureDetector(
           onTap: () async {
@@ -431,7 +418,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 Expanded(
                   child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
                     ? Image.network(
-                        '${ApiEndpoints.baseUrl}/${receta.imagenUrl}',
+                        '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst('/', '')}',
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
@@ -482,19 +469,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       itemCount: recetasGuardadas.length,
       itemBuilder: (context, index) {
         final receta = recetasGuardadas[index];
-        receta.imagenUrl != null
-          ? Image.network(
-              '${ApiEndpoints.uploadImage}${receta.imagenUrl}',
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: Colors.grey.shade300,
-                child: const Icon(Icons.image, size: 50),
-              ),
-            )
-          : Container(
-              color: Colors.grey.shade300,
-              child: const Icon(Icons.image, size: 50),
-            );
 
         return GestureDetector(
           onTap: () async {
@@ -543,7 +517,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 Expanded(
                   child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
                       ? Image.network(
-                          '${ApiEndpoints.uploadImage}${receta.imagenUrl}',
+                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(

@@ -22,7 +22,7 @@ class RegisterScreen extends StatefulWidget {
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
-bool isLoanding = false;
+
 class _RegisterScreenState extends State<RegisterScreen> {
   // Controladores de texto
   final name = TextEditingController();
@@ -30,6 +30,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final contrasenya = TextEditingController();
   final confirmarContrasenya = TextEditingController();
   final descripcion = TextEditingController();
+  bool isLoading = false;
 
   // Selecciones de dropdowns
   String? paisSeleccionado;
@@ -83,8 +84,8 @@ bool _ocultarConfirmar = true;
   // ==============================================
 
   void registrar() async {
-    if (isLoanding) return;
-    setState(() => isLoanding=true);
+    if (isLoading) return;
+    setState(() => isLoading=true);
 
     
     logger.i('Iniciando proceso de registro'); // Log de inicio
@@ -163,7 +164,11 @@ bool _ocultarConfirmar = true;
       );
 
       if (imagenPerfil != null) {
-        await widget.authService.subirFotoPerfil(imagenPerfil!);
+        try {
+          await widget.authService.subirFotoPerfil(imagenPerfil!);
+        } catch (e) {
+          logger.e('Error subiendo foto de perfil: $e');
+        }
       }
 
       // Éxito → mensaje y redirigir a login
@@ -184,7 +189,7 @@ bool _ocultarConfirmar = true;
       logger.e('Error en registro: $e'); // Log de error
       mostrarMensaje(e.toString().replaceAll("Exception:", ""));
     }finally{
-      setState(() => isLoanding= false);
+      setState(() => isLoading= false);
     }
   }
 
@@ -346,8 +351,8 @@ bool _ocultarConfirmar = true;
                   foregroundColor: Colors.white,
                   minimumSize: const Size(250, 40),
                 ),
-                onPressed: isLoanding ? null : registrar,
-                child: isLoanding 
+                onPressed: isLoading ? null : registrar,
+                child: isLoading 
                 ? const SizedBox(
                   height: 20,
                   width: 20,
