@@ -160,5 +160,9 @@
   
   "sesionCaducada": "Sesión caducada",
   "sesionCaducadaMsg": "Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente para continuar.",
-  "irAlLogin": "Ir al login"
+  "irAlLogin": "Ir al login",
+  "recetaAhoraPublica": "Receta ahora es pública",
+  "recetaAhoraPrivada": "Receta ahora es privada",
+  "errorCambiarPrivacidad": "Error al cambiar privacidad",
+  "errorGeneral": "Error general"
 }

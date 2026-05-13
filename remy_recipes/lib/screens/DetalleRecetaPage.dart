@@ -147,8 +147,8 @@ void _toggleLike() async {
           SnackBar(
             content: Text(
               nuevaPrivacidad 
-                ? 'Receta ahora es pública'
-                : 'Receta ahora es privada'
+                ? AppLocalizations.of(context)!.recetaAhoraPublica
+                : AppLocalizations.of(context)!.recetaAhoraPrivada
             ),
             duration: const Duration(seconds: 2),
           ),
@@ -156,13 +156,13 @@ void _toggleLike() async {
         // NO salir de la pantalla - mantener al usuario aquí
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al cambiar privacidad')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorCambiarPrivacidad)),
         );
       }
     } catch (e) {
       logger.e('Error cambiando privacidad: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error general')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.errorGeneral)),
       );
     } finally {
       if (mounted) {
@@ -205,8 +205,8 @@ void _toggleLike() async {
                 // Llamada al servicio para eliminar (debe estar en recetas_service)
                 if (success) {
                   logger.i('Receta eliminada exitosamente');
-                  Navigator.pop(context); // Cierra diálogo
-                  Navigator.pop(context, true); // Vuelve atrás y refresca
+                  if (mounted) Navigator.of(context).pop(); // diálogo
+                  if (mounted) Navigator.of(context).pop(true); // página
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -341,7 +341,7 @@ void _toggleLike() async {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                '${ApiEndpoints.baseUrl}${widget.receta.imagenUrl!.replaceFirst('/', '')}',
+                '${ApiEndpoints.baseUrl}/${widget.receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                 height: 220,
                 width: double.infinity,
                 fit: BoxFit.cover,

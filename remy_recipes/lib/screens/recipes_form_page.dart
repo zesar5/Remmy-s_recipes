@@ -8,6 +8,7 @@ import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../data/constants/app_strings.dart';
 import '../l10n/app_localizations.dart';
+import '../services/config.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
@@ -352,7 +353,11 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
       } else {
         // MODO EDITAR
         logger.i('Modo editar: Actualizando receta en servidor');
-        success = await editarReceta(receta, widget.token);
+        success = await editarRecetaConImagen(
+          receta: receta,
+          token: widget.token,
+          imagenFile: imagePath != null ? File(imagePath!) : null,
+        );
       }
 
       if (success) {
@@ -467,7 +472,7 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     : (widget.recetaEditar?.imagenUrl != null &&
                               widget.recetaEditar!.imagenUrl!.isNotEmpty
                           ? Image.network(
-                              widget.recetaEditar!.imagenUrl!,
+                              '${ApiEndpoints.baseUrl}/${widget.recetaEditar!.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}',
                               fit: BoxFit.cover,
                             )
                           : const Center(

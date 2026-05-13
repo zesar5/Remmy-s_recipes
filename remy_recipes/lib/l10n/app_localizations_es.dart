@@ -453,4 +453,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get irAlLogin => 'Ir al login';
+
+  @override
+  String get recetaAhoraPublica => 'Receta ahora es pública';
+
+  @override
+  String get recetaAhoraPrivada => 'Receta ahora es privada';
+
+  @override
+  String get errorCambiarPrivacidad => 'Error al cambiar privacidad';
+
+  @override
+  String get errorGeneral => 'Error general';
 }

@@ -263,6 +263,59 @@ Future<bool> editarReceta(Receta receta, String token) async {
   }
 }
 
+Future<bool> editarRecetaConImagen({
+  required Receta receta,
+  required String token,
+  File? imagenFile,
+}) async {
+
+  final url = Uri.parse('${ApiEndpoints.recetas}/${receta.id}');
+
+  var request = http.MultipartRequest('PUT', url);
+
+  request.headers['Authorization'] = 'Bearer $token';
+
+  request.fields['titulo'] = receta.titulo;
+  request.fields['publica'] = receta.esPublica ? '1' : '0';
+
+  if (receta.duracion != null) {
+    request.fields['duracion'] = receta.duracion.toString();
+  }
+
+  if (receta.pais != null) {
+    request.fields['pais'] = receta.pais!;
+  }
+
+  if (receta.estacion != null) {
+    request.fields['estacion'] = receta.estacion!;
+  }
+
+  if (receta.alergenos != null) {
+    request.fields['alergenos'] = receta.alergenos!;
+  }
+
+  request.fields['ingredientes'] = jsonEncode(
+    receta.ingredientes!.map((i) => i.toJson()).toList(),
+  );
+
+  request.fields['pasos'] = jsonEncode(
+    receta.pasos!.map((p) => p.toJson()).toList(),
+  );
+
+  if (imagenFile != null) {
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'imagen',
+        imagenFile.path,
+      ),
+    );
+  }
+
+  final response = await request.send();
+
+  return response.statusCode == 200;
+}
+
 //Filtrar recetas con datos introducidos por el usuario
 Future<List<Receta>> recetaFiltrada({
   String? texto,

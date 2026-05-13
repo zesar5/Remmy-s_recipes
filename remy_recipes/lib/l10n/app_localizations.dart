@@ -961,6 +961,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ir al login'**
   String get irAlLogin;
+
+  /// No description provided for @recetaAhoraPublica.
+  ///
+  /// In es, this message translates to:
+  /// **'Receta ahora es pública'**
+  String get recetaAhoraPublica;
+
+  /// No description provided for @recetaAhoraPrivada.
+  ///
+  /// In es, this message translates to:
+  /// **'Receta ahora es privada'**
+  String get recetaAhoraPrivada;
+
+  /// No description provided for @errorCambiarPrivacidad.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cambiar privacidad'**
+  String get errorCambiarPrivacidad;
+
+  /// No description provided for @errorGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Error general'**
+  String get errorGeneral;
 }
 
 class _AppLocalizationsDelegate

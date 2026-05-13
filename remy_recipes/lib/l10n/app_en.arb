@@ -160,5 +160,9 @@
   
   "sesionCaducada": "Session expired",
   "sesionCaducadaMsg": "Your session has expired due to inactivity. Please log in again to continue.",
-  "irAlLogin": "Go to login"
+  "irAlLogin": "Go to login",
+  "recetaAhoraPublica": "Recipe is now public",
+  "recetaAhoraPrivada": "Recipe is now private",
+  "errorCambiarPrivacidad": "Error changing privacy",
+  "errorGeneral": "General error"
 }
