@@ -38,3 +38,7 @@
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:36:18.554Z"}
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:36:36.330Z"}
 {"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-04-13T21:50:43.976Z"}
+{"err":"Duplicate entry 'cesarovich12@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-05-12T19:08:40.593Z"}
+{"err":"Duplicate entry 'cesarovich12@gmail.com' for key 'email'","level":"error","message":"Error de registro","timestamp":"2026-05-12T19:08:48.081Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-05-12T19:47:35.835Z"}
+{"err":"Data truncated for column 'estacion' at row 1","level":"error","message":"Error al crear una receta: ","timestamp":"2026-05-12T19:47:44.445Z"}

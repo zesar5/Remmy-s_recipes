@@ -103,7 +103,8 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
                   return SizedBox(
-                    width: 40,
+                    width: 55,
+                    height: 65,
                     child: TextField(
                       controller: _codeControllers[index],
                       focusNode: _codeFocusNodes[index],

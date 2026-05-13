@@ -13,7 +13,7 @@ import '../l10n/app_localizations.dart';
 // ==========================================================================
 //                PANTALLA DE REGISTRO DE USUARIO
 // ==========================================================================
- 
+
 class RegisterScreen extends StatefulWidget {
   final AuthService authService;
 
@@ -50,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool errorAnio = false;
 
   bool _ocultarContrasena = true;
-bool _ocultarConfirmar = true;
+  bool _ocultarConfirmar = true;
 
   String? errorCorreoMensaje; // Mensaje personalizado para correo
 
@@ -85,9 +85,7 @@ bool _ocultarConfirmar = true;
 
   void registrar() async {
     if (isLoading) return;
-    setState(() => isLoading=true);
 
-    
     logger.i('Iniciando proceso de registro'); // Log de inicio
     // 1. Marcar visualmente campos vacíos
     setState(() {
@@ -144,11 +142,11 @@ bool _ocultarConfirmar = true;
       logger.w(
         'Validación fallida: Contraseña no cumple requisitos de fortaleza',
       ); // Advertencia
-      mostrarMensaje(
-        AppLocalizations.of(context)!.requisitosContrasenya,
-      );
+      mostrarMensaje(AppLocalizations.of(context)!.requisitosContrasenya);
       return;
     }
+
+    setState(() => isLoading = true);
 
     // 5. Llamada real al servicio de autenticación
     try {
@@ -188,8 +186,8 @@ bool _ocultarConfirmar = true;
       // Error del backend (ej: usuario ya existe, email duplicado)
       logger.e('Error en registro: $e'); // Log de error
       mostrarMensaje(e.toString().replaceAll("Exception:", ""));
-    }finally{
-      setState(() => isLoading= false);
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
@@ -314,7 +312,6 @@ bool _ocultarConfirmar = true;
                     _ocultarContrasena = !_ocultarContrasena;
                   });
                 },
-                
               ),
 
               const SizedBox(height: 10),
@@ -324,15 +321,13 @@ bool _ocultarConfirmar = true;
                 controller: confirmarContrasenya,
                 esPassword: true,
                 error: errorConfirmar,
-               ocultarTexto: _ocultarConfirmar,
+                ocultarTexto: _ocultarConfirmar,
                 toggleVisibilidad: () {
                   setState(() {
                     _ocultarConfirmar = !_ocultarConfirmar;
                   });
                 },
-                
               ),
-
 
               const SizedBox(height: 10),
 
@@ -352,16 +347,16 @@ bool _ocultarConfirmar = true;
                   minimumSize: const Size(250, 40),
                 ),
                 onPressed: isLoading ? null : registrar,
-                child: isLoading 
-                ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                : Text(AppLocalizations.of(context)!.registrarse),
+                child: isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(AppLocalizations.of(context)!.registrarse),
               ),
             ],
           ),
@@ -398,16 +393,16 @@ bool _ocultarConfirmar = true;
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
 
-              suffixIcon: esPassword
-              ? IconButton(
-                icon: Icon(
-                  (ocultarTexto ?? true)
-                      ? Icons.visibility_off
-                      :Icons.visibility,
-                ),
-                onPressed: toggleVisibilidad,
-              )
-              :null,
+            suffixIcon: esPassword
+                ? IconButton(
+                    icon: Icon(
+                      (ocultarTexto ?? true)
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: toggleVisibilidad,
+                  )
+                : null,
 
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
@@ -417,7 +412,10 @@ bool _ocultarConfirmar = true;
               borderSide: BorderSide(color: Colors.red, width: 2),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            errorText: error ? (errorTextMessage ?? AppLocalizations.of(context)!.campoRequerido) : null,
+            errorText: error
+                ? (errorTextMessage ??
+                      AppLocalizations.of(context)!.campoRequerido)
+                : null,
           ),
         ),
       ],
@@ -447,7 +445,9 @@ bool _ocultarConfirmar = true;
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            errorText: errorPais ? AppLocalizations.of(context)!.campoRequerido : null,
+            errorText: errorPais
+                ? AppLocalizations.of(context)!.campoRequerido
+                : null,
           ),
         ),
       ],
@@ -477,7 +477,9 @@ bool _ocultarConfirmar = true;
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            errorText: errorAnio ? AppLocalizations.of(context)!.campoRequerido : null,
+            errorText: errorAnio
+                ? AppLocalizations.of(context)!.campoRequerido
+                : null,
           ),
         ),
       ],
