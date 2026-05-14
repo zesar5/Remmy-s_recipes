@@ -422,7 +422,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                   child:
                       receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
                       ? Image.network(
-                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst('/', '')}',
+                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
