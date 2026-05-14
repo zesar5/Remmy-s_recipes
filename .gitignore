@@ -10,3 +10,31 @@ localhost.pem
 # No se suben los log
 app.log
 error.log
+
+# Dependencias y entornos locales
+Backend/node_modules/
+venv/
+
+# Archivos subidos o generados en tiempo de ejecución
+Backend/uploads/
+
+# Flutter / Dart
+remy_recipes/.dart_tool/
+remy_recipes/build/
+remy_recipes/.idea/
+remy_recipes/.packages
+remy_recipes/.flutter-plugins
+remy_recipes/.flutter-plugins-dependencies
+remy_recipes/.pub-cache/
+
+# Android
+remy_recipes/android/.gradle/
+remy_recipes/android/.idea/
+remy_recipes/android/app/.cxx/
+remy_recipes/android/app/build/
+remy_recipes/android/.kotlin/
+
+# iOS
+remy_recipes/ios/Pods/
+remy_recipes/ios/Flutter/Flutter.framework/
+remy_recipes/ios/Flutter/Flutter.podspec
