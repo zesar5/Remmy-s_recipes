@@ -150,26 +150,35 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 ),
               ],
       ),
-      body: Column(
-        children: [
-          // Cabecera con foto, nombre y descripción (sin el menú, que ahora está en AppBar)
-          _buildHeader(),
-          if (!widget.viewOnly) _buildMenuBar(),
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          // 👉 Swipe derecha = volver al Home
+          if (details.primaryVelocity != null &&
+              details.primaryVelocity! > 300) {
+            Navigator.pop(context);
+          }
+        },
+        child: Column(
+          children: [
+            // Cabecera con foto, nombre y descripción (sin el menú, que ahora está en AppBar)
+            _buildHeader(),
+            if (!widget.viewOnly) _buildMenuBar(),
 
-          // Contenido dinámico según la vista seleccionada
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              color: const Color.fromARGB(
-                255,
-                192,
-                187,
-                181,
-              ), // Fondo beige suave
-              child: _buildContent(),
+            // Contenido dinámico según la vista seleccionada
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                color: const Color.fromARGB(
+                  255,
+                  192,
+                  187,
+                  181,
+                ), // Fondo beige suave
+                child: _buildContent(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -200,17 +209,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
               // URL del backend para obtener la foto de perfil
               //evita que flutter use la imagen en cache y fuerza a pedirla en el backend
               child: user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
-                ? Image.network(
-                    '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}',
-                    width: 120,
-                    height: 120,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      logger.w('Error cargando imagen de perfil');
-                      return const Text("👤", style: TextStyle(fontSize: 55));
-                    },
-                  )
-                : const Text("👤", style: TextStyle(fontSize: 55)),
+                  ? Image.network(
+                      '${ApiEndpoints.baseUrl}/${user.fotoPerfil!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}',
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        logger.w('Error cargando imagen de perfil');
+                        return const Text("👤", style: TextStyle(fontSize: 55));
+                      },
+                    )
+                  : const Text("👤", style: TextStyle(fontSize: 55)),
             ),
           ),
 
@@ -272,83 +281,77 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   /// Botón del menú con efecto hover (útil en web) y selección
   Widget _menuButton(IconData icon, String view) {
-  bool isSelected = currentView == view;
+    bool isSelected = currentView == view;
 
-  return MouseRegion(
-    onEnter: (_) => setState(() => hovered = view),
-    onExit: (_) => setState(() => hovered = ""),
-    child: GestureDetector(
-      onTap: () {
-        setState(() => currentView = view);
-        
-        // ⚠️ AÑADIR ESTA LÍNEA:
-        if (view == "favoritos") {
-          _cargarFavoritos();
-        }
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 85,
-        height: 55,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF575757)
-              : (hovered == view
-                  ? Colors.white.withOpacity(0.15)
-                  : const Color(0xFF3A3A3A)),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: hovered == view
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        alignment: Alignment.center,
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 24,
+    return MouseRegion(
+      onEnter: (_) => setState(() => hovered = view),
+      onExit: (_) => setState(() => hovered = ""),
+      child: GestureDetector(
+        onTap: () {
+          setState(() => currentView = view);
+
+          // ⚠️ AÑADIR ESTA LÍNEA:
+          if (view == "favoritos") {
+            _cargarFavoritos();
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 85,
+          height: 55,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF575757)
+                : (hovered == view
+                      ? Colors.white.withOpacity(0.15)
+                      : const Color(0xFF3A3A3A)),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: hovered == view
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [],
+          ),
+          alignment: Alignment.center,
+          child: Icon(icon, color: Colors.white, size: 24),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   // ==============================================
   //             CONTENIDO DINÁMICO
   // ==============================================
 
- Widget _buildContent() {
-  switch (currentView) {
-    case "favoritos":
-      if (favoritos.isEmpty) {
-        return Center(
-          child: Text(
-            AppLocalizations.of(context)!.noRecetasGuardadas,
-            style: TextStyle(fontSize: 16),
-          ),
-        );
-      }
-      return widget.viewOnly
-          ? _buildHome()
-          : _buildFavoritosGrid();
+  Widget _buildContent() {
+    switch (currentView) {
+      case "favoritos":
+        if (favoritos.isEmpty) {
+          return Center(
+            child: Text(
+              AppLocalizations.of(context)!.noRecetasGuardadas,
+              style: TextStyle(fontSize: 16),
+            ),
+          );
+        }
+        return widget.viewOnly ? _buildHome() : _buildFavoritosGrid();
 
-    case "guardados":
-      return _buildRecetasGuardadas();
-    case "personas":
-      return _buildListaEditable(
-        titulo: "Personas",
-        lista: personas,
-        onAdd: () => _addToList(personas),
-      );
-    default:
-      return _buildHome();
+      case "guardados":
+        return _buildRecetasGuardadas();
+      case "personas":
+        return _buildListaEditable(
+          titulo: "Personas",
+          lista: personas,
+          onAdd: () => _addToList(personas),
+        );
+      default:
+        return _buildHome();
+    }
   }
-}
 
   // ⚠️ NUEVA FUNCIÓN: Muestra los favoritos en cuadrícula
   Widget _buildFavoritosGrid() {
@@ -416,21 +419,22 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
-                    ? Image.network(
-                        '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst('/', '')}',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey.shade300,
-                            child: const Icon(Icons.image, size: 50),
-                          );
-                        },
-                      )
-                    : Container(
-                        color: Colors.grey.shade300,
-                        child: const Icon(Icons.image, size: 50),
-                      ),
+                  child:
+                      receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
+                      ? Image.network(
+                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst('/', '')}',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.image, size: 50),
+                            );
+                          },
+                        )
+                      : Container(
+                          color: Colors.grey.shade300,
+                          child: const Icon(Icons.image, size: 50),
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -515,7 +519,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
+                  child:
+                      receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
                       ? Image.network(
                           '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                           fit: BoxFit.cover,

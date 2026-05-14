@@ -479,106 +479,130 @@ class _MainPageState extends State<MainPage> {
           child: const Icon(Icons.add, size: 28),
         ),
       ),
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          // 👉 Swipe derecha = abrir menú
+          if (details.primaryVelocity != null &&
+              details.primaryVelocity! > 300) {
+            _scaffoldKey.currentState?.openDrawer();
+          }
+          // 👉 Swipe izquierda = abrir perfil
+          else if (details.primaryVelocity != null &&
+              details.primaryVelocity! < -300) {
+            if (widget.authService.currentUser != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PerfilScreen(authService: widget.authService),
+                ),
+              ).then((_) {
+                setState(() {});
+              });
+            }
+          }
+        },
 
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // 🔒 TOP BAR FIJA
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _TopBarSliver(child: _buildTopBar(context)),
-            ),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // 🔒 TOP BAR FIJA
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _TopBarSliver(child: _buildTopBar(context)),
+              ),
 
-            // CONTENIDO QUE SCROLLA
-            SliverPadding(
-              padding: const EdgeInsets.all(14),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 10),
+              // CONTENIDO QUE SCROLLA
+              SliverPadding(
+                padding: const EdgeInsets.all(14),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    const SizedBox(height: 10),
 
-                  Column(
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.appName,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontFamily: 'Alegreya',
-                          color: Colors.black,
-                          shadows: [
-                            Shadow(
-                              offset: Offset(1, 1),
-                              blurRadius: 3,
-                              color: Colors.black26,
-                            ),
-                          ],
+                    Column(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.appName,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontFamily: 'Alegreya',
+                            color: Colors.black,
+                            shadows: [
+                              Shadow(
+                                offset: Offset(1, 1),
+                                blurRadius: 3,
+                                color: Colors.black26,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
 
-                      Center(
-                        child: Transform.scale(
-                          scale: 1.7,
-                          child: SizedBox(
-                            width: 260,
-                            height: 240,
-                            child: Image.asset(
-                              "assets/logosinfondoBien.png",
-                              fit: BoxFit.contain,
+                        Center(
+                          child: Transform.scale(
+                            scale: 1.7,
+                            child: SizedBox(
+                              width: 260,
+                              height: 240,
+                              child: Image.asset(
+                                "assets/logosinfondoBien.png",
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    AppLocalizations.of(context)!.recetas,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      ],
                     ),
-                  ),
 
-                  const SizedBox(height: 10),
-                ]),
-              ),
-            ),
+                    const SizedBox(height: 10),
 
-            // LOADING
-            if (loading)
-              const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (recipes.isEmpty)
-              SliverFillRemaining(
-                child: Center(
-                  child: Text(AppLocalizations.of(context)!.noHayRecetas),
-                ),
-              )
-            else
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate((context, i) {
-                    final r = recipes[i];
-                    return RecipeButton(
-                      recipe: r,
-                      authService: widget.authService,
-                    );
-                  }, childCount: recipes.length),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 250,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.85,
-                  ),
+                    Text(
+                      AppLocalizations.of(context)!.recetas,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+                  ]),
                 ),
               ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
+              // LOADING
+              if (loading)
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (recipes.isEmpty)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Text(AppLocalizations.of(context)!.noHayRecetas),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate((context, i) {
+                      final r = recipes[i];
+                      return RecipeButton(
+                        recipe: r,
+                        authService: widget.authService,
+                      );
+                    }, childCount: recipes.length),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 250,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.85,
+                        ),
+                  ),
+                ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            ],
+          ),
         ),
       ),
     );
@@ -754,7 +778,8 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           child: ClipOval(
-            child: user != null &&
+            child:
+                user != null &&
                     user.fotoPerfil != null &&
                     user.fotoPerfil!.isNotEmpty
                 ? Image.network(
@@ -844,7 +869,6 @@ class RecipeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () async {
@@ -905,17 +929,17 @@ class RecipeButton extends StatelessWidget {
                   top: Radius.circular(14),
                 ),
                 child: recipe.imagenUrl != null && recipe.imagenUrl!.isNotEmpty
-                  ? Image.network(
-                      '${ApiEndpoints.baseUrl}/${recipe.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(Icons.image_not_supported),
-                        );
-                      },
-                    )
-                  : const Center(child: Icon(Icons.image_not_supported)),
+                    ? Image.network(
+                        '${ApiEndpoints.baseUrl}/${recipe.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(Icons.image_not_supported),
+                          );
+                        },
+                      )
+                    : const Center(child: Icon(Icons.image_not_supported)),
               ),
             ),
 

@@ -240,3 +240,7 @@
 {"id":"31","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-05-12T20:23:35.176Z"}
 {"id":"31","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-05-12T20:24:36.344Z"}
 {"level":"info","message":"Mensaje informativo","timestamp":"2026-05-13T14:22:10.516Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-14T09:11:34.520Z"}
+{"level":"info","message":"Error al obtener perfil: usuario no encontrado","timestamp":"2026-05-14T09:13:55.798Z"}
+{"id":"36","level":"info","message":"Perfil actualizado exitosamente","timestamp":"2026-05-14T09:15:41.778Z"}
+{"level":"info","message":"Mensaje informativo","timestamp":"2026-05-14T15:04:30.563Z"}
