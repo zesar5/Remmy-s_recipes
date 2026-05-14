@@ -8,6 +8,7 @@ import '../services/recetas_service.dart';
 import 'package:flutter/foundation.dart';
 import '../data/constants/app_strings.dart';
 import '../l10n/app_localizations.dart';
+import '../services/config.dart';
 
 // ==========================================================================
 //          FORMULARIO DE CREACIÓN / EDICIÓN DE RECETA
@@ -467,8 +468,13 @@ class _RecipeFormPageState extends State<RecipeFormPage> {
                     : (widget.recetaEditar?.imagenUrl != null &&
                               widget.recetaEditar!.imagenUrl!.isNotEmpty
                           ? Image.network(
-                              widget.recetaEditar!.imagenUrl!,
+                              '${ApiEndpoints.baseUrl}/${widget.recetaEditar!.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(
+                                  child: Icon(Icons.image_not_supported),
+                                );
+                              },
                             )
                           : const Center(
                               child: Text('+', style: TextStyle(fontSize: 40)),

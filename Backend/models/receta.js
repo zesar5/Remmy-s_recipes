@@ -44,7 +44,7 @@ const RecetaModel = {
     const recetas = rows.map(row => ({
             id: row.Id_receta,
             titulo: row.titulo,
-            imagenBase64: row.imagen || null
+            imagen: row.imagen || null
         }));
 
         return recetas;
@@ -88,7 +88,7 @@ const RecetaModel = {
     return rows.map(row => ({
       Id_receta: row.Id_receta,
       titulo: row.titulo,
-      imagenBase64: row.imagen || null
+      imagen: row.imagen || null
     }));
   },
 
@@ -431,7 +431,7 @@ const FavoritoModel = {
     return rows.map(row => ({
       id: row.Id_receta.toString(),
       titulo: row.titulo,
-      imagenBase64: row.imagen || null
+      imagen: row.imagen || null
     }));
   },
 

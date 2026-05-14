@@ -419,22 +419,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child:
-                      receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
-                      ? Image.network(
-                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey.shade300,
-                              child: const Icon(Icons.image, size: 50),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.image, size: 50),
-                        ),
+                  child: _buildRecetaImageWidget(receta),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -519,22 +504,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child:
-                      receta.imagenUrl != null && receta.imagenUrl!.isNotEmpty
-                      ? Image.network(
-                          '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey.shade300,
-                              child: const Icon(Icons.image, size: 50),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.image, size: 50),
-                        ),
+                  child: _buildRecetaImageWidget(receta),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -558,6 +528,47 @@ class _PerfilScreenState extends State<PerfilScreen> {
         AppLocalizations.of(context)!.vistaPrincipalPerfil,
         style: TextStyle(fontSize: 16),
       ),
+    );
+  }
+
+  /// Widget helper para cargar imágenes de recetas con manejo centralizado
+  Widget _buildRecetaImageWidget(Receta receta) {
+    if (receta.imagenUrl == null || receta.imagenUrl!.isEmpty) {
+      return Container(
+        color: Colors.grey.shade300,
+        child: const Icon(Icons.image, size: 50),
+      );
+    }
+
+    final imageUrl =
+        '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}';
+
+    logger.d(
+      '📸 Cargando imagen - Receta: ${receta.titulo}, URL: $imageUrl',
+    );
+
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          logger.d('✅ Imagen cargada: ${receta.titulo}');
+          return child;
+        }
+        return Container(
+          color: Colors.grey.shade200,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        logger.w(
+          '❌ Error cargando imagen - Receta: ${receta.titulo}, Error: $error',
+        );
+        return Container(
+          color: Colors.grey.shade300,
+          child: const Icon(Icons.image, size: 50),
+        );
+      },
     );
   }
 

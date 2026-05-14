@@ -108,6 +108,10 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
     '⬅️ Respuesta recibida - Status: ${response.statusCode}, ⬅️Body: ${response.body}',
   );
 
+  logger.d(
+    '⬅️ Respuesta recibida - Status: ${response.statusCode}, ⬅️Body: ${response.body}',
+  );
+
   if (response.statusCode == 401) {
     await _checkAndHandleSessionExpiration(response.statusCode, response.body);
     return [];
