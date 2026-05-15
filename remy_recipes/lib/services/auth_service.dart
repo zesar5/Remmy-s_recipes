@@ -251,6 +251,7 @@ class AuthService {
     required String nombreUsuario,
     String? descripcion,
     String? fotoPerfil,
+    String? pais,
   }) async {
     if (_accessToken == null || _currentUser == null) {
       logger.w('Intento de updateProfile sin token o usuario actual');
@@ -261,7 +262,7 @@ class AuthService {
       'Iniciando actualización de perfil para userId: ${_currentUser!.id}',
     );
     logger.d(
-      'Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}',
+      'Datos: nombreUsuario=$nombreUsuario, descripcion=${descripcion ?? 'null'}, fotoPerfil=${fotoPerfil != null ? '[PRESENTE]' : 'null'}, pais=${pais ?? 'null'}',
     );
 
     // URL con userId (similar a fetchProfile)
@@ -274,10 +275,10 @@ class AuthService {
       url,
       headers: ApiHeadersHelper.withAuth(_accessToken),
       body: jsonEncode({
-        'nombre':
-            nombreUsuario, // Asegúrate de que coincida con lo que espera tu backend (ej. 'userName' o 'nombreUsuario')
+        'nombre': nombreUsuario,
         'descripcion': descripcion,
         'fotoPerfil': fotoPerfil,
+        'pais': pais,
       }),
     );
 

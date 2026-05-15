@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../l10n/app_localizations.dart';
 import '../services/config.dart';
+import '../data/constants/app_strings.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final AuthService authService;
@@ -20,6 +21,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLoading = false;
   late TextEditingController nameController;
   late TextEditingController descripcionController;
+  String? selectedCountry;
   File? imagenPerfilFile;
   String? imagenPerfilUrl;
   final picker = ImagePicker();
@@ -33,6 +35,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = widget.authService.currentUser!;
     nameController = TextEditingController(text: user.userName);
     descripcionController = TextEditingController(text: user.descripcion ?? '');
+    selectedCountry = user.pais;
 
     if (user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty) {
       avatarImage = NetworkImage(
@@ -113,6 +116,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         nombreUsuario: nameController.text.trim(),
         descripcion: descripcionController.text.trim(),
         fotoPerfil: imagenPerfilUrl,
+        pais: selectedCountry,
       );
 
       logger.i('Perfil actualizado exitosamente');
@@ -154,12 +158,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             fontSize: 20,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: isLoading ? null : guardarCambios,
-          ),
-        ],
       ),
       body: Stack(
         children: [
@@ -215,7 +213,55 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   maxLines: 3,
                 ),
+                const SizedBox(height: 16),
+
+                // País
+                DropdownButtonFormField<String>(
+                  value: selectedCountry,
+                  decoration: InputDecoration(labelText: AppStrings.pais),
+                  items: AppStrings.countries
+                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                      .toList(),
+                  onChanged: (v) => setState(() => selectedCountry = v),
+                ),
               ],
+            ),
+          ),
+
+          // Botón Guardar fijo abajo
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : guardarCambios,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppStrings.colorFondo,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          AppLocalizations.of(context)!.editarPerfil,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
             ),
           ),
 

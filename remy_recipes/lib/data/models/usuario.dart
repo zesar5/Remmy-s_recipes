@@ -37,21 +37,21 @@ class Usuario {
   // ------------------------------------------------------------------------
   factory Usuario.fromJson(Map<String, dynamic> json) {
     return Usuario(
-      id: (json['Id_usuario'] ?? json['id'])?.toString() ?? '',
-      userName: json['nombre'] ?? '',
-      pais: json['pais'],
-      email: json['email'] ?? '',
+      id: (json['Id_usuario'] ?? json['id'] ?? json['userId'])?.toString() ?? '',
+      userName: json['nombre'] ?? json['userName'] ?? json['nombreUsuario'] ?? json['username'] ?? '',
+      pais: json['pais'] ?? json['country'],
+      email: json['email'] ?? json['correo'] ?? json['user_email'] ?? '',
 
       // Estos campos NO vienen en el perfil → los dejamos vacíos
       contrasena: '',
       contrasena2: '',
 
-      descripcion: json['descripcion'],
-      anioNacimiento: json['anioNacimiento'], // puede ser int o null
+      descripcion: json['descripcion'] ?? json['bio'] ?? json['about'],
+      anioNacimiento: json['anioNacimiento'] ?? json['birthYear'],
       // La foto podría venir como base64 completo o null
-      fotoPerfil: json['fotoPerfil'] ?? json['foto'],
+      fotoPerfil: json['fotoPerfil'] ?? json['foto'] ?? json['profilePicture'],
       // La URL de la foto (nuevo campo)
-      fotoUrl: json['fotoUrl'],
+      fotoUrl: json['fotoUrl'] ?? json['foto_url'] ?? json['profileUrl'],
     );
   }
 

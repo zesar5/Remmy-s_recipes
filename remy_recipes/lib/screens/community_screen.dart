@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/auth_service.dart';
 import '../services/session_manager.dart';
+import '../utils/image_url_helper.dart';
 import 'Profile_screen.dart';
 import 'package:logger/logger.dart';
 import 'package:remy_recipes/data/models/usuario.dart';
@@ -19,6 +20,8 @@ class ComunidadScreen extends StatefulWidget {
 
 class _ComunidadScreenState extends State<ComunidadScreen> {
   final Logger logger = Logger();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
   List<Usuario> usuarios = [];
   bool isLoading = true;
   late SessionManager _sessionManager;
@@ -28,6 +31,24 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
     super.initState();
     _sessionManager = SessionManager();
     fetchUsuarios();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Usuario> get filteredUsuarios {
+    if (_searchQuery.isEmpty) return usuarios;
+    final query = _searchQuery.toLowerCase();
+    return usuarios.where((u) => u.userName.toLowerCase().contains(query)).toList();
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
   }
 
   Future<void> fetchUsuarios() async {
@@ -109,56 +130,123 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: usuarios.length,
-              itemBuilder: (context, index) {
-                final user = usuarios[index];
-
-                // Construir la URL de la foto de forma flexible
-                String? fotoUrl;
-                if (user.fotoUrl != null) {
-                  // Si viene la URL relativa del servidor, construir URL completa
-                  fotoUrl = '${ApiEndpoints.baseUrl}${user.fotoUrl}?t=${DateTime.now().millisecondsSinceEpoch}';
-                } else {
-                  // Fallback: construir URL con el ID del usuario
-                  fotoUrl = '${ApiEndpoints.baseUrl}/usuarios/foto/${user.id}?t=${DateTime.now().millisecondsSinceEpoch}';
-                }
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.grey.shade300,
-                      backgroundImage: user.fotoPerfil != null
-                          ? MemoryImage(base64Decode(user.fotoPerfil!.replaceFirst(RegExp(r'data:image/\w+;base64,'), '')))
-                          : NetworkImage(fotoUrl),
-                      onBackgroundImageError: (_, __) => null,
-                      child: const Icon(Icons.person),
+          : Column(
+              children: [
+                Container(
+                  color: const Color(0xFFDEB887),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _onSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: 'Buscar usuario...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                _onSearchChanged('');
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
-                    title: Text(user.userName),
-                    subtitle: user.descripcion != null
-                        ? Text(user.descripcion!)
-                        : null,
-                    onTap: () {
-                      logger.i("Abriendo perfil de ${user.userName}");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PerfilScreen(
-                            authService: widget.authService,
-                            usuarioAMostrar: user,
-                            viewOnly: true, // modo solo visualización
-                          ),
-                        ),
-                      );
-                    },
                   ),
-                );
-              },
+                ),
+                Expanded(
+                  child: filteredUsuarios.isEmpty
+                      ? Center(
+                          child: Text(
+                            _searchQuery.isEmpty
+                                ? 'No hay usuarios para mostrar'
+                                : 'No se encontró ningún usuario',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredUsuarios.length,
+                          itemBuilder: (context, index) {
+                            final user = filteredUsuarios[index];
+
+                            final fotoUrl = user.fotoUrl != null && user.fotoUrl!.isNotEmpty
+                                ? ImageUrlHelper.buildImageUrl(user.fotoUrl!)
+                                : ImageUrlHelper.buildImageUrl('/usuarios/foto/${user.id}');
+                            final ImageProvider<Object> avatarImage = user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
+                                ? (() {
+                                    try {
+                                      final base64String = user.fotoPerfil!.replaceFirst(RegExp(r'data:image/\w+;base64,'), '');
+                                      return MemoryImage(base64Decode(base64String)) as ImageProvider<Object>;
+                                    } catch (_) {
+                                      return NetworkImage(fotoUrl) as ImageProvider<Object>;
+                                    }
+                                  })()
+                                : NetworkImage(fotoUrl) as ImageProvider<Object>;
+
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Colors.grey.shade300,
+                                  child: ClipOval(
+                                    child: Image(
+                                      image: avatarImage,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.person),
+                                    ),
+                                  ),
+                                ),
+                                title: Text(user.userName),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (user.pais != null && user.pais!.isNotEmpty)
+                                      Text('${user.pais!} • ${user.email}'),
+                                    if (user.pais == null || user.pais!.isEmpty)
+                                      Text(user.email),
+                                    if (user.descripcion != null && user.descripcion!.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 4.0),
+                                        child: Text(
+                                          user.descripcion!,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 13),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  logger.i("Abriendo perfil de ${user.userName}");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => PerfilScreen(
+                                        authService: widget.authService,
+                                        usuarioAMostrar: user,
+                                        viewOnly: true,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
             ),
     );
   }

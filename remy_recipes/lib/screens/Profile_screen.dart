@@ -47,15 +47,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
     super.initState();
     logger.i('Inicializando pantalla de perfil'); // Log de inicio
 
-    // Protección: si no hay usuario logueado → redirige a login
-    if (widget.authService.currentUser == null) {
+    // Protección: si no hay usuario en contexto ni usuario a mostrar, redirige a login
+    if (widget.usuarioAMostrar == null && widget.authService.currentUser == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, '/login');
       });
       return;
     }
 
-    // Cargamos el usuario desde AuthService
+    // Cargamos el usuario desde el perfil proporcionado o desde AuthService
     user = widget.usuarioAMostrar ?? widget.authService.currentUser!;
 
     // Cargamos las recetas del usuario
@@ -218,7 +218,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         return const Text("👤", style: TextStyle(fontSize: 55));
                       },
                     )
-                  : const Text("👤", style: TextStyle(fontSize: 55)),
+                  : user.fotoUrl != null && user.fotoUrl!.isNotEmpty
+                      ? Image.network(
+                          ImageUrlHelper.buildImageUrl(user.fotoUrl!),
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            logger.w('Error cargando imagen de perfil');
+                            return const Text("👤", style: TextStyle(fontSize: 55));
+                          },
+                        )
+                      : const Text("👤", style: TextStyle(fontSize: 55)),
             ),
           ),
 
@@ -229,6 +240,33 @@ class _PerfilScreenState extends State<PerfilScreen> {
             user.userName,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
+
+          const SizedBox(height: 6),
+          // País y email
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (user.pais != null && user.pais!.isNotEmpty) ...[
+                const Icon(Icons.location_on, size: 16),
+                const SizedBox(width: 6),
+                Text(user.pais!, style: const TextStyle(fontSize: 13)),
+              ],
+              if (user.email != null && user.email.isNotEmpty) ...[
+                const SizedBox(width: 12),
+                const Icon(Icons.email, size: 16),
+                const SizedBox(width: 6),
+                Text(user.email, style: const TextStyle(fontSize: 13)),
+              ],
+            ],
+          ),
+
+          if (user.anioNacimiento != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Año de nacimiento: ${user.anioNacimiento}',
+              style: const TextStyle(fontSize: 13),
+            ),
+          ],
 
           const SizedBox(height: 12),
 
