@@ -888,6 +888,16 @@ class RecipeButton extends StatelessWidget {
 
           Navigator.pop(context);
 
+          if (recetaCompleta == null) {
+            logger.e("Receta nula - No se pudo cargar");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.errorCargarReceta),
+              ),
+            );
+            return;
+          }
+
           Navigator.push(
             context,
             MaterialPageRoute(

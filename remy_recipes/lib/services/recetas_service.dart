@@ -6,6 +6,7 @@ import '../data/models/receta.dart';
 import 'config.dart';
 import 'package:logger/logger.dart';
 import 'session_manager.dart';
+import 'api_headers_helper.dart';
 // ==========================================================================
 //          SERVICIO DE RECETAS - CONEXIÓN CON EL BACKEND
 // ==========================================================================
@@ -22,14 +23,21 @@ Future<void> _checkAndHandleSessionExpiration(int statusCode, String responseBod
 
 /// Obtiene TODAS las recetas (normalmente públicas, según backend)
 Future<List<Receta>> obtenerTodasLasRecetas() async {
-  final url = Uri.parse('${ApiEndpoints.recetas}/recetas');
-  logger.i('iniciando obtención de todas las recetas');
+  final url = Uri.parse(ApiEndpoints.recetas);
+  logger.i('Iniciando obtención de todas las recetas');
   try {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonList = json.decode(response.body);
-      logger.i('Recetas obtenidas exitosamwnte: $jsonList.length}');
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! List) {
+        logger.e('El backend no devolvió una lista válida: $decoded');
+        return [];
+      }
+      
+      final List<dynamic> jsonList = decoded;
+      logger.i('Recetas obtenidas exitosamente: ${jsonList.length}');
       return jsonList.map((json) => Receta.fromJson(json)).toList();
     } else {
       logger.e('Error al cargar recetas: ${response.statusCode}');
@@ -50,23 +58,25 @@ Future<String?> crearRecetaEnServidor(Receta nuevaReceta, String token) async {
   final url = Uri.parse(ApiEndpoints.recetas);
 
   logger.i('Iniciando creación de receta en servidor');
-  logger.d(
-    'Token:$token, URL: $url, Body: ${json.encode(nuevaReceta.toJson())}',
-  );
+  logger.d('URL: $url, Body: ${json.encode(nuevaReceta.toJson())}');
 
   try {
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token', // ← Obligatorio para autenticación
-      },
+      headers: ApiHeadersHelper.withAuth(token),
       body: json.encode(nuevaReceta.toJson()),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       logger.i('Response body: ${response.body}');
-      final data = json.decode(response.body);
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! Map) {
+        logger.e('Respuesta inesperada (no es Map): $decoded');
+        return null;
+      }
+      
+      final data = decoded as Map<String, dynamic>;
       logger.i('Receta creada con éxito. ID: ${data['id']}');
       return data['id']?.toString();
     } else if (response.statusCode == 401) {
@@ -98,10 +108,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
 
   final response = await http.get(
     Uri.parse('${ApiEndpoints.obtenerRecetaUsuario}/$userId'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
+    headers: ApiHeadersHelper.withAuth(token),
   );
 
   logger.d(
@@ -128,7 +135,7 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
 
   if (decoded is! List) {
     logger.e('El backend no devolvió una lista: $decoded');
-    throw Exception('❌ El backend NO devolvió una lista');
+    return [];
   }
 
   // Usamos fromHomeJson porque la respuesta es ligera (id, título, imagen)
@@ -146,21 +153,23 @@ Future<List<Receta>> obtenerRecetasUsuario(String token, String userId) async {
 Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
   final url = Uri.parse('${ApiEndpoints.recetas}/$recetaId');
   logger.i('Iniciando obtención de receta por ID: $recetaId');
-  logger.d('Token: $token, URL: $url');
+  logger.d('URL: $url');
   final response = await http.get(
     url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
+    headers: ApiHeadersHelper.withAuth(token),
   );
 
   if (response.statusCode == 200) {
-    final data = json.decode(response.body);
+    final decoded = json.decode(response.body);
+    
+    if (decoded is! Map) {
+      logger.e('Respuesta de receta no es Map: $decoded');
+      throw Exception('Formato de receta inválido');
+    }
+    
+    final data = decoded as Map<String, dynamic>;
     logger.i('Receta obtenida por ID exitosamente');
-    return Receta.fromJson(
-      data,
-    ); // ← Usa el constructor completo (ingredientes + pasos)
+    return Receta.fromJson(data); // ← Usa el constructor completo (ingredientes + pasos)
   } else if (response.statusCode == 401) {
     await _checkAndHandleSessionExpiration(response.statusCode, response.body);
     throw Exception('Sesión expirada. Por favor inicia sesión nuevamente.');
@@ -174,20 +183,32 @@ Future<Receta> obtenerRecetaPorId(String token, String recetaId) async {
 
 /// Obtiene una receta SOLO si es pública (sin token)
 /// Ruta: GET /recetas/publicas/:id
-Future<Receta> obtenerRecetaPublicaPorId(String recetaId) async {
+Future<Receta?> obtenerRecetaPublicaPorId(String recetaId) async {
   final url = Uri.parse('${ApiEndpoints.recetas}/publicas/$recetaId');
 
   logger.i('Iniciando obtención de receta pública por ID: $recetaId');
 
-  final response = await http.get(url);
+  try {
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    logger.i('Receta pública obtenida exitosamente');
-    return Receta.fromJson(data);
-  } else {
-    logger.e('Error al obtener receta pública: Status ${response.statusCode}');
-    throw Exception('Error al obtener receta pública: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! Map) {
+        logger.e('Respuesta inesperada (no es Map): $decoded');
+        return null;
+      }
+      
+      final data = decoded as Map<String, dynamic>;
+      logger.i('Receta pública obtenida exitosamente');
+      return Receta.fromJson(data);
+    } else {
+      logger.e('Error al obtener receta pública: Status ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    logger.e('Error obteniendo receta pública: $e');
+    return null;
   }
 }
 
@@ -201,9 +222,16 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! List) {
+        logger.e('El backend no devolvió una lista: $decoded');
+        return [];
+      }
+      
+      final List data = decoded;
       logger.i('Recetas públicas obtenidas: ${data.length}');
-      return data.map((e) => Receta.fromHomeJson(e)).toList();
+      return data.map((e) => Receta.fromHomeJson(e as Map<String, dynamic>)).toList();
     } else {
       logger.e('Error al obtener recetas públicas: ${response.statusCode}');
       return [];
@@ -220,20 +248,18 @@ Future<List<Receta>> obtenerRecetasPublicas() async {
 Future<bool> eliminarReceta(int id, String token) async {
   logger.i('Iniciando eliminación de receta ID: $id');
   final response = await http.delete(
-    Uri.parse('${ApiEndpoints.recetas}/$id'), // ← Faltaba /recetas/
-    headers: {'Authorization': 'Bearer $token'},
+    Uri.parse('${ApiEndpoints.recetas}/$id'),
+    headers: ApiHeadersHelper.withAuth(token),
   );
 
   if (response.statusCode == 200 || response.statusCode == 204) {
-    logger.i('Receta eliminada exitosamente'); // Log de éxito
+    logger.i('Receta eliminada exitosamente');
     return true;
   } else if (response.statusCode == 401) {
     await _checkAndHandleSessionExpiration(response.statusCode, response.body);
     return false;
   } else {
-    logger.e(
-      'Error al eliminar receta: Status ${response.statusCode}',
-    ); // Log de error
+    logger.e('Error al eliminar receta: Status ${response.statusCode}');
     return false;
   }
 }
@@ -242,27 +268,22 @@ Future<bool> eliminarReceta(int id, String token) async {
 /// Ruta: PUT /recetas/:id
 /// Requiere token y ser propietario
 Future<bool> editarReceta(Receta receta, String token) async {
-  logger.i('Iniciando edición de receta ID: ${receta.id}'); // Log de inicio
-  logger.d('Token: $token, Body: ${jsonEncode(receta.toJson())}'); // Debug
+  logger.i('Iniciando edición de receta ID: ${receta.id}');
+  logger.d('Body: ${jsonEncode(receta.toJson())}');
   final response = await http.put(
     Uri.parse('${ApiEndpoints.recetas}/${receta.id}'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
+    headers: ApiHeadersHelper.withAuth(token),
     body: jsonEncode(receta.toJson()),
   );
 
   if (response.statusCode == 200) {
-    logger.i('Receta editada exitosamente'); // Log de éxito
+    logger.i('Receta editada exitosamente');
     return true;
   } else if (response.statusCode == 401) {
     await _checkAndHandleSessionExpiration(response.statusCode, response.body);
     return false;
   } else {
-    logger.e(
-      'Error al editar receta: Status ${response.statusCode}',
-    ); // Log de error
+    logger.e('Error al editar receta: Status ${response.statusCode}');
     return false;
   }
 }
@@ -290,9 +311,9 @@ Future<List<Receta>> recetaFiltrada({
   logger.d('Filtros enviados: $filtros, Token: $token'); // Debug
 
   try {
-    final headers = {'Content-Type': 'application/json'};
+    final headers = ApiHeadersHelper.basicHeaders;
     if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
+      headers.addAll({'Authorization': 'Bearer $token'});
     }
 
     final response = await http.post(
@@ -302,9 +323,16 @@ Future<List<Receta>> recetaFiltrada({
     );
 
     if (response.statusCode == 200) {
-      final List data = json.decode(response.body);
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! List) {
+        logger.e('Respuesta de filtro no es lista: $decoded');
+        return [];
+      }
+      
+      final List data = decoded;
       logger.i('Filtro aplicado exitosamente: ${data.length} resultados');
-      return data.map((e) => Receta.fromHomeJson(e)).toList();
+      return data.map((e) => Receta.fromHomeJson(e as Map<String, dynamic>)).toList();
     } else if (response.statusCode == 401) {
       await _checkAndHandleSessionExpiration(response.statusCode, response.body);
       return [];
@@ -334,17 +362,21 @@ Future<List<Receta>> obtenerFavoritos(String token) async {
   try {
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
     );
 
     logger.d('Respuesta obtenerFavoritos - Status: ${response.statusCode}');
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      final favoritos = data.map((item) => Receta.fromHomeJson(item)).toList();
+      final decoded = json.decode(response.body);
+      
+      if (decoded is! List) {
+        logger.e('Respuesta de favoritos no es lista: $decoded');
+        return [];
+      }
+      
+      final List<dynamic> data = decoded;
+      final favoritos = data.map((item) => Receta.fromHomeJson(item as Map<String, dynamic>)).toList();
       logger.i('Favoritos obtenidos: ${favoritos.length} recetas');
       return favoritos;
     } else if (response.statusCode == 401) {
@@ -370,15 +402,12 @@ Future<bool> anadirFavorito(int recetaId, String token) async {
   try {
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
     );
 
     logger.d('Respuesta anadirFavorito - Status: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       logger.i('Receta añadida a favoritos exitosamente');
       return true;
     } else if (response.statusCode == 401) {
@@ -407,15 +436,12 @@ Future<bool> eliminarFavorito(int recetaId, String token) async {
   try {
     final response = await http.delete(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
     );
 
     logger.d('Respuesta eliminarFavorito - Status: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 204) {
       logger.i('Receta eliminada de favoritos exitosamente');
       return true;
     } else if (response.statusCode == 401) {
@@ -441,10 +467,7 @@ Future<bool> esFavorito(int recetaId, String token) async {
   try {
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
     );
 
     if (response.statusCode == 200) {
@@ -475,10 +498,7 @@ Future<bool> toggleFavorito(int recetaId, String token) async {
   try {
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
     );
 
     logger.d('Respuesta toggleFavorito - Status: ${response.statusCode}');
@@ -512,10 +532,7 @@ Future<bool> cambiarPrivacidadReceta(String recetaId, bool esPublica, String tok
   try {
     final response = await http.put(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: ApiHeadersHelper.withAuth(token),
       body: jsonEncode({'publica': esPublica ? 1 : 0}),
     );
 
@@ -543,8 +560,7 @@ Future<String?> crearRecetaConImagen({
   final url = Uri.parse(ApiEndpoints.recetas);
 
   var request = http.MultipartRequest('POST', url);
-
-  request.headers['Authorization'] = 'Bearer $token';
+  request.headers.addAll(ApiHeadersHelper.multipartHeaders(token));
 
   request.fields['titulo'] = receta.titulo;
   request.fields['publica'] = receta.esPublica ? '1' : '0';
@@ -577,10 +593,22 @@ Future<String?> crearRecetaConImagen({
   final respStr = await response.stream.bytesToString();
 
   if (response.statusCode == 200 || response.statusCode == 201) {
-    final data = json.decode(respStr);
-    return data['id']?.toString();
+    try {
+      final data = json.decode(respStr);
+      
+      if (data is! Map) {
+        logger.e('Respuesta inesperada (no es Map): $data');
+        return null;
+      }
+      
+      logger.i('Receta con imagen creada exitosamente. ID: ${data['id']}');
+      return (data as Map<String, dynamic>)['id']?.toString();
+    } catch (e) {
+      logger.e('Error parseando respuesta: $e');
+      return null;
+    }
   } else {
-    print("ERROR: $respStr");
+    logger.e('Error al crear receta con imagen: ${response.statusCode} - $respStr');
     return null;
   }
 }

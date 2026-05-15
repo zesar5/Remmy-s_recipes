@@ -1,3 +1,22 @@
+// ==========================================================================
+//                      API_SERVICE - DEPRECATED / NO ACTIVO
+// ==========================================================================
+// 
+// ESTADO: Este archivo NO se utiliza actualmente.
+// 
+// El proyecto usa HTTP (package:http) en lugar de Dio para todas las llamadas API.
+// Ver recetas_service.dart y auth_service.dart para la implementación actual.
+// 
+// Si en el futuro se decide migrar a Dio:
+// 1. Descomentar este archivo
+// 2. Consolidar toda la lógica de recetas_service y auth_service aquí
+// 3. Reemplazar todas las llamadas http.get/post con _dio.get/post
+// 4. Eliminar duplicidad de clientes HTTP
+// 
+// DEPENDENCIAS REQUERIDAS si se activa:
+// - dio: ^5.0.0 o superior
+// - dio_logging_interceptor (opcional, para debug)
+// 
 /*import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'dart:io';

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../data/models/usuario.dart';
 import 'config.dart';
 import 'session_manager.dart';
+import 'api_headers_helper.dart';
 
 // ==========================================================================
 //          SERVICIO CENTRAL DE AUTENTICACIÓN (AuthService)
@@ -90,10 +91,10 @@ class AuthService {
   Future<bool> login({required String email, required String password}) async {
     final url = Uri.parse(ApiEndpoints.login);
 
-    logger.i("ha pasado por esta funcion que es login: $email");
+    logger.i("Iniciando login para: $email");
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: ApiHeadersHelper.basicHeaders,
       body: json.encode({
         'email': email,
         'contrasena': password, // ← Clave exacta que espera el backend
@@ -168,7 +169,7 @@ class AuthService {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: ApiHeadersHelper.basicHeaders,
       body: json.encode(newUser.toJsonRegistro()),
     );
 
@@ -214,10 +215,7 @@ class AuthService {
 
     final response = await http.get(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_accessToken', // ← Token obligatorio aquí
-      },
+      headers: ApiHeadersHelper.withAuth(_accessToken),
     );
 
     if (response.statusCode == 200) {
@@ -274,10 +272,7 @@ class AuthService {
     final response = await http.put(
       // O PATCH si tu backend lo usa
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_accessToken',
-      },
+      headers: ApiHeadersHelper.withAuth(_accessToken),
       body: jsonEncode({
         'nombre':
             nombreUsuario, // Asegúrate de que coincida con lo que espera tu backend (ej. 'userName' o 'nombreUsuario')
