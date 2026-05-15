@@ -7,6 +7,7 @@ import '../services/recetas_service.dart';
 import '../data/models/receta.dart';
 import '../data/constants/app_strings.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/image_url_helper.dart';
 // =======================================================
 //          PANTALLA DE DETALLE DE RECETA
 // =======================================================
@@ -341,7 +342,7 @@ void _toggleLike() async {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
-                '${ApiEndpoints.baseUrl}/${widget.receta.imagenUrl!.replaceFirst('/', '')}',
+                ImageUrlHelper.buildImageUrl(widget.receta.imagenUrl),
                 height: 220,
                 width: double.infinity,
                 fit: BoxFit.cover,

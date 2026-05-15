@@ -15,6 +15,7 @@ import '../data/constants/app_strings.dart';
 import 'package:logger/logger.dart';
 import '../l10n/app_localizations.dart';
 import 'login_screen.dart';
+import '../utils/image_url_helper.dart';
 
 // =======================================================
 //                  PANTALLA PRINCIPAL (HOME)
@@ -940,7 +941,7 @@ class RecipeButton extends StatelessWidget {
                 ),
                 child: recipe.imagenUrl != null && recipe.imagenUrl!.isNotEmpty
                     ? Image.network(
-                        '${ApiEndpoints.baseUrl}/${recipe.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}',
+                        ImageUrlHelper.buildImageUrl(recipe.imagenUrl),
                         fit: BoxFit.cover,
                         width: double.infinity,
                         errorBuilder: (context, error, stackTrace) {

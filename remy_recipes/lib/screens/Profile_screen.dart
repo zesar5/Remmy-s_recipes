@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:remy_recipes/screens/login_screen.dart';
 import 'package:logger/logger.dart';
 import '../services/auth_service.dart';
@@ -12,6 +10,7 @@ import 'package:remy_recipes/services/config.dart';
 import 'package:flutter/material.dart';
 import 'EditProfileScreen.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/image_url_helper.dart';
 
 // =======================================================
 //              PANTALLA DE PERFIL DE USUARIO
@@ -540,8 +539,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
       );
     }
 
-    final imageUrl =
-        '${ApiEndpoints.baseUrl}/${receta.imagenUrl!.replaceFirst(RegExp(r'^/'), '')}?t=${DateTime.now().millisecondsSinceEpoch}';
+    // ✅ USAR HELPER: Construye URL optimizada para emulador + APK
+    final imageUrl = ImageUrlHelper.buildImageUrl(receta.imagenUrl);
 
     logger.d(
       '📸 Cargando imagen - Receta: ${receta.titulo}, URL: $imageUrl',
