@@ -6,18 +6,18 @@ import '../services/config.dart';
 // ==========================================================================
 // Este helper asegura que las imágenes funcionen tanto en emulador como en APK
 // Maneja automáticamente:
-// - URLs en emulador (http://10.0.2.2:8000)
-// - URLs en dispositivo físico (http://192.168.x.x:8000)
-// - URLs relativas (para mayor compatibilidad)
+// - URLs en emulador: http://10.0.2.2:8000
+// - URLs en APK/dispositivo: Lee del .env.production (NGROK o servidor remoto)
+// - URLs relativas solo si BaseUrl está mal configurada
 // - Paths con o sin barra inicial
 
 class ImageUrlHelper {
   /// Construye URL de imagen optimizada para funcionar en todos los contextos
   /// 
   /// Estrategia:
-  /// 1. Si es web → URL completa
-  /// 2. Si es Android/iOS → intenta path relativo primero
-  /// 3. Fallback a URL completa con timestamp para forzar recarga
+  /// 1. Siempre usa ApiEndpoints.baseUrl (que ya viene del .env correcto)
+  /// 2. Agrega timestamp para forzar recarga de caché
+  /// 3. Normaliza paths
   static String buildImageUrl(String? imagePath, {bool includeTimestamp = true}) {
     if (imagePath == null || imagePath.isEmpty) {
       return '';
@@ -26,19 +26,7 @@ class ImageUrlHelper {
     // Normalizar path: eliminar barra inicial si existe
     final cleanPath = imagePath.replaceFirst(RegExp(r'^/'), '');
 
-    // En desarrollo/emulador: usar URL completa
-    if (kDebugMode) {
-      return _buildFullUrl(cleanPath, includeTimestamp);
-    }
-
-    // En APK (release): intentar path relativo primero
-    if (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS) {
-      // URL relativa: funciona si el servidor está en el mismo host
-      return '/$cleanPath';
-    }
-
-    // Fallback: URL completa
+    // ✅ SIEMPRE usar ApiEndpoints.baseUrl (lee del .env.production en APK)
     return _buildFullUrl(cleanPath, includeTimestamp);
   }
 
@@ -66,18 +54,18 @@ class ImageUrlHelper {
       return 'http://10.0.2.2:8000/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    // En APK/release → URL relativa (más compatible)
+    // En APK/release → Usar ApiEndpoints.baseUrl (del .env)
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
-      return '/$cleanPath';
+      return '${ApiEndpoints.baseUrl}/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
     // Web → URL completa
     if (kIsWeb) {
-      return '${ApiEndpoints.baseUrl}/$cleanPath';
+      return '${ApiEndpoints.baseUrl}/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
     // Fallback
-    return '/$cleanPath';
+    return '${ApiEndpoints.baseUrl}/$cleanPath';
   }
 }
