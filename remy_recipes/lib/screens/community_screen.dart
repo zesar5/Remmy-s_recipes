@@ -80,11 +80,18 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
       logger.d('Respuesta comunidad - Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        List data = json.decode(response.body);
+        final decoded = json.decode(response.body);
+        
+        // Validar si es una lista
+        if (decoded is! List) {
+          logger.e('Error: La respuesta no es una lista');
+          setState(() => isLoading = false);
+          return;
+        }
 
         setState(() {
-          // Limpiamos y llenamos la lista sin duplicados
-          usuarios = data.map((e) => Usuario.fromJson(e)).toList();
+          // Convertir a lista de Usuario
+          usuarios = (decoded as List<dynamic>).map((e) => Usuario.fromJson(e as Map<String, dynamic>)).toList();
           isLoading = false;
         });
         logger.i('✅ Usuarios de comunidad cargados: ${usuarios.length}');
@@ -175,19 +182,10 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
                           itemBuilder: (context, index) {
                             final user = filteredUsuarios[index];
 
+                            // Construir URL de imagen usando ImageUrlHelper
                             final fotoUrl = user.fotoUrl != null && user.fotoUrl!.isNotEmpty
                                 ? ImageUrlHelper.buildImageUrl(user.fotoUrl!)
-                                : ImageUrlHelper.buildImageUrl('/usuarios/foto/${user.id}');
-                            final ImageProvider<Object> avatarImage = user.fotoPerfil != null && user.fotoPerfil!.isNotEmpty
-                                ? (() {
-                                    try {
-                                      final base64String = user.fotoPerfil!.replaceFirst(RegExp(r'data:image/\w+;base64,'), '');
-                                      return MemoryImage(base64Decode(base64String)) as ImageProvider<Object>;
-                                    } catch (_) {
-                                      return NetworkImage(fotoUrl) as ImageProvider<Object>;
-                                    }
-                                  })()
-                                : NetworkImage(fotoUrl) as ImageProvider<Object>;
+                                : ImageUrlHelper.buildImageUrl('/uploads/usuarios/foto/${user.id}');
 
                             return Card(
                               margin: const EdgeInsets.symmetric(
@@ -199,8 +197,8 @@ class _ComunidadScreenState extends State<ComunidadScreen> {
                                   radius: 25,
                                   backgroundColor: Colors.grey.shade300,
                                   child: ClipOval(
-                                    child: Image(
-                                      image: avatarImage,
+                                    child: Image.network(
+                                      fotoUrl,
                                       width: 50,
                                       height: 50,
                                       fit: BoxFit.cover,

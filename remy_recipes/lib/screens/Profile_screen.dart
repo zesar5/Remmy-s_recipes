@@ -218,18 +218,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         return const Text("👤", style: TextStyle(fontSize: 55));
                       },
                     )
-                  : user.fotoUrl != null && user.fotoUrl!.isNotEmpty
-                      ? Image.network(
-                          ImageUrlHelper.buildImageUrl(user.fotoUrl!),
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            logger.w('Error cargando imagen de perfil');
-                            return const Text("👤", style: TextStyle(fontSize: 55));
-                          },
-                        )
-                      : const Text("👤", style: TextStyle(fontSize: 55)),
+                  : const Text("👤", style: TextStyle(fontSize: 55)),
             ),
           ),
 
