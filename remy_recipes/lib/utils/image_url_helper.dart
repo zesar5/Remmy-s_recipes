@@ -13,32 +13,51 @@ import '../services/config.dart';
 
 class ImageUrlHelper {
   /// Construye URL de imagen optimizada para funcionar en todos los contextos
-  /// 
+  ///
   /// Estrategia:
-  /// 1. Siempre usa ApiEndpoints.baseUrl (que ya viene del .env correcto)
-  /// 2. Agrega timestamp para forzar recarga de caché
-  /// 3. Normaliza paths
+  /// 1. Si ya está completa, la devuelve tal cual
+  /// 2. Si no, usa ApiEndpoints.baseUrl
+  /// 3. Si baseUrl está vacío, usa un fallback local
+  /// 4. Agrega timestamp para evitar caché obsoleto
   static String buildImageUrl(String? imagePath, {bool includeTimestamp = true}) {
     if (imagePath == null || imagePath.isEmpty) {
       return '';
     }
 
-    // Normalizar path: eliminar barra inicial si existe
-    final cleanPath = imagePath.replaceFirst(RegExp(r'^/'), '');
+    final trimmedPath = imagePath.trim();
 
-    // ✅ SIEMPRE usar ApiEndpoints.baseUrl (lee del .env.production en APK)
-    return _buildFullUrl(cleanPath, includeTimestamp);
+    if (trimmedPath.startsWith('http://') || trimmedPath.startsWith('https://')) {
+      return _appendTimestamp(trimmedPath, includeTimestamp);
+    }
+
+    final cleanPath = trimmedPath.replaceFirst(RegExp(r'^/'), '');
+    final baseUrl = ApiEndpoints.baseUrl.trim();
+
+    if (baseUrl.isEmpty) {
+      // Fallback para builds en los que el .env no se carga correctamente
+      final fallbackBaseUrl = defaultTargetPlatform == TargetPlatform.android
+          ? 'http://10.0.2.2:8000'
+          : 'http://localhost:8000';
+      return _buildFullUrl(fallbackBaseUrl, cleanPath, includeTimestamp);
+    }
+
+    return _buildFullUrl(baseUrl, cleanPath, includeTimestamp);
   }
 
-  /// Construye URL completa con timestamp opcional para forzar recarga de caché
-  static String _buildFullUrl(String cleanPath, bool includeTimestamp) {
-    final baseUrl = ApiEndpoints.baseUrl;
-    final timestamp = includeTimestamp 
-      ? '?t=${DateTime.now().millisecondsSinceEpoch}'
-      : '';
-    
-    return '$baseUrl/$cleanPath$timestamp';
+  static String _buildFullUrl(String baseUrl, String cleanPath, bool includeTimestamp) {
+    final normalizedBaseUrl = baseUrl.replaceFirst(RegExp(r'/$'), '');
+    final normalizedPath = cleanPath.replaceFirst(RegExp(r'^/'), '');
+    final timestamp = includeTimestamp ? _timestampQuery() : '';
+    return '$normalizedBaseUrl/$normalizedPath$timestamp';
   }
+
+  static String _appendTimestamp(String url, bool includeTimestamp) {
+    if (!includeTimestamp) return url;
+    final separator = url.contains('?') ? '&' : '?';
+    return '$url${separator}t=${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  static String _timestampQuery() => '?t=${DateTime.now().millisecondsSinceEpoch}';
 
   /// Alternativa: intenta detección inteligente de IP local
   /// (Útil si necesitas conectar a dispositivo físico sin cambiar config)
@@ -49,23 +68,19 @@ class ImageUrlHelper {
 
     final cleanPath = imagePath.replaceFirst(RegExp(r'^/'), '');
 
-    // En emulador → URL emulador
     if (kDebugMode && defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2:8000/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    // En APK/release → Usar ApiEndpoints.baseUrl (del .env)
     if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       return '${ApiEndpoints.baseUrl}/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    // Web → URL completa
     if (kIsWeb) {
       return '${ApiEndpoints.baseUrl}/$cleanPath?t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    // Fallback
     return '${ApiEndpoints.baseUrl}/$cleanPath';
   }
 }

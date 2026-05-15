@@ -561,7 +561,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
       },
       errorBuilder: (context, error, stackTrace) {
         logger.w(
-          '❌ Error cargando imagen - Receta: ${receta.titulo}, Error: $error',
+          '❌ Error cargando imagen - Receta: ${receta.titulo}, URL: $imageUrl, Error: $error',
         );
         return Container(
           color: Colors.grey.shade300,
