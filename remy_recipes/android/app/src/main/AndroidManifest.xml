@@ -8,7 +8,7 @@
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:usesCleartextTraffic="true"
-        android:label="remy_recipes"
+        android:label="Remmy's Recipes"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
